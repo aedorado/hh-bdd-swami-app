@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/ui/home/home_drawer.dart';
 
+import 'home_carousel.dart';
+
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
@@ -11,8 +13,8 @@ class _HomeState extends State<Home> {
   int _selectedIndex = 0;
   static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text('Hare Krishna\nHare Krishna\nKrishna Krishna\nHare Hare\nHare Rama\nHare Rama\nRama Rama\n Hare Hare', style: optionStyle,),
+  List<Widget> _widgetOptions = <Widget>[
+    HomeScreen(),
     Text('Favourites', style: optionStyle,),
     Text('Mindfulness', style: optionStyle,),
     Text('Alerts', style: optionStyle,),
@@ -54,3 +56,13 @@ class _HomeState extends State<Home> {
   }
 
 }
+
+class HomeScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: CarouselList(),
+    );
+  }
+}
+
