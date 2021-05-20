@@ -61,8 +61,58 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: CarouselList(),
+      child: Column(
+        children: [
+          new Expanded(flex: 7, child: CarouselList()),
+          new Expanded(flex: 11, child: HomeScreenBottomCards()),
+        ],
+      ),
     );
   }
 }
+
+class HomeScreenBottomCards extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        new Flexible(flex: 1, child: HomeScreenBottomCard(displayString: "Association", displayImage: "https://i.postimg.cc/3Jc0NCqK/A.jpg")),
+        new Flexible(flex: 1, child: HomeScreenBottomCard(displayString: "Books", displayImage: "https://i.postimg.cc/1zxgcRP2/B.jpg")),
+        new Flexible(flex: 1, child: HomeScreenBottomCard(displayString: "Chanting", displayImage: "https://i.postimg.cc/RZJ6HJrw/c.jpg")),
+      ],
+    );
+  }
+
+}
+
+class HomeScreenBottomCard extends StatelessWidget {
+
+  final String displayString;
+  final String displayImage;
+  const HomeScreenBottomCard({Key key, this.displayString, this.displayImage}): super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+          image: DecorationImage(image: NetworkImage(displayImage), fit: BoxFit.cover)
+      ),
+      child: Column(
+        children: [
+          Spacer(),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(color: Colors.white.withOpacity(0.7)),
+            child: Center(
+              child: Text(displayString, style: new TextStyle(fontSize: 18.0),),
+            ),
+          ),
+          Spacer(),
+        ],
+      ),
+    );
+  }
+}
+
+
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 const kPrimaryColor = Color(0xFF5638f7);
@@ -80,99 +82,83 @@ class HomeScreenCarouselCard {
 var homeCarouselCards = [
   HomeScreenCarouselCard(
       title: 'Hare Krishna',
-      image: 'https://i.postimg.cc/0y7dXccV/bdd1.jpg',
+      image: 'https://pbs.twimg.com/media/Ed8kkw6XYAIJxBe.jpg',
       description:
       'In this age of quarrel and hypocrisy, the only means of deliverance is the chanting of the holy names of the Lord. There is no other way. There is no other way. There is no other way.'),
   HomeScreenCarouselCard(
+      title: 'Srimad Bhagvatam',
+      image: 'https://bddswami.com/wp-content/uploads/2020/07/rs02-1.jpg',
+      description:
+      'Śrī Caitanya Mahāprabhu very elaborately explained the harer nāma verse of the Bṛhan-nāradīya Purāṇa, and Sārvabhauma Bhaṭṭācārya was struck with wonder to hear His explanation.'),
+  HomeScreenCarouselCard(
       title: 'Chaitanya Charitamrita',
-      image: 'https://i.postimg.cc/ZqVNXg3x/bdd2.jpg',
+      image: 'https://bddswami.com/wp-content/uploads/2020/07/rs01-1.jpg',
       description:
       'Śrī Caitanya Mahāprabhu very elaborately explained the harer nāma verse of the Bṛhan-nāradīya Purāṇa, and Sārvabhauma Bhaṭṭācārya was struck with wonder to hear His explanation.'),
 ];
 
 // ignore: must_be_immutable
 class CarouselCard extends StatelessWidget {
-  CarouselCard({this.car});
+  CarouselCard({this.card});
 
-  HomeScreenCarouselCard car;
+  HomeScreenCarouselCard card;
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Padding(
-        padding: EdgeInsets.only(
-          top: 32.0,
-          left: 8.0,
-          right: 8.0,
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.5,
+        decoration: BoxDecoration(
+          // color: Colors.redAccent,
+          boxShadow: [
+            BoxShadow(
+                color: kShadowColor, offset: Offset(0, 20), blurRadius: 10.0),
+          ],
+          image: DecorationImage(
+              image: NetworkImage(card.image), fit: BoxFit.cover),
         ),
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.7,
-          height: MediaQuery.of(context).size.height * 0.5,
-          decoration: BoxDecoration(
-            // color: Colors.redAccent,
-            borderRadius: BorderRadius.circular(16.0),
-            boxShadow: [
-              BoxShadow(
-                  color: kShadowColor, offset: Offset(0, 20), blurRadius: 10.0),
-            ],
-            image: DecorationImage(
-                image: NetworkImage(car.image), fit: BoxFit.cover),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              // Padding(
-              //   padding: const EdgeInsets.all(10.0),
-              //   child: Container(
-              //     width: 44,
-              //     height: 44,
-              //     child: Image.network(
-              //       'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Tesla_Motors.svg/595px-Tesla_Motors.svg.png',
-              //       fit: BoxFit.contain,
-              //     ),
-              //   ),
-              // ),
-              Spacer(),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.white.withOpacity(0.7),
-                      // border: Border.all(color: Colors.blueAccent)
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: <Widget>[
-                        Spacer(),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: <Widget>[
-                            Text(
-                              car.title,
-                              style: kCardTitleStyle,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Spacer(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white.withOpacity(0.7),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: <Widget>[
+                      Spacer(),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: <Widget>[
+                          Text(
+                            card.title,
+                            style: kCardTitleStyle,
+                          ),
+                          Container(
+                            height: 100,
+                            width: MediaQuery.of(context).size.width * 0.6,
+                            child: Text(
+                              card.description,
+                              style: kCardDescriptionTextStyle,
+                              textAlign: TextAlign.end,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 5,
                             ),
-                            Container(
-                              height: 100,
-                              width: MediaQuery.of(context).size.width * 0.6,
-                              child: Text(
-                                car.description,
-                                style: kCardDescriptionTextStyle,
-                                textAlign: TextAlign.end,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 5,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-              )
-            ],
-          ),
+              ),
+            )
+          ],
         ),
       ),
     );
@@ -188,50 +174,71 @@ class _CarouselListState extends State<CarouselList> {
   // List<Container> indicators = [];
   int currentPage = 0;
 
+  PageController _pageController = PageController(
+    initialPage: 0,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    Timer.periodic(Duration(seconds: 5), (Timer timer) {
+      if (currentPage < 2) {
+        currentPage++;
+      } else {
+        currentPage = 0;
+      }
+
+      _pageController.animateToPage(
+        currentPage,
+        duration: Duration(milliseconds: 350),
+        curve: Curves.easeIn,
+      );
+    });
+  }
+
+
   Widget updateIndicators() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: homeCarouselCards.map(
-              (card) {
-            var index = homeCarouselCards.indexOf(card);
-            return Container(
-              width: 7.0,
-              height: 7.0,
-              margin: EdgeInsets.symmetric(horizontal: 6.0),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color:
-                currentPage == index ? Colors.red : Color(0xFFA6AEBD),
-              ),
-            );
-          },
-        ).toList(),
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: homeCarouselCards.map(
+                (card) {
+              var index = homeCarouselCards.indexOf(card);
+              return Container(
+                width: 7.0,
+                height: 7.0,
+                margin: EdgeInsets.symmetric(horizontal: 6.0),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color:
+                  currentPage == index ? Colors.red : Color(0xFFA6AEBD),
+                ),
+              );
+            },
+          ).toList(),
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: <Widget>[
-        // Spacer(),
         Container(
           height: MediaQuery.of(context).size.height * 0.5,
           width: double.infinity,
           child: PageView.builder(
             itemBuilder: (context, index) {
-              return Opacity(
-                opacity: currentPage == index ? 1.0 : 0.8,
-                child: CarouselCard(
-                  car: homeCarouselCards[index],
-                ),
+              return CarouselCard(
+                card: homeCarouselCards[index],
               );
             },
             itemCount: homeCarouselCards.length,
-            controller:
-            PageController(initialPage: 0, viewportFraction: 0.75),
+            controller: _pageController,
             onPageChanged: (index) {
               setState(() {
                 currentPage = index;
@@ -240,14 +247,6 @@ class _CarouselListState extends State<CarouselList> {
           ),
         ),
         updateIndicators(),
-        Spacer(),
-        // Column(
-        //   children: <Widget>[
-        //     Text('Flutter UI Component Library',style: kHeadlineLabelStyle,),
-        //     Text('@irangareddy',style: kSubtitleStyle,)
-        //   ],
-        // ),
-        // Spacer(),
       ],
     );
   }
