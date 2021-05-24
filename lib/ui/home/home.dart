@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hh_bbds_app/ui/home/home_drawer.dart';
+import 'package:hh_bbds_app/ui/audio/audio_main_screen.dart';
+import 'package:hh_bbds_app/ui/library/library_home.dart';
 
 import 'home_carousel.dart';
 
@@ -16,9 +17,9 @@ class _HomeState extends State<Home> {
   List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
     Text('Favourites', style: optionStyle,),
-    Text('Mindfulness', style: optionStyle,),
+    LibraryHome(),
     Text('Alerts', style: optionStyle,),
-    Text('Explore', style: optionStyle,),
+    AudioMainPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -32,9 +33,9 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(title: Text("BDD Swami App")),
       body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
-      drawer: Drawer(
-        child: HomeDrawer(),
-      ),
+      // drawer: Drawer(
+      //   child: HomeDrawer(),
+      // ),
       bottomNavigationBar: _bottomNavigationBar(),
     );
   }
@@ -45,9 +46,9 @@ class _HomeState extends State<Home> {
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Home"),
         BottomNavigationBarItem(icon: Icon(Icons.favorite_border), label: "Favorites"),
-        BottomNavigationBarItem(icon: Icon(Icons.emoji_emotions_outlined), label: "Mindfulness"),
-        BottomNavigationBarItem(icon: Icon(Icons.notifications_outlined), label: "Alerts"),
-        BottomNavigationBarItem(icon: Icon(Icons.search), label: "Explore")
+        BottomNavigationBarItem(icon: Icon(Icons.grid_view), label: "Gallery"),
+        BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
+        BottomNavigationBarItem(icon: Icon(Icons.notifications_outlined), label: "Alerts")
       ],
       currentIndex: _selectedIndex,
       selectedItemColor: Colors.amber[800],
