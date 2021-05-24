@@ -182,11 +182,7 @@ class _CarouselListState extends State<CarouselList> {
   void initState() {
     super.initState();
     Timer.periodic(Duration(seconds: 5), (Timer timer) {
-      if (currentPage < 2) {
-        currentPage++;
-      } else {
-        currentPage = 0;
-      }
+      currentPage++;
 
       _pageController.animateToPage(
         currentPage,
@@ -213,8 +209,7 @@ class _CarouselListState extends State<CarouselList> {
                 margin: EdgeInsets.symmetric(horizontal: 6.0),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color:
-                  currentPage == index ? Colors.red : Color(0xFFA6AEBD),
+                  color: (currentPage % homeCarouselCards.length) == index ? Colors.red : Color(0xFFA6AEBD),
                 ),
               );
             },
@@ -234,10 +229,10 @@ class _CarouselListState extends State<CarouselList> {
           child: PageView.builder(
             itemBuilder: (context, index) {
               return CarouselCard(
-                card: homeCarouselCards[index],
+                card: homeCarouselCards[index % homeCarouselCards.length],
               );
             },
-            itemCount: homeCarouselCards.length,
+            // itemCount: homeCarouselCards.length, // comment for infinite carousel
             controller: _pageController,
             onPageChanged: (index) {
               setState(() {
