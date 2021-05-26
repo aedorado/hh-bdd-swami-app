@@ -19,8 +19,8 @@ class _HomeState extends State<Home> {
     HomeScreen(),
     Text('Favourites', style: optionStyle,),
     LibraryHome(),
-    Text('Alerts', style: optionStyle,),
     Text('Search', style: optionStyle,),
+    Text('Alerts', style: optionStyle,),
   ];
 
   void _onItemTapped(int index) {
