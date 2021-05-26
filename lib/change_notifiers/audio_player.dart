@@ -3,14 +3,18 @@ import 'package:flutter/cupertino.dart';
 
 class CurrentAudio extends ChangeNotifier {
 
-  bool _audioIsPlaying = false;
+  int currentAudioIndex = -1;
+  bool audioIsPlaying = false;
   Duration totalAudioDuration;
   Duration currentAudioPosition;
-  AudioPlayerState _audioPlayerState;
+  AudioPlayerState audioPlayerState;
 
-  AudioPlayer audioPlayer = new AudioPlayer();
+  AudioPlayer audioPlayer;
 
   CurrentAudio() {
+
+    this.audioPlayer = new AudioPlayer();
+
     audioPlayer.onDurationChanged.listen((d) {
       this.totalAudioDuration = d;
       notifyListeners();
@@ -23,30 +27,30 @@ class CurrentAudio extends ChangeNotifier {
 
     audioPlayer.onPlayerCompletion.listen((event) {
         this.currentAudioPosition = Duration(seconds: 0);
-        this._audioIsPlaying = false;
+        this.audioIsPlaying = false;
         notifyListeners();
     });
 
     audioPlayer.onPlayerStateChanged.listen((ps) {
-      this._audioPlayerState = ps;
+      this.audioPlayerState = ps;
       notifyListeners();
     });
 
   }
 
   void playAudio(String audioUrl) {
-    _audioIsPlaying = true;
-    audioPlayer.play('https://thegrowingdeveloper.org/files/audios/quiet-time.mp3?b4869097e4');
+    this.audioIsPlaying = true;
+    this.audioPlayer.play('https://thegrowingdeveloper.org/files/audios/quiet-time.mp3?b4869097e4');
   }
 
   void pauseAudio() {
-    _audioIsPlaying = false;
-    audioPlayer.pause();
+    this.audioIsPlaying = false;
+    this.audioPlayer.pause();
   }
 
   void stopAudio() {
-    _audioIsPlaying = false;
-    audioPlayer.stop();
+    this.audioIsPlaying = false;
+    this.audioPlayer.stop();
   }
 
 }

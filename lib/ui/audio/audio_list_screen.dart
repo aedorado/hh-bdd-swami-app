@@ -14,60 +14,62 @@ class AudioListScreen extends StatefulWidget {
 class _AudioListScreenState extends State<AudioListScreen> {
 
   // State items related to presently playing audio
-  bool _audioIsPlaying = false;
-  int _currentAudioIndex = -1;
-  Duration _totalAudioDuration;
-  Duration _currentAudioPosition;
+  // bool _audioIsPlaying = false;
+  // int _currentAudioIndex = -1;
+  // Duration _totalAudioDuration;
+  // Duration _currentAudioPosition;
+
+  CurrentAudio currentAudio = new CurrentAudio();
 
   int selectedSuggestion = 0;
 
   String audioAPIUrl = "https://mocki.io/v1/6817415e-fc15-4ed5-b6a2-e811e45802f5";
 
-  AudioPlayer audioPlayer;
+  // AudioPlayer audioPlayer;
 
   @override
   void initState() {
     super.initState();
-    audioPlayer = new AudioPlayer();
-    audioPlayer.onDurationChanged.listen((d) => setState(() => _totalAudioDuration = d));
-    audioPlayer.onAudioPositionChanged.listen((p) => setState(() => _currentAudioPosition = p));
-    audioPlayer.onPlayerCompletion.listen((event) {
-      setState(() {
-        _currentAudioPosition = Duration(seconds: 0);
-        _audioIsPlaying = false;
-      });
-    });
+    // audioPlayer = new AudioPlayer();
+    // audioPlayer.onDurationChanged.listen((d) => setState(() => _totalAudioDuration = d));
+    // audioPlayer.onAudioPositionChanged.listen((p) => setState(() => _currentAudioPosition = p));
+    // audioPlayer.onPlayerCompletion.listen((event) {
+    //   setState(() {
+    //     _currentAudioPosition = Duration(seconds: 0);
+    //     _audioIsPlaying = false;
+    //   });
+    // });
   }
 
   @override
   void dispose() {
-    audioPlayer.release();
+    this.currentAudio.audioPlayer.release();
     super.dispose();
   }
 
   playAudio(String audioUrl, int audioIndex) {
     setState(() {
-      _audioIsPlaying = true;
-      _currentAudioIndex = audioIndex;
+      currentAudio.audioIsPlaying = true;
+      currentAudio.currentAudioIndex = audioIndex;
     });
-    audioPlayer.play('https://thegrowingdeveloper.org/files/audios/quiet-time.mp3?b4869097e4');
+    currentAudio.playAudio('https://thegrowingdeveloper.org/files/audios/quiet-time.mp3?b4869097e4');
     // audioPlayer.play(audioUrl);
   }
 
   pauseAudio() {
     setState(() {
-      _audioIsPlaying = false;
+      currentAudio.audioIsPlaying = false;
     });
-    audioPlayer.pause();
+    currentAudio.pauseAudio();
   }
 
   stopAudio() {
     setState(() {
-      _audioIsPlaying = false;
-      int _currentAudioIndex = -1;
-      _currentAudioPosition = Duration(seconds: 0);
+      currentAudio.audioIsPlaying = false;
+      currentAudio.currentAudioIndex = -1;
+      currentAudio.currentAudioPosition = Duration(seconds: 0);
     });
-    audioPlayer.stop();
+    currentAudio.stopAudio();
   }
 
   @override
@@ -121,7 +123,7 @@ class _AudioListScreenState extends State<AudioListScreen> {
                         itemCount: snapshot.data.length,
                         itemBuilder: (BuildContext context, int index) {
                           return Container(
-                            height: 68,
+                            height: 75,
                             child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -153,8 +155,8 @@ class _AudioListScreenState extends State<AudioListScreen> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 16),),
-                                              if (_audioIsPlaying && index == _currentAudioIndex) Text(_currentAudioPosition.toString().split('.').first),
-                                              if (_audioIsPlaying && index == _currentAudioIndex) Text(_totalAudioDuration.toString().split('.').first),
+                                              if (currentAudio.audioIsPlaying && index == currentAudio.currentAudioIndex) Text(currentAudio.currentAudioPosition.toString().split('.').first),
+                                              if (currentAudio.audioIsPlaying && index == currentAudio.currentAudioIndex) Text(currentAudio.totalAudioDuration.toString().split('.').first),
                                             ],
                                           ),
                                         ),
@@ -167,20 +169,16 @@ class _AudioListScreenState extends State<AudioListScreen> {
                                               // and
                                               // user clicks on the button for the audio that is playing
                                               // then pause audio
-                                              if (_audioIsPlaying && (index == _currentAudioIndex)) {
+                                              if (currentAudio.audioIsPlaying && (index == currentAudio.currentAudioIndex)) {
                                                 pauseAudio();
-                                              } else if (_audioIsPlaying && (index != _currentAudioIndex)) { // user clicks on play button for an audio that is not playing currently
+                                              } else if (currentAudio.audioIsPlaying && (index != currentAudio.currentAudioIndex)) { // user clicks on play button for an audio that is not playing currently
                                                 stopAudio();
                                                 playAudio(snapshot.data[index].url, index);
-                                              } else if (!_audioIsPlaying) { // if not audio is playing, simply start playing current audio
+                                              } else if (!currentAudio.audioIsPlaying) { // if not audio is playing, simply start playing current audio
                                                 playAudio(snapshot.data[index].url, index);
                                               }
                                             },
-                                            child: Icon(
-                                                (index == _currentAudioIndex &&
-                                                        _audioIsPlaying)
-                                                    ? Icons.pause
-                                                    : Icons.play_arrow)),
+                                            child: Icon((index == currentAudio.currentAudioIndex && currentAudio.audioIsPlaying) ? Icons.pause : Icons.play_arrow)),
                                       ),
                                   // Divider(color: Colors.black, height: 1,),
                                 ],
