@@ -7,6 +7,7 @@ class HomeDrawer extends StatelessWidget {
       padding: EdgeInsets.zero,
       children: <Widget>[
         DrawerHeader(
+          child: Text('Hare Krishna'),
           decoration: BoxDecoration(color: Colors.blue, image: DecorationImage(
               image: AssetImage("images/hkmm.jpg"), fit: BoxFit.cover)),
         ),
