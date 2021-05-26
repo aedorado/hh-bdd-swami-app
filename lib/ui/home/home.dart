@@ -78,9 +78,9 @@ class HomeScreenBottomCards extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        new Flexible(flex: 1, child: HomeScreenBottomCard(displayString: "Association", displayImage: "https://i.postimg.cc/3Jc0NCqK/A.jpg")),
-        new Flexible(flex: 1, child: HomeScreenBottomCard(displayString: "Books", displayImage: "https://i.postimg.cc/1zxgcRP2/B.jpg")),
-        new Flexible(flex: 1, child: HomeScreenBottomCard(displayString: "Chanting", displayImage: "https://i.postimg.cc/RZJ6HJrw/c.jpg")),
+        new Flexible(flex: 1, child: HomeScreenBottomCard(displayString: "Association", displayImage: "images/A.jpg")),
+        new Flexible(flex: 1, child: HomeScreenBottomCard(displayString: "Books", displayImage: "images/B.jpg")),
+        new Flexible(flex: 1, child: HomeScreenBottomCard(displayString: "Chanting", displayImage: "images/C.jpg")),
       ],
     );
   }
@@ -97,7 +97,7 @@ class HomeScreenBottomCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          image: DecorationImage(image: NetworkImage(displayImage), fit: BoxFit.cover)
+          image: DecorationImage(image: AssetImage(displayImage), fit: BoxFit.cover)
       ),
       child: Column(
         children: [
