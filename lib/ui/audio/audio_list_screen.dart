@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/change_notifiers/audio_player.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/network/audio.dart';
+import 'package:hh_bbds_app/ui/audio/audio_play_screen.dart';
 import 'package:provider/provider.dart';
 
 class AudioListScreen extends StatefulWidget {
@@ -44,12 +45,13 @@ class _AudioListScreenState extends State<AudioListScreen> {
     super.dispose();
   }
 
-  startAudio(String audioUrl, int audioIndex) {
+  playAudio(String audioUrl, int audioIndex) {
     setState(() {
       _audioIsPlaying = true;
       _currentAudioIndex = audioIndex;
     });
     audioPlayer.play('https://thegrowingdeveloper.org/files/audios/quiet-time.mp3?b4869097e4');
+    // audioPlayer.play(audioUrl);
   }
 
   pauseAudio() {
@@ -63,6 +65,7 @@ class _AudioListScreenState extends State<AudioListScreen> {
     setState(() {
       _audioIsPlaying = false;
       int _currentAudioIndex = -1;
+      _currentAudioPosition = Duration(seconds: 0);
     });
     audioPlayer.stop();
   }
@@ -118,69 +121,71 @@ class _AudioListScreenState extends State<AudioListScreen> {
                         itemCount: snapshot.data.length,
                         itemBuilder: (BuildContext context, int index) {
                           return Container(
-                            height: 108,
+                            height: 68,
                             child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  flex: 1,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 2, left: 2, right: 2, bottom: 2),
-                                    child: CircleAvatar(
-                                        backgroundImage: NetworkImage(
-                                            'https://i.postimg.cc/RZJ6HJrw/c.jpg')),
-                                    // ClipRRect(
-                                    //   borderRadius: BorderRadius.circular(8.0),
-                                    //   child: Image.network('https://i.postimg.cc/RZJ6HJrw/c.jpg', height: 150.0, width: 100.0),
-                                    // ),
-                                  ),
-                                ),
-                                Expanded(
-                                    flex: 4,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(12.0),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 16),),
-                                          if (_audioIsPlaying && index == _currentAudioIndex) Text(_currentAudioPosition.toString().split('.').first),
-                                          if (_audioIsPlaying && index == _currentAudioIndex) Text(_totalAudioDuration.toString().split('.').first),
-                                        ],
-                                      ),
-                                    )),
-                                Expanded(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Expanded(
                                     flex: 1,
-                                    child: Consumer<CurrentAudio>(
-                                      builder: (_, currentAudio, child) => InkWell(
-                                          onTap: () {
-                                            // if audio is playing
-                                            // and
-                                            // user clicks on the button for the audio that is playing
-                                            // then pause audio
-                                            if (_audioIsPlaying && (index == _currentAudioIndex)) {
-                                              pauseAudio();
-                                            } else if (_audioIsPlaying && (index != _currentAudioIndex)) { // user clicks on play button for an audio that is not playing currently
-                                              stopAudio();
-                                              startAudio(snapshot.data[index].url, index);
-                                            } else if (!_audioIsPlaying) { // if not audio is playing, simply start playing current audio
-                                              startAudio(snapshot.data[index].url, index);
-                                            }
-                                          },
-                                          child: Icon(
-                                              (index == _currentAudioIndex &&
-                                                      _audioIsPlaying)
-                                                  ? Icons.pause
-                                                  : Icons.play_arrow)),
-                                    )),
-                                // Divider(color: Colors.black, height: 1,),
-                              ],
-                              //: Center(child: Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 18),)),
-                            ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 2, left: 2, right: 2, bottom: 2),
+                                      child: CircleAvatar(
+                                          backgroundImage: NetworkImage(
+                                              'https://i.postimg.cc/RZJ6HJrw/c.jpg')),
+                                      // ClipRRect(
+                                      //   borderRadius: BorderRadius.circular(8.0),
+                                      //   child: Image.network('https://i.postimg.cc/RZJ6HJrw/c.jpg', height: 150.0, width: 100.0),
+                                      // ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                      flex: 4,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(12.0),
+                                        child: InkWell(
+                                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen())),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 16),),
+                                              if (_audioIsPlaying && index == _currentAudioIndex) Text(_currentAudioPosition.toString().split('.').first),
+                                              if (_audioIsPlaying && index == _currentAudioIndex) Text(_totalAudioDuration.toString().split('.').first),
+                                            ],
+                                          ),
+                                        ),
+                                      )),
+                                  Expanded(
+                                      flex: 1,
+                                      child: InkWell(
+                                            onTap: () {
+                                              // if audio is playing
+                                              // and
+                                              // user clicks on the button for the audio that is playing
+                                              // then pause audio
+                                              if (_audioIsPlaying && (index == _currentAudioIndex)) {
+                                                pauseAudio();
+                                              } else if (_audioIsPlaying && (index != _currentAudioIndex)) { // user clicks on play button for an audio that is not playing currently
+                                                stopAudio();
+                                                playAudio(snapshot.data[index].url, index);
+                                              } else if (!_audioIsPlaying) { // if not audio is playing, simply start playing current audio
+                                                playAudio(snapshot.data[index].url, index);
+                                              }
+                                            },
+                                            child: Icon(
+                                                (index == _currentAudioIndex &&
+                                                        _audioIsPlaying)
+                                                    ? Icons.pause
+                                                    : Icons.play_arrow)),
+                                      ),
+                                  // Divider(color: Colors.black, height: 1,),
+                                ],
+                                //: Center(child: Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 18),)),
+                              ),
                           );
                         }));
               } else if (snapshot.hasError) {

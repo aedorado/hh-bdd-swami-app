@@ -4,49 +4,49 @@ import 'package:flutter/cupertino.dart';
 class CurrentAudio extends ChangeNotifier {
 
   bool _audioIsPlaying = false;
-  Duration _totalAudioDuration;
-  Duration _currentAudioPosition;
+  Duration totalAudioDuration;
+  Duration currentAudioPosition;
   AudioPlayerState _audioPlayerState;
 
   AudioPlayer audioPlayer = new AudioPlayer();
 
   CurrentAudio() {
     audioPlayer.onDurationChanged.listen((d) {
-      _totalAudioDuration = d;
+      this.totalAudioDuration = d;
       notifyListeners();
     });
 
     audioPlayer.onAudioPositionChanged.listen((p) {
-      _currentAudioPosition = p;
+      this.currentAudioPosition = p;
       notifyListeners();
     });
 
     audioPlayer.onPlayerCompletion.listen((event) {
-        _currentAudioPosition = Duration(seconds: 0);
-        _audioIsPlaying = false;
+        this.currentAudioPosition = Duration(seconds: 0);
+        this._audioIsPlaying = false;
         notifyListeners();
     });
 
     audioPlayer.onPlayerStateChanged.listen((ps) {
-      _audioPlayerState = ps;
+      this._audioPlayerState = ps;
       notifyListeners();
     });
 
-    startAudio(String audioUrl, int audioIndex) {
-      _audioIsPlaying = true;
-      audioPlayer.play('https://thegrowingdeveloper.org/files/audios/quiet-time.mp3?b4869097e4');
-    }
+  }
 
-    pauseAudio() {
-      _audioIsPlaying = false;
-      audioPlayer.pause();
-    }
+  void playAudio(String audioUrl) {
+    _audioIsPlaying = true;
+    audioPlayer.play('https://thegrowingdeveloper.org/files/audios/quiet-time.mp3?b4869097e4');
+  }
 
-    stopAudio() {
-      _audioIsPlaying = false;
-      audioPlayer.stop();
-    }
+  void pauseAudio() {
+    _audioIsPlaying = false;
+    audioPlayer.pause();
+  }
 
+  void stopAudio() {
+    _audioIsPlaying = false;
+    audioPlayer.stop();
   }
 
 }
