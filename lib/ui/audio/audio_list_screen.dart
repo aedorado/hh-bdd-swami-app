@@ -25,54 +25,23 @@ class _AudioListScreenState extends State<AudioListScreen> {
 
   String audioAPIUrl = "https://mocki.io/v1/6817415e-fc15-4ed5-b6a2-e811e45802f5";
 
-  // AudioPlayer audioPlayer;
+  AudioPlayer audioPlayer;
 
   @override
   void initState() {
     super.initState();
-    // audioPlayer = new AudioPlayer();
-    // audioPlayer.onDurationChanged.listen((d) => setState(() => _totalAudioDuration = d));
-    // audioPlayer.onAudioPositionChanged.listen((p) => setState(() => _currentAudioPosition = p));
-    // audioPlayer.onPlayerCompletion.listen((event) {
-    //   setState(() {
-    //     _currentAudioPosition = Duration(seconds: 0);
-    //     _audioIsPlaying = false;
-    //   });
-    // });
+  }
+
+  @override
+  void didChangeDependencies() {
+    audioPlayer = Provider.of<CurrentAudio>(context, listen: false).audioPlayer;
   }
 
   @override
   void dispose() {
-    Provider.of<CurrentAudio>(context, listen: false).stopAudio();
+    audioPlayer.release();
     super.dispose();
     // currentAudio.audioPlayer.release();
-  }
-
-  playAudio(CurrentAudio currentAudio, String audioUrl, int audioIndex) {
-    // setState(() {
-    //   currentAudio.audioIsPlaying = true;
-    //   currentAudio.currentAudioIndex = audioIndex;
-    // });
-    currentAudio.playAudio(audioUrl, audioIndex);
-    // https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3
-    // 'https://thegrowingdeveloper.org/files/audios/quiet-time.mp3?b4869097e4'
-    // audioPlayer.play(audioUrl);
-  }
-
-  pauseAudio(CurrentAudio currentAudio, ) {
-    // setState(() {
-    //   currentAudio.audioIsPlaying = false;
-    // });
-    currentAudio.pauseAudio();
-  }
-
-  stopAudio(CurrentAudio currentAudio, ) {
-    // setState(() {
-    //   currentAudio.audioIsPlaying = false;
-    //   currentAudio.currentAudioIndex = -1;
-    //   currentAudio.currentAudioPosition = Duration(seconds: 0);
-    // });
-    currentAudio.stopAudio();
   }
 
   @override

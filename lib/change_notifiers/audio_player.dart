@@ -60,10 +60,4 @@ class CurrentAudio extends ChangeNotifier {
     notifyListeners();
   }
 
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  //   this.audioPlayer.release();
-  // }
-
 }
