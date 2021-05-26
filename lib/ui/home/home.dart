@@ -20,7 +20,7 @@ class _HomeState extends State<Home> {
     Text('Favourites', style: optionStyle,),
     LibraryHome(),
     Text('Alerts', style: optionStyle,),
-    AudioListScreen(),
+    Text('Search', style: optionStyle,),
   ];
 
   void _onItemTapped(int index) {

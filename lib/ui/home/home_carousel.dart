@@ -184,11 +184,13 @@ class _CarouselListState extends State<CarouselList> {
     Timer.periodic(Duration(seconds: 5), (Timer timer) {
       currentPage++;
 
-      _pageController.animateToPage(
-        currentPage,
-        duration: Duration(milliseconds: 350),
-        curve: Curves.easeIn,
-      );
+      if (_pageController.hasClients) {
+        _pageController.animateToPage(
+          currentPage,
+          duration: Duration(milliseconds: 350),
+          curve: Curves.easeIn,
+        );
+      }
     });
   }
 

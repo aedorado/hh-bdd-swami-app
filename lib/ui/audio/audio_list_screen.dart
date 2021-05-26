@@ -23,7 +23,6 @@ class _AudioListScreenState extends State<AudioListScreen> {
                 child: ListView.builder(
                     itemCount: snapshot.data.length,
                     itemBuilder: (BuildContext context, int index) {
-                      debugPrint('Index: $index');
                       return Text('${snapshot.data[index].name}');
                     }
                 )
