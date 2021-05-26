@@ -19,7 +19,7 @@ class _AudioListScreenState extends State<AudioListScreen> {
   // Duration _totalAudioDuration;
   // Duration _currentAudioPosition;
 
-  CurrentAudio currentAudio = new CurrentAudio();
+  // CurrentAudio currentAudio = new CurrentAudio();
 
   int selectedSuggestion = 0;
 
@@ -43,32 +43,35 @@ class _AudioListScreenState extends State<AudioListScreen> {
 
   @override
   void dispose() {
-    this.currentAudio.audioPlayer.release();
+    Provider.of<CurrentAudio>(context, listen: false).stopAudio();
     super.dispose();
+    // currentAudio.audioPlayer.release();
   }
 
-  playAudio(String audioUrl, int audioIndex) {
-    setState(() {
-      currentAudio.audioIsPlaying = true;
-      currentAudio.currentAudioIndex = audioIndex;
-    });
-    currentAudio.playAudio('https://thegrowingdeveloper.org/files/audios/quiet-time.mp3?b4869097e4');
+  playAudio(CurrentAudio currentAudio, String audioUrl, int audioIndex) {
+    // setState(() {
+    //   currentAudio.audioIsPlaying = true;
+    //   currentAudio.currentAudioIndex = audioIndex;
+    // });
+    currentAudio.playAudio(audioUrl, audioIndex);
+    // https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3
+    // 'https://thegrowingdeveloper.org/files/audios/quiet-time.mp3?b4869097e4'
     // audioPlayer.play(audioUrl);
   }
 
-  pauseAudio() {
-    setState(() {
-      currentAudio.audioIsPlaying = false;
-    });
+  pauseAudio(CurrentAudio currentAudio, ) {
+    // setState(() {
+    //   currentAudio.audioIsPlaying = false;
+    // });
     currentAudio.pauseAudio();
   }
 
-  stopAudio() {
-    setState(() {
-      currentAudio.audioIsPlaying = false;
-      currentAudio.currentAudioIndex = -1;
-      currentAudio.currentAudioPosition = Duration(seconds: 0);
-    });
+  stopAudio(CurrentAudio currentAudio, ) {
+    // setState(() {
+    //   currentAudio.audioIsPlaying = false;
+    //   currentAudio.currentAudioIndex = -1;
+    //   currentAudio.currentAudioPosition = Duration(seconds: 0);
+    // });
     currentAudio.stopAudio();
   }
 
@@ -123,7 +126,7 @@ class _AudioListScreenState extends State<AudioListScreen> {
                         itemCount: snapshot.data.length,
                         itemBuilder: (BuildContext context, int index) {
                           return Container(
-                            height: 75,
+                            height: 80,
                             child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -148,37 +151,41 @@ class _AudioListScreenState extends State<AudioListScreen> {
                                         padding: const EdgeInsets.all(12.0),
                                         child: InkWell(
                                           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen())),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 16),),
-                                              if (currentAudio.audioIsPlaying && index == currentAudio.currentAudioIndex) Text(currentAudio.currentAudioPosition.toString().split('.').first),
-                                              if (currentAudio.audioIsPlaying && index == currentAudio.currentAudioIndex) Text(currentAudio.totalAudioDuration.toString().split('.').first),
-                                            ],
+                                          child: Consumer<CurrentAudio>(
+                                            builder: (_, currentAudio, child) => Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 16),),
+                                                if (currentAudio.audioIsPlaying && index == currentAudio.currentAudioIndex) Text(currentAudio.currentAudioPosition.toString().split('.').first),
+                                                if (currentAudio.audioIsPlaying && index == currentAudio.currentAudioIndex) Text(currentAudio.totalAudioDuration.toString().split('.').first),
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       )),
                                   Expanded(
                                       flex: 1,
-                                      child: InkWell(
-                                            onTap: () {
-                                              // if audio is playing
-                                              // and
-                                              // user clicks on the button for the audio that is playing
-                                              // then pause audio
-                                              if (currentAudio.audioIsPlaying && (index == currentAudio.currentAudioIndex)) {
-                                                pauseAudio();
-                                              } else if (currentAudio.audioIsPlaying && (index != currentAudio.currentAudioIndex)) { // user clicks on play button for an audio that is not playing currently
-                                                stopAudio();
-                                                playAudio(snapshot.data[index].url, index);
-                                              } else if (!currentAudio.audioIsPlaying) { // if not audio is playing, simply start playing current audio
-                                                playAudio(snapshot.data[index].url, index);
-                                              }
-                                            },
-                                            child: Icon((index == currentAudio.currentAudioIndex && currentAudio.audioIsPlaying) ? Icons.pause : Icons.play_arrow)),
+                                      child: Consumer<CurrentAudio>(
+                                        builder: (_, currentAudio, child) => InkWell(
+                                              onTap: () {
+                                                // if audio is playing
+                                                // and
+                                                // user clicks on the button for the audio that is playing
+                                                // then pause audio
+                                                if (currentAudio.audioIsPlaying && (index == currentAudio.currentAudioIndex)) {
+                                                  currentAudio.pauseAudio();
+                                                } else if (currentAudio.audioIsPlaying && (index != currentAudio.currentAudioIndex)) { // user clicks on play button for an audio that is not playing currently
+                                                  currentAudio.stopAudio();
+                                                  currentAudio.playAudio(snapshot.data[index].url, index);
+                                                } else if (!currentAudio.audioIsPlaying) { // if not audio is playing, simply start playing current audio
+                                                  currentAudio.playAudio(snapshot.data[index].url, index);
+                                                }
+                                              },
+                                              child: Icon((index == currentAudio.currentAudioIndex && currentAudio.audioIsPlaying) ? Icons.pause : Icons.play_arrow)),
+                                      ),
                                       ),
                                   // Divider(color: Colors.black, height: 1,),
                                 ],

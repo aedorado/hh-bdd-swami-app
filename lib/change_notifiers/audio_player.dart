@@ -38,19 +38,32 @@ class CurrentAudio extends ChangeNotifier {
 
   }
 
-  void playAudio(String audioUrl) {
+  void playAudio(String audioUrl, int audioIndex) {
+    this.currentAudioIndex = audioIndex;
     this.audioIsPlaying = true;
-    this.audioPlayer.play('https://thegrowingdeveloper.org/files/audios/quiet-time.mp3?b4869097e4');
+    this.audioPlayer.play(audioUrl);
+    notifyListeners();
   }
 
   void pauseAudio() {
     this.audioIsPlaying = false;
     this.audioPlayer.pause();
+    notifyListeners();
   }
 
   void stopAudio() {
-    this.audioIsPlaying = false;
+    debugPrint("Stopping Audio");
     this.audioPlayer.stop();
+    this.audioIsPlaying = false;
+    this.currentAudioIndex = -1;
+    this.currentAudioPosition = Duration(seconds: 0);
+    notifyListeners();
   }
+
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  //   this.audioPlayer.release();
+  // }
 
 }
