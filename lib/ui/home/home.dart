@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hh_bbds_app/ui/audio/audio_main_screen.dart';
+import 'package:hh_bbds_app/ui/audio/audio_play_screen.dart';
 import 'package:hh_bbds_app/ui/library/library_home.dart';
 
 import 'home_carousel.dart';
@@ -19,7 +19,7 @@ class _HomeState extends State<Home> {
     Text('Favourites', style: optionStyle,),
     LibraryHome(),
     Text('Alerts', style: optionStyle,),
-    AudioMainPage(),
+    AudioPlayScreen(),
   ];
 
   void _onItemTapped(int index) {
