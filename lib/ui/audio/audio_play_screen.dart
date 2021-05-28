@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
+import 'package:provider/provider.dart';
 
 var audioTitleStyle = TextStyle(
   // fontWeight: FontWeight.bold,
@@ -57,72 +59,74 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
               ),
             ),
             Spacer(),
-            Padding(
-              padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
-              child: SliderTheme(
-                data: SliderThemeData(
-                  // thumbColor: Color(0xFFEB1555),
-                  inactiveTrackColor: Color(0xFF8D8E98),
-                  // activeTrackColor: Colors.white,
-                  // overlayColor: Color(0x99EB1555),
-                  // thumbShape: RoundSliderThumbShape(enabledThumbRadius: 15.0),
-                  // overlayShape: RoundSliderOverlayShape(overlayRadius: 30.0),
-                ),
-                child: Slider(
-                  min: 0,
-                  max: 100,
-                  value: _audioSliderPos,
-                  onChanged: (double value) {
-                    setState(() {
-                      _audioSliderPos = value;
-                    });
-                  },
-                ),
-              ),
-            ),
-            Spacer(),
-            Padding(
-              padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+            Container(
+              child: Column(
                 children: [
-                  InkWell(
-                    onTap: () {
-                      setState(() {
-                        playing = !playing;
-                      });
-                    },
-                    child: Container(
-                      child: Center(
-                          child: Icon(
-                        playing ? Icons.pause : Icons.play_arrow,
-                        size: 50,
-                      )),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
+                    child: SliderTheme(
+                      data: SliderThemeData(
+                        // thumbColor: Color(0xFFEB1555),
+                        inactiveTrackColor: Color(0xFF8D8E98),
+                        // activeTrackColor: Colors.white,
+                        // overlayColor: Color(0x99EB1555),
+                        // thumbShape: RoundSliderThumbShape(enabledThumbRadius: 15.0),
+                        // overlayShape: RoundSliderOverlayShape(overlayRadius: 30.0),
+                      ),
+                      child: Slider(
+                        min: 0,
+                        max: 100,
+                        value: _audioSliderPos,
+                        onChanged: (double value) {
+                          setState(() {
+                            _audioSliderPos = value;
+                          });
+                        },
+                      ),
                     ),
                   ),
-                ],
-              ),
-            ),
-            Spacer(),
-            Padding(
-              padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  InkWell(
-                    onTap: () {
-                      setState(() {
-                        isFavorite = !isFavorite;
-                      });
-                    },
-                    child: Container(
-                      child: Center(
-                          child: IconTheme(
-                              data: new IconThemeData(color: Colors.redAccent),
-                              child: Icon(
-                                isFavorite ? Icons.favorite : Icons.favorite_border,
-                                size: 50,
-                              ))),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Consumer<CurrentAudio>(
+                          builder: (context, currentAudio, child) => InkWell(
+                            onTap: () {
+                              currentAudio.isPlaying ? currentAudio.pauseAudio() : currentAudio.playAudio();
+                            },
+                            child: Container(
+                              child: Center(
+                                  child: Icon( currentAudio.isPlaying ? Icons.pause : Icons.play_arrow, size: 50,
+                                  )),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              isFavorite = !isFavorite;
+                            });
+                          },
+                          child: Container(
+                            child: Center(
+                                child: IconTheme(
+                                    data: new IconThemeData(color: Colors.redAccent),
+                                    child: Icon(
+                                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                                      size: 50,
+                                    ))),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

@@ -1,10 +1,12 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:hh_bbds_app/models/podo/audio.dart';
 
 class CurrentAudio extends ChangeNotifier {
 
+  Audio audio;
   int currentAudioIndex = -1;
-  bool audioIsPlaying = false;
+  bool isPlaying = false;
   Duration totalAudioDuration;
   Duration currentAudioPosition;
   AudioPlayerState audioPlayerState;
@@ -27,7 +29,7 @@ class CurrentAudio extends ChangeNotifier {
 
     audioPlayer.onPlayerCompletion.listen((event) {
         this.currentAudioPosition = Duration(seconds: 0);
-        this.audioIsPlaying = false;
+        this.isPlaying = false;
         notifyListeners();
     });
 
@@ -38,25 +40,25 @@ class CurrentAudio extends ChangeNotifier {
 
   }
 
-  void playAudio(String audioUrl, int audioIndex) {
-    this.currentAudioIndex = audioIndex;
-    this.audioIsPlaying = true;
-    this.audioPlayer.play(audioUrl);
+  void playAudio() {
+    this.isPlaying = true;
+    this.audioPlayer.play(this.audio.url);
     notifyListeners();
   }
 
   void pauseAudio() {
-    this.audioIsPlaying = false;
+    this.isPlaying = false;
     this.audioPlayer.pause();
     notifyListeners();
   }
 
   void stopAudio() {
-    debugPrint("Stopping Audio");
+    this.audio = null;
     this.audioPlayer.stop();
-    this.audioIsPlaying = false;
+    this.isPlaying = false;
     this.currentAudioIndex = -1;
     this.currentAudioPosition = Duration(seconds: 0);
+    this.audioPlayer.release();
     notifyListeners();
   }
 

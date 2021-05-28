@@ -1,6 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:hh_bbds_app/change_notifiers/audio_player.dart';
+import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/network/audio.dart';
 import 'package:hh_bbds_app/ui/audio/audio_play_screen.dart';
@@ -13,18 +13,11 @@ class AudioListScreen extends StatefulWidget {
 
 class _AudioListScreenState extends State<AudioListScreen> {
 
-  // State items related to presently playing audio
-  // bool _audioIsPlaying = false;
-  // int _currentAudioIndex = -1;
-  // Duration _totalAudioDuration;
-  // Duration _currentAudioPosition;
-
-  // CurrentAudio currentAudio = new CurrentAudio();
-
   int selectedSuggestion = 0;
 
   String audioAPIUrl = "https://mocki.io/v1/6817415e-fc15-4ed5-b6a2-e811e45802f5";
 
+  CurrentAudio currentAudio;
   AudioPlayer audioPlayer;
 
   @override
@@ -34,14 +27,19 @@ class _AudioListScreenState extends State<AudioListScreen> {
 
   @override
   void didChangeDependencies() {
+    currentAudio = Provider.of<CurrentAudio>(context, listen: false);
     audioPlayer = Provider.of<CurrentAudio>(context, listen: false).audioPlayer;
   }
 
   @override
   void dispose() {
-    audioPlayer.release();
+    currentAudio.audio = null;
+    currentAudio.audioPlayer.stop();
+    currentAudio.isPlaying = false;
+    currentAudio.currentAudioIndex = -1;
+    currentAudio.currentAudioPosition = Duration(seconds: 0);
+    currentAudio.audioPlayer.release();
     super.dispose();
-    // currentAudio.audioPlayer.release();
   }
 
   @override
@@ -118,19 +116,25 @@ class _AudioListScreenState extends State<AudioListScreen> {
                                       flex: 4,
                                       child: Padding(
                                         padding: const EdgeInsets.all(12.0),
-                                        child: InkWell(
-                                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen())),
-                                          child: Consumer<CurrentAudio>(
-                                            builder: (_, currentAudio, child) => Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 16),),
-                                                if (currentAudio.audioIsPlaying && index == currentAudio.currentAudioIndex) Text(currentAudio.currentAudioPosition.toString().split('.').first),
-                                                if (currentAudio.audioIsPlaying && index == currentAudio.currentAudioIndex) Text(currentAudio.totalAudioDuration.toString().split('.').first),
-                                              ],
+                                        child: Consumer<CurrentAudio>(
+                                          builder: (_, currentAudio, child) => InkWell(
+                                            onTap: () {
+                                              currentAudio.audio = snapshot.data[index];
+                                              currentAudio.currentAudioIndex = index;
+                                              Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen()));
+                                            },
+                                            child: Consumer<CurrentAudio>(
+                                              builder: (_, currentAudio, child) => Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 16),),
+                                                  if (currentAudio.isPlaying && index == currentAudio.currentAudioIndex) Text(currentAudio.currentAudioPosition.toString().split('.').first),
+                                                  if (currentAudio.isPlaying && index == currentAudio.currentAudioIndex) Text(currentAudio.totalAudioDuration.toString().split('.').first),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -144,16 +148,20 @@ class _AudioListScreenState extends State<AudioListScreen> {
                                                 // and
                                                 // user clicks on the button for the audio that is playing
                                                 // then pause audio
-                                                if (currentAudio.audioIsPlaying && (index == currentAudio.currentAudioIndex)) {
+                                                if (currentAudio.isPlaying && (index == currentAudio.currentAudioIndex)) {
                                                   currentAudio.pauseAudio();
-                                                } else if (currentAudio.audioIsPlaying && (index != currentAudio.currentAudioIndex)) { // user clicks on play button for an audio that is not playing currently
+                                                } else if (currentAudio.isPlaying && (index != currentAudio.currentAudioIndex)) { // user clicks on play button for an audio that is not playing currently
                                                   currentAudio.stopAudio();
-                                                  currentAudio.playAudio(snapshot.data[index].url, index);
-                                                } else if (!currentAudio.audioIsPlaying) { // if not audio is playing, simply start playing current audio
-                                                  currentAudio.playAudio(snapshot.data[index].url, index);
+                                                  currentAudio.currentAudioIndex = index;
+                                                  currentAudio.audio = snapshot.data[index];
+                                                  currentAudio.playAudio();
+                                                } else if (!currentAudio.isPlaying) { // if not audio is playing, simply start playing current audio
+                                                  currentAudio.currentAudioIndex = index;
+                                                  currentAudio.audio = snapshot.data[index];
+                                                  currentAudio.playAudio();
                                                 }
                                               },
-                                              child: Icon((index == currentAudio.currentAudioIndex && currentAudio.audioIsPlaying) ? Icons.pause : Icons.play_arrow)),
+                                              child: Icon((index == currentAudio.currentAudioIndex && currentAudio.isPlaying) ? Icons.pause : Icons.play_arrow)),
                                       ),
                                       ),
                                   // Divider(color: Colors.black, height: 1,),
