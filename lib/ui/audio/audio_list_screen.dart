@@ -199,12 +199,26 @@ class AudioListScreenPage extends StatelessWidget {
                             )
                           ),
                           Expanded(flex: 1,
-                            child: IconTheme(
-                                data: new IconThemeData(color: Colors.redAccent),
-                                child: Icon(
-                                  true ? Icons.favorite : Icons.favorite_border,
-                                  size: 24,
-                                )),
+                            child: InkWell(
+                              onTap: () {
+                                final snackBar = SnackBar(
+                                  action: SnackBarAction(
+                                    label: 'Undo',
+                                    onPressed: () {
+                                      // Some code to undo the change.
+                                    },
+                                  ),
+                                  content: Text('Added to Favorites!')
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                              },
+                              child: IconTheme(
+                                  data: new IconThemeData(color: Colors.redAccent),
+                                  child: Icon(
+                                    true ? Icons.favorite : Icons.favorite_border,
+                                    size: 24,
+                                  )),
+                            ),
                           ),
                           Expanded(
                             flex: 1,
