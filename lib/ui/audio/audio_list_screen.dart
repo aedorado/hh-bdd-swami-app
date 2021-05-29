@@ -55,47 +55,49 @@ class _AudioListScreenState extends State<AudioListScreen> {
       appBar: AppBar(
         title: Text('BDDS Audio Library'),
       ),
-      body: Column(
-        children: [
-          ColoredBox(
-              color: Color(0xFFBDBDBD),
-              child: Container(
-                height: 56,
-                child: SingleChildScrollView(
-                  physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          shrinkWrap: true,
-                          itemCount: audioListScreenSuggestions.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return _audioListSuggestionBox(index, audioListScreenSuggestions[index]);
-                          }
-                      ),
-                    ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            ColoredBox(
+                color: Color(0xFFBDBDBD),
+                child: Container(
+                  height: 56,
+                  child: SingleChildScrollView(
+                    physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            shrinkWrap: true,
+                            itemCount: audioListScreenSuggestions.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return _audioListSuggestionBox(index, audioListScreenSuggestions[index]);
+                            }
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
 
-          ),
-          Expanded(
-            child: PageView.builder(
-              itemCount: audioListScreenSuggestions.length,
-              itemBuilder: (context, index) {
-                return AudioListScreenPage();
-              },
-              controller: _pageController,
-              onPageChanged: (pageNumber) {
-                setState(() {
-                  this.selectedSuggestion = pageNumber;
-                });
-              },
             ),
-          )
-          // AudioListScreenPage(),
-        ],
+            Expanded(
+              child: PageView.builder(
+                itemCount: audioListScreenSuggestions.length,
+                itemBuilder: (context, index) {
+                  return AudioListScreenPage();
+                },
+                controller: _pageController,
+                onPageChanged: (pageNumber) {
+                  setState(() {
+                    this.selectedSuggestion = pageNumber;
+                  });
+                },
+              ),
+            ),
+            Miniplayer(),
+          ],
+        ),
       ),
     );
   }
@@ -135,40 +137,6 @@ class _AudioListScreenState extends State<AudioListScreen> {
 
 }
 
-class AudioListSuggestionBox extends StatelessWidget {
-  final String title;
-  final int flex;
-  final bool isSelected;
-
-  const AudioListSuggestionBox(
-      {Key key, this.title, this.flex, this.isSelected})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding:
-          const EdgeInsets.only(left: 5.0, right: 5.0, top: 6, bottom: 6),
-      child: Container(
-        decoration: new BoxDecoration(
-          color: isSelected == true ? Color(0xFF0077C2) : Color(0xFFBDBDBD),
-          borderRadius: new BorderRadius.all(Radius.elliptical(80, 100)),
-        ),
-        height: 36,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Center(
-            child: Text(
-              this.title,
-              style: TextStyle(color: Colors.white, fontSize: 16),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class AudioListScreenPage extends StatelessWidget {
 
   final String url;
@@ -196,7 +164,7 @@ class AudioListScreenPage extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Expanded(
-                            flex: 1,
+                            flex: 2,
                             child: Padding(
                               padding: const EdgeInsets.only(
                                   top: 2, left: 2, right: 2, bottom: 2),
@@ -206,52 +174,65 @@ class AudioListScreenPage extends StatelessWidget {
                             ),
                           ),
                           Expanded(
-                              flex: 4,
-                              child: Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Consumer<CurrentAudio>(
-                                  builder: (_, currentAudio, child) => InkWell(
-                                    onTap: () {
-                                      currentAudio.audio = snapshot.data[index];
-                                      currentAudio.currentAudioIndex = index;
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen()));
-                                    },
-                                    child: Consumer<CurrentAudio>(
-                                      builder: (_, currentAudio, child) => Column(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                        children: [
-                                          Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 16),),
-                                          if (currentAudio.isPlaying && index == currentAudio.currentAudioIndex) Text(currentAudio.currentAudioPosition.toString().split('.').first),
-                                          if (currentAudio.isPlaying && index == currentAudio.currentAudioIndex) Text(currentAudio.totalAudioDuration.toString().split('.').first),
-                                        ],
-                                      ),
-                                    ),
+                            flex: 6,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Consumer<CurrentAudio>(
+                                builder: (_, currentAudio, child) => InkWell(
+                                  onTap: () {
+                                    currentAudio.audio = snapshot.data[index];
+                                    currentAudio.currentAudioIndex = index;
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen()));
+                                  },
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 16),),
+                                      Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 12),),
+                                      // if (currentAudio.isPlaying && index == currentAudio.currentAudioIndex) Text(currentAudio.currentAudioPosition.toString().split('.').first),
+                                      // if (currentAudio.isPlaying && index == currentAudio.currentAudioIndex) Text(currentAudio.totalAudioDuration.toString().split('.').first),
+                                    ],
                                   ),
                                 ),
-                              )),
+                              ),
+                            )
+                          ),
+                          Expanded(flex: 1,
+                            child: IconTheme(
+                                data: new IconThemeData(color: Colors.redAccent),
+                                child: Icon(
+                                  true ? Icons.favorite : Icons.favorite_border,
+                                  size: 24,
+                                )),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: InkWell(
+                              onTap: () {},
+                              child: Icon(Icons.more_vert, size: 24,)
+                            ),
+                          ),
                           Expanded(
                             flex: 1,
                             child: Consumer<CurrentAudio>(
                               builder: (_, currentAudio, child) => InkWell(
-                                  onTap: () {
-                                    // if audio is playing and user clicks on the button for the audio that is playing then pause audio
-                                    if (currentAudio.isPlaying && (index == currentAudio.currentAudioIndex)) {
-                                      currentAudio.pauseAudio();
-                                    } else if (currentAudio.isPlaying && (index != currentAudio.currentAudioIndex)) { // user clicks on play button for an audio that is not playing currently
-                                      currentAudio.stopAudio();
-                                      currentAudio.currentAudioIndex = index;
-                                      currentAudio.audio = snapshot.data[index];
-                                      currentAudio.playAudio();
-                                    } else if (!currentAudio.isPlaying) { // if not audio is playing, simply start playing current audio
-                                      currentAudio.currentAudioIndex = index;
-                                      currentAudio.audio = snapshot.data[index];
-                                      currentAudio.playAudio();
-                                    }
-                                  },
-                                  child: Icon((index == currentAudio.currentAudioIndex && currentAudio.isPlaying) ? Icons.pause : Icons.play_arrow)),
+                                onTap: () {
+                                  // if audio is playing and user clicks on the button for the audio that is playing then pause audio
+                                  if (currentAudio.isPlaying && (index == currentAudio.currentAudioIndex)) {
+                                    currentAudio.pauseAudio();
+                                  } else if (currentAudio.isPlaying && (index != currentAudio.currentAudioIndex)) { // user clicks on play button for an audio that is not playing currently
+                                    currentAudio.stopAudio();
+                                    currentAudio.currentAudioIndex = index;
+                                    currentAudio.audio = snapshot.data[index];
+                                    currentAudio.playAudio();
+                                  } else if (!currentAudio.isPlaying) { // if ndebugot audio is playing, simply start playing current audio
+                                    currentAudio.currentAudioIndex = index;
+                                    currentAudio.audio = snapshot.data[index];
+                                    currentAudio.playAudio();
+                                  }
+                                },
+                                child: Icon((index == currentAudio.currentAudioIndex && currentAudio.isPlaying) ? Icons.pause : Icons.play_arrow)),
                             ),
                           ),
                           // Divider(color: Colors.black, height: 1,),
@@ -268,5 +249,96 @@ class AudioListScreenPage extends StatelessWidget {
     );
   }
 }
+
+class CustomTrackShape extends RoundedRectSliderTrackShape {
+  Rect getPreferredRect({
+    @required RenderBox parentBox,
+    Offset offset = Offset.zero,
+    @required SliderThemeData sliderTheme,
+    bool isEnabled = false,
+    bool isDiscrete = false,
+  }) {
+    final double trackHeight = sliderTheme.trackHeight;
+    final double trackLeft = offset.dx;
+    final double trackTop = 0;
+    final double trackWidth = parentBox.size.width;
+    return Rect.fromLTWH(trackLeft, trackTop, trackWidth, trackHeight);
+  }
+}
+
+class Miniplayer extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<CurrentAudio>(
+      builder: (context, currentAudio, child) => AnimatedContainer(
+        height: currentAudio.isPlaying ? 80 : 0,
+        duration: Duration(milliseconds: 200),
+        // Provide an optional curve to make the animation feel smoother.
+        curve: Curves.easeIn,
+        child: ColoredBox(
+          color: Color(0xFF42A5F5),
+          child: Column(
+            children: [
+              SizedBox(
+                height: 4,
+                child: SliderTheme(
+                  data: SliderThemeData(
+                    trackShape: CustomTrackShape(),
+                    trackHeight: 2.0,
+                    // thumbColor: Color(0xFFEB1555),
+                    inactiveTrackColor: Color(0xFF8D8E98),
+                    // activeTrackColor: Colors.white,
+                    // overlayColor: Color(0x99EB1555),
+                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 0.0),
+                    // overlayShape: RoundSliderOverlayShape(overlayRadius: 30.0),
+                  ),
+                  child: Slider(
+                    min: 0,
+                    max: (currentAudio.totalAudioDuration == null) ? 0.0 : currentAudio.totalAudioDuration.inMilliseconds.toDouble(),
+                    value: (currentAudio.currentAudioPosition == null || currentAudio.audioPlayerState == AudioPlayerState.COMPLETED)
+                        ? 0.0 : currentAudio.currentAudioPosition.inMilliseconds.toDouble(),
+                    onChanged: null,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Row(children: [
+                  Expanded(
+                    flex: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 2, left: 2, right: 2, bottom: 2),
+                      child: CircleAvatar(backgroundImage: NetworkImage('https://i.postimg.cc/RZJ6HJrw/c.jpg')),
+                    ),
+                  ),
+                  Expanded(flex: 4, child: Center(child: Column(
+                    children: [
+                      Text(currentAudio.audio == null ? '' : currentAudio.audio.name, style: TextStyle(fontSize: 15), overflow: TextOverflow.ellipsis,),
+                      Text(currentAudio.audio == null ? '' : currentAudio.audio.name, style: TextStyle(fontSize: 9), overflow: TextOverflow.ellipsis,),
+                    ],
+                  ))),
+                  Expanded(
+                      flex: 1,
+                      child: InkWell(
+                          onTap: () {
+                            // if audio is playing and user clicks on the button for the audio that is playing then pause audio
+                            if (currentAudio.isPlaying) {
+                              currentAudio.pauseAudio();
+                            } else if (!currentAudio.isPlaying) { // if not audio is playing, simply start playing current audio
+                              currentAudio.playAudio();
+                            }
+                          },
+                          child: Icon(currentAudio.isPlaying ? Icons.pause : Icons.play_arrow))),
+                ],),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 
 

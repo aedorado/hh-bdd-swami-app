@@ -12,7 +12,6 @@ Future<List<Audio>> fetchAudios() async {
     // If the server did return a 200 OK response,
     // then parse the JSON.
     AudioResponse ar = AudioResponse.fromJson(jsonDecode(response.body));
-    debugPrint('${ar.audios.length}');
     return ar.audios;
   } else {
     // If the server did not return a 200 OK response,
