@@ -4,6 +4,7 @@ import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/network/audio.dart';
 import 'package:hh_bbds_app/ui/audio/audio_play_screen.dart';
+import 'package:hh_bbds_app/ui/audio/miniplayer.dart';
 import 'package:provider/provider.dart';
 
 class AudioListScreen extends StatefulWidget {
@@ -19,8 +20,15 @@ class _AudioListScreenState extends State<AudioListScreen> {
   final _animationDuration = 250;
   int selectedSuggestion = 0;
 
-  // String audioAPIUrl = "https://mocki.io/v1/6817415e-fc15-4ed5-b6a2-e811e45802f5";
-  String audioAPIUrl = "https://mocki.io/v1/f3ed5273-36ea-4bc1-b6b7-31df45d77a35";
+  final List audioListScreenSuggestions = ['TRACKS', 'SERIES', 'SEMINARS', 'YEAR', 'PLAYLIST'];
+  final List audioListScreenFutures = [
+    fetchAudios('https://mocki.io/v1/f3ed5273-36ea-4bc1-b6b7-31df45d77a35'),
+    fetchAudios('https://mocki.io/v1/6817415e-fc15-4ed5-b6a2-e811e45802f5'),
+    fetchAudios('https://mocki.io/v1/f3ed5273-36ea-4bc1-b6b7-31df45d77a35'),
+    fetchAudios('https://mocki.io/v1/6817415e-fc15-4ed5-b6a2-e811e45802f5'),
+    fetchAudios('https://mocki.io/v1/f3ed5273-36ea-4bc1-b6b7-31df45d77a35'),
+  ];
+
 
   CurrentAudio currentAudio;
   AudioPlayer audioPlayer;
@@ -46,8 +54,6 @@ class _AudioListScreenState extends State<AudioListScreen> {
     currentAudio.audioPlayer.release();
     super.dispose();
   }
-
-  List audioListScreenSuggestions = ['TRACKS', 'ALBUMS', 'YEAR', 'POPULARITY', 'LENGTH'];
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +91,7 @@ class _AudioListScreenState extends State<AudioListScreen> {
               child: PageView.builder(
                 itemCount: audioListScreenSuggestions.length,
                 itemBuilder: (context, index) {
-                  return AudioListScreenPage();
+                  return AudioListScreenPage(audioListScreenFutures[index]);
                 },
                 controller: _pageController,
                 onPageChanged: (pageNumber) {
@@ -137,16 +143,54 @@ class _AudioListScreenState extends State<AudioListScreen> {
 
 }
 
+class PopUpMenuTile extends StatelessWidget {
+  const PopUpMenuTile(
+      {Key key,
+        @required this.icon,
+        @required this.title,
+        this.isActive = false})
+      : super(key: key);
+  final IconData icon;
+  final String title;
+  final bool isActive;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Icon(icon,
+            color: isActive
+                ? Theme.of(context).accentColor
+                : Theme.of(context).primaryColor),
+        const SizedBox(
+          width: 8,
+        ),
+        Text(
+          title,
+          style: Theme.of(context).textTheme.headline4.copyWith(
+              color: isActive
+                  ? Theme.of(context).accentColor
+                  : Theme.of(context).primaryColor),
+        ),
+      ],
+    );
+  }
+}
+
 class AudioListScreenPage extends StatelessWidget {
 
-  final String url;
+  Future<List<Audio>> audioListFuture;
 
-  const AudioListScreenPage({Key key, this.url}) : super(key: key);
+  AudioListScreenPage(Future<List<Audio>> audioListFuture) {
+    this.audioListFuture = audioListFuture;
+  }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Audio>>(
-      future: fetchAudios(),
+      future: this.audioListFuture,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           // return Text(snapshot.data!.title);
@@ -223,7 +267,72 @@ class AudioListScreenPage extends StatelessWidget {
                           Expanded(
                             flex: 1,
                             child: InkWell(
-                              onTap: () {},
+                              onTap: () {
+                                // return PopupMenuButton<int>(
+                                //   offset: const Offset(0, 0),
+                                //   itemBuilder: (context) => [
+                                //     PopupMenuItem<int>(
+                                //         value: 0,
+                                //         child: PopUpMenuTile(
+                                //           isActive: true,
+                                //           icon: Icons.fiber_manual_record,
+                                //           title:'Stop recording',
+                                //         )),
+                                //     PopupMenuItem<int>(
+                                //         value: 1,
+                                //         child: PopUpMenuTile(
+                                //           isActive: true,
+                                //           icon: Icons.pause,
+                                //           title: 'Pause recording',
+                                //         )),
+                                //     PopupMenuItem<int>(
+                                //         value: 2,
+                                //         child: PopUpMenuTile(
+                                //           icon: Icons.group,
+                                //           title: 'Members',
+                                //         )),
+                                //     PopupMenuItem<int>(
+                                //         value: 3,
+                                //         child: PopUpMenuTile(
+                                //           icon: Icons.person_add,
+                                //           title: 'Invite members',
+                                //         )),
+                                //   ],
+                                //   child: Column(
+                                //     mainAxisSize: MainAxisSize.min,
+                                //     children: <Widget>[
+                                //       Icon(Icons.more_vert,
+                                //           color: Colors.white60),
+                                //       Text('more',
+                                //           style: Theme.of(context)
+                                //               .textTheme
+                                //               .caption)
+                                //     ],
+                                //   ),
+                                // );
+                                // showMenu<String>(
+                                //   context: context,
+                                //   position: RelativeRect.fromLTRB(25.0, 25.0, 0.0, 0.0),      //position where you want to show the menu on screen
+                                //   items: [
+                                //     PopupMenuItem<String>(
+                                //         child: const Text('Add to Favorites'), value: '1'),
+                                //     PopupMenuItem<String>(
+                                //         child: const Text('menu option 2'), value: '2'),
+                                //     PopupMenuItem<String>(
+                                //         child: const Text('menu option 3'), value: '3'),
+                                //   ],
+                                //   elevation: 8.0,
+                                // ).then<void>((String itemSelected) {
+                                //   if (itemSelected == null) return;
+                                //   if(itemSelected == "1"){
+                                //     //code here
+                                //   }else if(itemSelected == "2"){
+                                //     //code here
+                                //   }else{
+                                //     //code here
+                                //   }
+                                // });
+                              },
                               child: Icon(Icons.more_vert, size: 24,)
                             ),
                           ),
@@ -262,97 +371,9 @@ class AudioListScreenPage extends StatelessWidget {
       },
     );
   }
+
 }
 
-class CustomTrackShape extends RoundedRectSliderTrackShape {
-  Rect getPreferredRect({
-    @required RenderBox parentBox,
-    Offset offset = Offset.zero,
-    @required SliderThemeData sliderTheme,
-    bool isEnabled = false,
-    bool isDiscrete = false,
-  }) {
-    final double trackHeight = sliderTheme.trackHeight;
-    final double trackLeft = offset.dx;
-    final double trackTop = 0;
-    final double trackWidth = parentBox.size.width;
-    return Rect.fromLTWH(trackLeft, trackTop, trackWidth, trackHeight);
-  }
-}
-
-class Miniplayer extends StatelessWidget {
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<CurrentAudio>(
-      builder: (context, currentAudio, child) => AnimatedContainer(
-        height: currentAudio.isPlaying ? 80 : 0,
-        duration: Duration(milliseconds: 200),
-        // Provide an optional curve to make the animation feel smoother.
-        curve: Curves.easeIn,
-        child: ColoredBox(
-          color: Color(0xFF42A5F5),
-          child: Column(
-            children: [
-              SizedBox(
-                height: 4,
-                child: SliderTheme(
-                  data: SliderThemeData(
-                    trackShape: CustomTrackShape(),
-                    trackHeight: 2.0,
-                    // thumbColor: Color(0xFFEB1555),
-                    inactiveTrackColor: Color(0xFF8D8E98),
-                    // activeTrackColor: Colors.white,
-                    // overlayColor: Color(0x99EB1555),
-                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 0.0),
-                    // overlayShape: RoundSliderOverlayShape(overlayRadius: 30.0),
-                  ),
-                  child: Slider(
-                    min: 0,
-                    max: (currentAudio.totalAudioDuration == null) ? 0.0 : currentAudio.totalAudioDuration.inMilliseconds.toDouble(),
-                    value: (currentAudio.currentAudioPosition == null || currentAudio.audioPlayerState == AudioPlayerState.COMPLETED)
-                        ? 0.0 : currentAudio.currentAudioPosition.inMilliseconds.toDouble(),
-                    onChanged: null,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Row(children: [
-                  Expanded(
-                    flex: 1,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 2, left: 2, right: 2, bottom: 2),
-                      child: CircleAvatar(backgroundImage: NetworkImage('https://i.postimg.cc/RZJ6HJrw/c.jpg')),
-                    ),
-                  ),
-                  Expanded(flex: 4, child: Center(child: Column(
-                    children: [
-                      Text(currentAudio.audio == null ? '' : currentAudio.audio.name, style: TextStyle(fontSize: 15), overflow: TextOverflow.ellipsis,),
-                      Text(currentAudio.audio == null ? '' : currentAudio.audio.name, style: TextStyle(fontSize: 9), overflow: TextOverflow.ellipsis,),
-                    ],
-                  ))),
-                  Expanded(
-                      flex: 1,
-                      child: InkWell(
-                          onTap: () {
-                            // if audio is playing and user clicks on the button for the audio that is playing then pause audio
-                            if (currentAudio.isPlaying) {
-                              currentAudio.pauseAudio();
-                            } else if (!currentAudio.isPlaying) { // if not audio is playing, simply start playing current audio
-                              currentAudio.playAudio();
-                            }
-                          },
-                          child: Icon(currentAudio.isPlaying ? Icons.pause : Icons.play_arrow))),
-                ],),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 
 

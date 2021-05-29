@@ -54,12 +54,14 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
             Expanded(
               flex: 1,
               child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
-                  child: Text(
-                    "What Prahalad Maharaja learnt in the womb",
-                    style: audioTitleStyle,
-                    textAlign: TextAlign.center,
+                child: Consumer<CurrentAudio>(
+                  builder: (context, currentAudio, child) => Padding(
+                    padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
+                    child: Text(
+                      currentAudio.audio.name,
+                      style: audioTitleStyle,
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ),
               ),

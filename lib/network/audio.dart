@@ -4,9 +4,9 @@ import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/models/response_model/audio_response.dart';
 import 'package:http/http.dart' as http;
 
-Future<List<Audio>> fetchAudios() async {
+Future<List<Audio>> fetchAudios(String url) async {
   final response =
-  await http.get(Uri.parse('https://mocki.io/v1/f3ed5273-36ea-4bc1-b6b7-31df45d77a35'));
+  await http.get(Uri.parse(url));
 
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
