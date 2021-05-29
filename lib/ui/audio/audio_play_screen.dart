@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
 import 'package:provider/provider.dart';
@@ -15,7 +16,6 @@ class AudioPlayScreen extends StatefulWidget {
 }
 
 class _AudioPlayScreenState extends State<AudioPlayScreen> {
-  double _audioSliderPos = 0;
   bool playing = false;
   bool isFavorite = false;
 
@@ -86,15 +86,16 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                               // thumbShape: RoundSliderThumbShape(enabledThumbRadius: 15.0),
                               // overlayShape: RoundSliderOverlayShape(overlayRadius: 30.0),
                             ),
-                            child: Slider(
-                              min: 0,
-                              max: 100,
-                              value: _audioSliderPos,
-                              onChanged: (double value) {
-                                setState(() {
-                                  _audioSliderPos = value;
-                                });
-                              },
+                            child: Consumer<CurrentAudio>(
+                              builder: (context, currentAudio, child) => Slider(
+                                min: 0,
+                                max: (currentAudio.totalAudioDuration == null) ? 0.0 : currentAudio.totalAudioDuration.inMilliseconds.toDouble(),
+                                value: (currentAudio.currentAudioPosition == null || currentAudio.audioPlayerState == AudioPlayerState.COMPLETED)
+                                          ? 0.0 : currentAudio.currentAudioPosition.inMilliseconds.toDouble(),
+                                onChanged: (double value) {
+                                  currentAudio.seekAudio(Duration(milliseconds: value.toInt()));
+                                },
+                              ),
                             ),
                           ),
                           Consumer<CurrentAudio>(

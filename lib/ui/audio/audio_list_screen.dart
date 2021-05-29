@@ -19,7 +19,8 @@ class _AudioListScreenState extends State<AudioListScreen> {
   final _animationDuration = 250;
   int selectedSuggestion = 0;
 
-  String audioAPIUrl = "https://mocki.io/v1/6817415e-fc15-4ed5-b6a2-e811e45802f5";
+  // String audioAPIUrl = "https://mocki.io/v1/6817415e-fc15-4ed5-b6a2-e811e45802f5";
+  String audioAPIUrl = "https://mocki.io/v1/f3ed5273-36ea-4bc1-b6b7-31df45d77a35";
 
   CurrentAudio currentAudio;
   AudioPlayer audioPlayer;
@@ -169,6 +170,11 @@ class AudioListSuggestionBox extends StatelessWidget {
 }
 
 class AudioListScreenPage extends StatelessWidget {
+
+  final String url;
+
+  const AudioListScreenPage({Key key, this.url}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Audio>>(
@@ -178,6 +184,7 @@ class AudioListScreenPage extends StatelessWidget {
           // return Text(snapshot.data!.title);
           return Container(
               child: ListView.builder(
+                  physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
                   itemCount: snapshot.data.length,

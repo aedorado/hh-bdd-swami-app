@@ -37,12 +37,17 @@ class CurrentAudio extends ChangeNotifier {
       this.audioPlayerState = ps;
       notifyListeners();
     });
-
   }
 
   void playAudio() {
-    this.isPlaying = true;
-    this.audioPlayer.play(this.audio.url);
+    if (this.audioPlayerState == AudioPlayerState.COMPLETED) {
+      this.isPlaying = true;
+      this.seekAudio(Duration(milliseconds: 0));
+      this.audioPlayer.resume();
+    } else {
+      this.isPlaying = true;
+      this.audioPlayer.play(this.audio.url);
+    }
     notifyListeners();
   }
 
@@ -59,6 +64,11 @@ class CurrentAudio extends ChangeNotifier {
     this.currentAudioIndex = -1;
     this.currentAudioPosition = Duration(seconds: 0);
     this.audioPlayer.release();
+    notifyListeners();
+  }
+
+  void seekAudio(Duration position) {
+    this.audioPlayer.seek(position);
     notifyListeners();
   }
 
