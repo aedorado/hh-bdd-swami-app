@@ -4,6 +4,7 @@ import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/ui/audio/audio_list_screen.dart';
+import 'package:hh_bbds_app/ui/audio/audio_queue_screen.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
@@ -41,7 +42,21 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
         child: Column(
           children: [
             Expanded(
-              flex: 3,
+              flex: 1,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => AudioQueueScreen()));
+                    },
+                    child: Icon(Icons.queue_music),
+                  )
+                ],
+              )
+            ),
+            Expanded(
+              flex: 6,
               child: Padding(
                 padding:
                     const EdgeInsets.only(left: 48, right: 48, top: 24, bottom: 12),
@@ -57,7 +72,7 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
               ),
             ),
             Expanded(
-              flex: 1,
+              flex: 2,
               child: Center(
                 child: Consumer<CurrentAudio>(
                   builder: (context, currentAudio, child) => Padding(
@@ -72,7 +87,7 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
               ),
             ),
             Expanded(
-              flex: 2,
+              flex: 4,
               child: Container(
                 decoration: BoxDecoration(
                     color: Colors.white,
