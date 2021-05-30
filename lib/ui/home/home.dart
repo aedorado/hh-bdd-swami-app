@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hh_bbds_app/ui/favorites/favorite_audios.dart';
 import 'package:hh_bbds_app/ui/library/library_home.dart';
 
 import 'home_carousel.dart';
@@ -15,7 +16,7 @@ class _HomeState extends State<Home> {
 
   List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
-    Text('Favourites', style: optionStyle,),
+    FavoriteAudios(),
     LibraryHome(),
     Text('Search', style: optionStyle,),
     Text('Alerts', style: optionStyle,),

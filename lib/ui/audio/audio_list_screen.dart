@@ -1,10 +1,13 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/network/audio.dart';
 import 'package:hh_bbds_app/ui/audio/audio_play_screen.dart';
 import 'package:hh_bbds_app/ui/audio/miniplayer.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 class AudioListScreen extends StatefulWidget {
@@ -182,6 +185,7 @@ class PopUpMenuTile extends StatelessWidget {
 class AudioListScreenPage extends StatelessWidget {
 
   Future<List<Audio>> audioListFuture;
+  Box<Audio> favoriteAudiosBox = Hive.box<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
 
   AudioListScreenPage(Future<List<Audio>> audioListFuture) {
     this.audioListFuture = audioListFuture;
@@ -245,96 +249,82 @@ class AudioListScreenPage extends StatelessWidget {
                           Expanded(flex: 1,
                             child: InkWell(
                               onTap: () {
+                                String snackBarText;
+                                String undoAction;
+                                if (favoriteAudiosBox.get(snapshot.data[index].name) == null) {
+                                  snackBarText = 'Added to favorites';
+                                  undoAction = 'remove';
+                                  favoriteAudiosBox.put(snapshot.data[index].name, snapshot.data[index]);
+                                } else {
+                                  snackBarText = 'Removed from favorites';
+                                  undoAction = 'add';
+                                  favoriteAudiosBox.delete(snapshot.data[index].name);
+                                }
+
                                 final snackBar = SnackBar(
                                   action: SnackBarAction(
                                     label: 'Undo',
                                     onPressed: () {
                                       // Some code to undo the change.
+                                      if (undoAction == 'add') {
+                                        favoriteAudiosBox.put(snapshot.data[index].name, snapshot.data[index]);
+                                      } else {
+                                        favoriteAudiosBox.delete(snapshot.data[index].name);
+                                      }
                                     },
                                   ),
-                                  content: Text('Added to Favorites!')
+                                  content: Text(snackBarText)
                                 );
                                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
                               },
-                              child: IconTheme(
-                                  data: new IconThemeData(color: Colors.redAccent),
-                                  child: Icon(
-                                    true ? Icons.favorite : Icons.favorite_border,
-                                    size: 24,
-                                  )),
+                              child: ValueListenableBuilder(
+                                valueListenable: favoriteAudiosBox.listenable(),
+                                builder: (context, box, widget) {
+                                  return IconTheme(
+                                    data: new IconThemeData(color: Colors.redAccent),
+                                    child: Icon((box.get(snapshot.data[index].name) == null) ? Icons.favorite_border : Icons.favorite,
+                                      size: 24,
+                                    )
+                                  );
+                                }
+                              ),
                             ),
                           ),
                           Expanded(
                             flex: 1,
-                            child: InkWell(
-                              onTap: () {
-                                // return PopupMenuButton<int>(
-                                //   offset: const Offset(0, 0),
-                                //   itemBuilder: (context) => [
-                                //     PopupMenuItem<int>(
-                                //         value: 0,
-                                //         child: PopUpMenuTile(
-                                //           isActive: true,
-                                //           icon: Icons.fiber_manual_record,
-                                //           title:'Stop recording',
-                                //         )),
-                                //     PopupMenuItem<int>(
-                                //         value: 1,
-                                //         child: PopUpMenuTile(
-                                //           isActive: true,
-                                //           icon: Icons.pause,
-                                //           title: 'Pause recording',
-                                //         )),
-                                //     PopupMenuItem<int>(
-                                //         value: 2,
-                                //         child: PopUpMenuTile(
-                                //           icon: Icons.group,
-                                //           title: 'Members',
-                                //         )),
-                                //     PopupMenuItem<int>(
-                                //         value: 3,
-                                //         child: PopUpMenuTile(
-                                //           icon: Icons.person_add,
-                                //           title: 'Invite members',
-                                //         )),
-                                //   ],
-                                //   child: Column(
-                                //     mainAxisSize: MainAxisSize.min,
-                                //     children: <Widget>[
-                                //       Icon(Icons.more_vert,
-                                //           color: Colors.white60),
-                                //       Text('more',
-                                //           style: Theme.of(context)
-                                //               .textTheme
-                                //               .caption)
-                                //     ],
-                                //   ),
-                                // );
-                                // showMenu<String>(
-                                //   context: context,
-                                //   position: RelativeRect.fromLTRB(25.0, 25.0, 0.0, 0.0),      //position where you want to show the menu on screen
-                                //   items: [
-                                //     PopupMenuItem<String>(
-                                //         child: const Text('Add to Favorites'), value: '1'),
-                                //     PopupMenuItem<String>(
-                                //         child: const Text('menu option 2'), value: '2'),
-                                //     PopupMenuItem<String>(
-                                //         child: const Text('menu option 3'), value: '3'),
-                                //   ],
-                                //   elevation: 8.0,
-                                // ).then<void>((String itemSelected) {
-                                //   if (itemSelected == null) return;
-                                //   if(itemSelected == "1"){
-                                //     //code here
-                                //   }else if(itemSelected == "2"){
-                                //     //code here
-                                //   }else{
-                                //     //code here
-                                //   }
-                                // });
-                              },
-                              child: Icon(Icons.more_vert, size: 24,)
+                            child: Padding(
+                              padding: EdgeInsets.only(left: 8),
+                              child: PopupMenuButton(
+                                onSelected: (item) {
+                                  switch (item) {
+                                    case 'update':
+                                      debugPrint('Updating...');
+                                      // nameController.text = 'update name';
+                                      // descriptionController.text =
+                                      // 'update description';
+                                      //
+                                      // inputItemDialog(context, 'update', index);
+                                      break;
+                                    case 'delete':
+                                    //TODO: delete item
+                                  }
+                                },
+                                itemBuilder: (context) {
+                                  return [
+                                    PopupMenuItem(
+                                      value: 'update',
+                                      child: Text('Update'),
+
+                                    ),
+                                    PopupMenuItem(
+                                      value: 'delete',
+                                      child: Text('Delete'),
+                                    ),
+                                  ];
+                                },
+                              ),
                             ),
+
                           ),
                           Expanded(
                             flex: 1,
