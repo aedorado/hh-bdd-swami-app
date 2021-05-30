@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
+import 'package:hh_bbds_app/change_notifiers/audio_queue.dart';
 import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/ui/home/home.dart';
@@ -21,10 +22,23 @@ void main() async {
 class BDDSApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => CurrentAudio(),
+
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<CurrentAudio>(
+          create: (_) => CurrentAudio(),
+        ),
+        ChangeNotifierProvider<AudioQueue>(
+          create: (_) => AudioQueue(),
+        ),
+      ],
       child: MaterialApp(home: Home()),
     );
+
+    // return ChangeNotifierProvider(
+    //   create: (context) => CurrentAudio(),
+    //   child: MaterialApp(home: Home()),
+    // );
   }
 }
 

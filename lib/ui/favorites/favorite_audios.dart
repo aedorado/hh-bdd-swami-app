@@ -101,8 +101,8 @@ class FavoriteAudios extends StatelessWidget {
                                     itemBuilder: (context) {
                                       return [
                                         PopupMenuItem(value: FAVORITES_ACTION_REMOVE, child: Text('Remove from Favorites'),),
-                                        PopupMenuItem(value: 'delete', child: Text('Play Next'),),
-                                        PopupMenuItem(value: 'delete', child: Text('Add to Queue'),),
+                                        PopupMenuItem(value: PLAY_NEXT, child: Text('Play Next'),),
+                                        PopupMenuItem(value: ADD_TO_QUEUE, child: Text('Add to Queue'),),
                                       ];
                                     },
                                   ),

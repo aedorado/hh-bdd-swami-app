@@ -1,6 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
+import 'package:hh_bbds_app/change_notifiers/audio_queue.dart';
 import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/network/audio.dart';
@@ -277,30 +278,34 @@ class AudioListScreenPage extends StatelessWidget {
                             flex: 1,
                             child: Padding(
                               padding: EdgeInsets.only(left: 2, right: 4),
-                              child: PopupMenuButton(
-                                onSelected: (item) {
-                                  switch (item) {
-                                    case FAVORITES_ACTION_REMOVE:
-                                      favoriteAudiosBox.delete(snapshot.data[index].id);
-                                      ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(snapshot.data[index], item, favoriteAudiosBox).build(context));
-                                      break;
-                                    case FAVORITES_ACTION_ADD:
-                                      favoriteAudiosBox.put(snapshot.data[index].id, snapshot.data[index]);
-                                      ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(snapshot.data[index], item, favoriteAudiosBox).build(context));
-                                      break;
-                                    case 'delete':
-                                    //TODO: delete item
-                                  }
-                                },
-                                itemBuilder: (context) {
-                                  return [
-                                    (favoriteAudiosBox.get(snapshot.data[index].id) == null) ?
-                                     PopupMenuItem(value: FAVORITES_ACTION_ADD, child: Text('Add to Favorites'),) :
-                                      PopupMenuItem(value: FAVORITES_ACTION_REMOVE, child: Text('Remove from Favorites'),),
-                                    PopupMenuItem(value: 'delete', child: Text('Play Next'),),
-                                    PopupMenuItem(value: 'delete', child: Text('Add to Queue'),),
-                                  ];
-                                },
+                              child: Consumer<AudioQueue>(
+                                builder: (context, audioQueue, child) => PopupMenuButton(
+                                  onSelected: (item) {
+                                    switch (item) {
+                                      case FAVORITES_ACTION_REMOVE:
+                                        favoriteAudiosBox.delete(snapshot.data[index].id);
+                                        ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(snapshot.data[index], item, favoriteAudiosBox).build(context));
+                                        break;
+                                      case FAVORITES_ACTION_ADD:
+                                        favoriteAudiosBox.put(snapshot.data[index].id, snapshot.data[index]);
+                                        ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(snapshot.data[index], item, favoriteAudiosBox).build(context));
+                                        break;
+                                      case ADD_TO_QUEUE:
+                                        bool isAdded = audioQueue.addAudio(snapshot.data[index]);
+                                        ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(isAdded, snapshot.data[index], audioQueue).build(context));
+                                        break;
+                                    }
+                                  },
+                                  itemBuilder: (context) {
+                                    return [
+                                      (favoriteAudiosBox.get(snapshot.data[index].id) == null) ?
+                                       PopupMenuItem(value: FAVORITES_ACTION_ADD, child: Text('Add to Favorites'),) :
+                                        PopupMenuItem(value: FAVORITES_ACTION_REMOVE, child: Text('Remove from Favorites'),),
+                                      PopupMenuItem(value: PLAY_NEXT, child: Text('Play Next'),),
+                                      PopupMenuItem(value: ADD_TO_QUEUE, child: Text('Add to Queue'),),
+                                    ];
+                                  },
+                                ),
                               ),
                             ),
                           ),
@@ -332,10 +337,8 @@ class AudioListScreenPage extends StatelessWidget {
         onPressed: () {
           // Some code to undo the change.
           if (favoritesActionPerformed == FAVORITES_ACTION_REMOVE) {
-            snackBarText = 'Added to Favorites';
             favoriteAudiosBox.put(a.id, a);
           } else {
-            snackBarText = 'Removed from Favorites';
             favoriteAudiosBox.delete(a.id);
           }
         },
@@ -380,6 +383,36 @@ class FavoritesSnackBar extends StatelessWidget {
         },
       ),
       content: Text(snackBarText),
+      duration: Duration(milliseconds: 1000),
+    );
+  }
+
+}
+
+class QueueModificationSnackBar extends StatelessWidget {
+
+  bool isAdded;
+  Audio audio;
+  AudioQueue audioQueue;
+  // String favoritesActionPerformed;
+  // Box<Audio> favoriteAudiosBox = Hive.box<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
+
+  QueueModificationSnackBar(this.isAdded, this.audio, this.audioQueue);
+
+  String snackBarText;
+
+  @override
+  SnackBar build(BuildContext context) {
+    return SnackBar(
+      action: this.isAdded ? SnackBarAction(
+        label: 'Undo',
+        onPressed: () {
+          if (this.isAdded) {
+            this.audioQueue.removeAudio(this.audio);
+          }
+        },
+      ): null,
+      content: Text(this.isAdded ? 'Added to Queue': 'Already added to Queue'),
       duration: Duration(milliseconds: 1000),
     );
   }

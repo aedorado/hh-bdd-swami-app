@@ -12,9 +12,21 @@ class AudioQueue extends ChangeNotifier {
     this.audioList = [];
   }
 
-  void addAudio(Audio a) {
-    this.audioList.add(a);
-    notifyListeners();
+  bool addAudio(Audio a) {
+    if (this.audioList.firstWhere((audioFromList) => audioFromList.id == a.id, orElse: () => null) == null) {
+      this.audioList.add(a);
+      notifyListeners();
+      return true;
+    }
+    return false;
+  }
+
+  Audio getAt(int index) {
+    if (index < audioList.length) {
+      return this.audioList.elementAt(index);
+    } else {
+      return null;
+    }
   }
 
   void addAudioAt(int index, Audio a) {
@@ -52,6 +64,40 @@ class AudioQueue extends ChangeNotifier {
     } else {
       return null;
     }
+  }
+
+  void rearrange(int oldIndex, int newIndex) {
+    debugPrint('OI = $oldIndex, NI = $newIndex');
+    // 0 -> 1 oi=0 ni=2
+    // 0 -> 2 oi=0 ni=3
+    // 0 -> 3 oi=0 ni=4
+    // 0 -> 4 oi=0 ni=5
+    // 2 -> 4 oi=2 ni=5
+    // TODO: Add now playing logic
+    if (newIndex < oldIndex) {
+      Audio audio = this.audioList.removeAt(oldIndex);
+      this.audioList.insert(newIndex, audio);
+    } else {
+      Audio audio = this.audioList.elementAt(oldIndex);
+      this.audioList.insert(newIndex, audio);
+      this.audioList.removeAt(oldIndex);
+    }
+    // Audio audio = this.audioList.removeAt(oldIndex);
+    // if (newIndex >= this.audioList.length - 1) {
+    //   this.audioList.add(audio);
+    // } else {
+    //   this.audioList.insert(newIndex, audio);
+    // }
+    notifyListeners();
+  }
+
+  @override
+  String toString() {
+    var concatenate = StringBuffer();
+    this.audioList.forEach((item){
+      concatenate.write(item.id + ", ");
+    });
+    return concatenate.toString();
   }
 
 }
