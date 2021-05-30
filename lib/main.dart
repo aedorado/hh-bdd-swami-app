@@ -14,6 +14,7 @@ void main() async {
   Directory document = await getApplicationDocumentsDirectory();
   Hive..init(document.path)..registerAdapter(AudioAdapter());
   await Hive.openBox<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
+  // Hive.box<Audio>(HIVE_BOX_FAVORITE_AUDIOS).deleteFromDisk();
   runApp(BDDSApp());
 }
 

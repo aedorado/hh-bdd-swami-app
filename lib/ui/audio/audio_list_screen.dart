@@ -25,11 +25,11 @@ class _AudioListScreenState extends State<AudioListScreen> {
 
   final List audioListScreenSuggestions = ['TRACKS', 'SERIES', 'SEMINARS', 'YEAR', 'PLAYLIST'];
   final List audioListScreenFutures = [
-    fetchAudios('https://mocki.io/v1/f3ed5273-36ea-4bc1-b6b7-31df45d77a35'),
+    fetchAudios('https://mocki.io/v1/00c25346-891a-4a2a-987e-4a9c1a6c637e'),
     fetchAudios('https://mocki.io/v1/6817415e-fc15-4ed5-b6a2-e811e45802f5'),
     fetchAudios('https://mocki.io/v1/f3ed5273-36ea-4bc1-b6b7-31df45d77a35'),
     fetchAudios('https://mocki.io/v1/6817415e-fc15-4ed5-b6a2-e811e45802f5'),
-    fetchAudios('https://mocki.io/v1/f3ed5273-36ea-4bc1-b6b7-31df45d77a35'),
+    fetchAudios('https://mocki.io/v1/00c25346-891a-4a2a-987e-4a9c1a6c637e'),
   ];
 
 
@@ -88,7 +88,6 @@ class _AudioListScreenState extends State<AudioListScreen> {
                     ),
                   ),
                 ),
-
             ),
             Expanded(
               child: PageView.builder(
@@ -211,6 +210,7 @@ class AudioListScreenPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          // Image
                           Expanded(
                             flex: 2,
                             child: Padding(
@@ -221,6 +221,7 @@ class AudioListScreenPage extends StatelessWidget {
                                       'https://i.postimg.cc/RZJ6HJrw/c.jpg')),
                             ),
                           ),
+                          // Title
                           Expanded(
                             flex: 6,
                             child: Padding(
@@ -229,7 +230,7 @@ class AudioListScreenPage extends StatelessWidget {
                                 builder: (_, currentAudio, child) => InkWell(
                                   onTap: () {
                                     currentAudio.audio = snapshot.data[index];
-                                    currentAudio.currentAudioIndex = index;
+                                    currentAudio.playAudio();
                                     Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen()));
                                   },
                                   child: Column(
@@ -238,51 +239,32 @@ class AudioListScreenPage extends StatelessWidget {
                                     children: [
                                       Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 16),),
                                       Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 12),),
-                                      // if (currentAudio.isPlaying && index == currentAudio.currentAudioIndex) Text(currentAudio.currentAudioPosition.toString().split('.').first),
-                                      // if (currentAudio.isPlaying && index == currentAudio.currentAudioIndex) Text(currentAudio.totalAudioDuration.toString().split('.').first),
                                     ],
                                   ),
                                 ),
                               ),
                             )
                           ),
+                          // Favorite Icon
                           Expanded(flex: 1,
                             child: InkWell(
                               onTap: () {
-                                String snackBarText;
-                                String undoAction;
-                                if (favoriteAudiosBox.get(snapshot.data[index].name) == null) {
-                                  snackBarText = 'Added to favorites';
-                                  undoAction = 'remove';
-                                  favoriteAudiosBox.put(snapshot.data[index].name, snapshot.data[index]);
+                                String favoritesActionPerformed;
+                                if (favoriteAudiosBox.get(snapshot.data[index].id) == null) {
+                                  favoritesActionPerformed = FAVORITES_ACTION_ADD;
+                                  favoriteAudiosBox.put(snapshot.data[index].id, snapshot.data[index]);
                                 } else {
-                                  snackBarText = 'Removed from favorites';
-                                  undoAction = 'add';
-                                  favoriteAudiosBox.delete(snapshot.data[index].name);
+                                  favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
+                                  favoriteAudiosBox.delete(snapshot.data[index].id);
                                 }
-
-                                final snackBar = SnackBar(
-                                  action: SnackBarAction(
-                                    label: 'Undo',
-                                    onPressed: () {
-                                      // Some code to undo the change.
-                                      if (undoAction == 'add') {
-                                        favoriteAudiosBox.put(snapshot.data[index].name, snapshot.data[index]);
-                                      } else {
-                                        favoriteAudiosBox.delete(snapshot.data[index].name);
-                                      }
-                                    },
-                                  ),
-                                  content: Text(snackBarText)
-                                );
-                                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(snapshot.data[index], favoritesActionPerformed, favoriteAudiosBox).build(context));
                               },
                               child: ValueListenableBuilder(
                                 valueListenable: favoriteAudiosBox.listenable(),
                                 builder: (context, box, widget) {
                                   return IconTheme(
                                     data: new IconThemeData(color: Colors.redAccent),
-                                    child: Icon((box.get(snapshot.data[index].name) == null) ? Icons.favorite_border : Icons.favorite,
+                                    child: Icon((box.get(snapshot.data[index].id) == null) ? Icons.favorite_border : Icons.favorite,
                                       size: 24,
                                     )
                                   );
@@ -290,20 +272,21 @@ class AudioListScreenPage extends StatelessWidget {
                               ),
                             ),
                           ),
+                          // More Icon
                           Expanded(
                             flex: 1,
                             child: Padding(
-                              padding: EdgeInsets.only(left: 8),
+                              padding: EdgeInsets.only(left: 2, right: 4),
                               child: PopupMenuButton(
                                 onSelected: (item) {
                                   switch (item) {
-                                    case 'update':
-                                      debugPrint('Updating...');
-                                      // nameController.text = 'update name';
-                                      // descriptionController.text =
-                                      // 'update description';
-                                      //
-                                      // inputItemDialog(context, 'update', index);
+                                    case FAVORITES_ACTION_REMOVE:
+                                      favoriteAudiosBox.delete(snapshot.data[index].id);
+                                      ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(snapshot.data[index], item, favoriteAudiosBox).build(context));
+                                      break;
+                                    case FAVORITES_ACTION_ADD:
+                                      favoriteAudiosBox.put(snapshot.data[index].id, snapshot.data[index]);
+                                      ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(snapshot.data[index], item, favoriteAudiosBox).build(context));
                                       break;
                                     case 'delete':
                                     //TODO: delete item
@@ -311,44 +294,16 @@ class AudioListScreenPage extends StatelessWidget {
                                 },
                                 itemBuilder: (context) {
                                   return [
-                                    PopupMenuItem(
-                                      value: 'update',
-                                      child: Text('Update'),
-
-                                    ),
-                                    PopupMenuItem(
-                                      value: 'delete',
-                                      child: Text('Delete'),
-                                    ),
+                                    (favoriteAudiosBox.get(snapshot.data[index].id) == null) ?
+                                     PopupMenuItem(value: FAVORITES_ACTION_ADD, child: Text('Add to Favorites'),) :
+                                      PopupMenuItem(value: FAVORITES_ACTION_REMOVE, child: Text('Remove from Favorites'),),
+                                    PopupMenuItem(value: 'delete', child: Text('Play Next'),),
+                                    PopupMenuItem(value: 'delete', child: Text('Add to Queue'),),
                                   ];
                                 },
                               ),
                             ),
-
                           ),
-                          Expanded(
-                            flex: 1,
-                            child: Consumer<CurrentAudio>(
-                              builder: (_, currentAudio, child) => InkWell(
-                                onTap: () {
-                                  // if audio is playing and user clicks on the button for the audio that is playing then pause audio
-                                  if (currentAudio.isPlaying && (index == currentAudio.currentAudioIndex)) {
-                                    currentAudio.pauseAudio();
-                                  } else if (currentAudio.isPlaying && (index != currentAudio.currentAudioIndex)) { // user clicks on play button for an audio that is not playing currently
-                                    currentAudio.stopAudio();
-                                    currentAudio.currentAudioIndex = index;
-                                    currentAudio.audio = snapshot.data[index];
-                                    currentAudio.playAudio();
-                                  } else if (!currentAudio.isPlaying) { // if ndebugot audio is playing, simply start playing current audio
-                                    currentAudio.currentAudioIndex = index;
-                                    currentAudio.audio = snapshot.data[index];
-                                    currentAudio.playAudio();
-                                  }
-                                },
-                                child: Icon((index == currentAudio.currentAudioIndex && currentAudio.isPlaying) ? Icons.pause : Icons.play_arrow)),
-                            ),
-                          ),
-                          // Divider(color: Colors.black, height: 1,),
                         ],
                         //: Center(child: Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 18),)),
                       ),
@@ -362,7 +317,77 @@ class AudioListScreenPage extends StatelessWidget {
     );
   }
 
+  Widget _getFavoriteSnackBar(Audio a, String favoritesActionPerformed) {
+    String snackBarText;
+
+    if (favoritesActionPerformed == FAVORITES_ACTION_REMOVE) {
+      snackBarText = 'Added to Favorites';
+    } else {
+      snackBarText = 'Removed from Favorites';
+    }
+
+    return SnackBar(
+      action: SnackBarAction(
+        label: 'Undo',
+        onPressed: () {
+          // Some code to undo the change.
+          if (favoritesActionPerformed == FAVORITES_ACTION_REMOVE) {
+            snackBarText = 'Added to Favorites';
+            favoriteAudiosBox.put(a.id, a);
+          } else {
+            snackBarText = 'Removed from Favorites';
+            favoriteAudiosBox.delete(a.id);
+          }
+        },
+      ),
+      content: Text(snackBarText),
+      duration: Duration(milliseconds: 1000),
+    );
+  }
+
 }
+
+class FavoritesSnackBar extends StatelessWidget {
+
+  Audio a;
+  String favoritesActionPerformed;
+  Box<Audio> favoriteAudiosBox = Hive.box<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
+  
+  FavoritesSnackBar(this.a, this.favoritesActionPerformed, this.favoriteAudiosBox) {
+    if (this.favoritesActionPerformed == FAVORITES_ACTION_REMOVE) {
+      snackBarText = 'Added to Favorites';
+    } else {
+      snackBarText = 'Removed from Favorites';
+    }
+  }
+
+  String snackBarText;
+
+  @override
+  SnackBar build(BuildContext context) {
+    return SnackBar(
+      action: SnackBarAction(
+        label: 'Undo',
+        onPressed: () {
+          // Some code to undo the change.
+          if (favoritesActionPerformed == FAVORITES_ACTION_REMOVE) {
+            snackBarText = 'Added to Favorites';
+            favoriteAudiosBox.put(a.id, a);
+          } else {
+            snackBarText = 'Removed from Favorites';
+            favoriteAudiosBox.delete(a.id);
+          }
+        },
+      ),
+      content: Text(snackBarText),
+      duration: Duration(milliseconds: 1000),
+    );
+  }
+
+}
+
+
+
 
 
 
