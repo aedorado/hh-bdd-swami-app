@@ -26,9 +26,9 @@ class _AudioListScreenState extends State<AudioListScreen> {
   final List audioListScreenSuggestions = ['TRACKS', 'SERIES', 'SEMINARS', 'YEAR', 'PLAYLIST'];
   final List audioListScreenFutures = [
     fetchAudios('https://mocki.io/v1/00c25346-891a-4a2a-987e-4a9c1a6c637e'),
-    fetchAudios('https://mocki.io/v1/6817415e-fc15-4ed5-b6a2-e811e45802f5'),
-    fetchAudios('https://mocki.io/v1/f3ed5273-36ea-4bc1-b6b7-31df45d77a35'),
-    fetchAudios('https://mocki.io/v1/6817415e-fc15-4ed5-b6a2-e811e45802f5'),
+    fetchAudios('https://mocki.io/v1/707d651f-aa2f-4d0a-90a9-2db94623350b'),
+    fetchAudios('https://mocki.io/v1/00c25346-891a-4a2a-987e-4a9c1a6c637e'),
+    fetchAudios('https://mocki.io/v1/707d651f-aa2f-4d0a-90a9-2db94623350b'),
     fetchAudios('https://mocki.io/v1/00c25346-891a-4a2a-987e-4a9c1a6c637e'),
   ];
 
@@ -321,9 +321,9 @@ class AudioListScreenPage extends StatelessWidget {
     String snackBarText;
 
     if (favoritesActionPerformed == FAVORITES_ACTION_REMOVE) {
-      snackBarText = 'Added to Favorites';
-    } else {
       snackBarText = 'Removed from Favorites';
+    } else {
+      snackBarText = 'Added to Favorites' ;
     }
 
     return SnackBar(
@@ -355,9 +355,9 @@ class FavoritesSnackBar extends StatelessWidget {
   
   FavoritesSnackBar(this.a, this.favoritesActionPerformed, this.favoriteAudiosBox) {
     if (this.favoritesActionPerformed == FAVORITES_ACTION_REMOVE) {
-      snackBarText = 'Added to Favorites';
-    } else {
       snackBarText = 'Removed from Favorites';
+    } else {
+      snackBarText = 'Added to Favorites';
     }
   }
 

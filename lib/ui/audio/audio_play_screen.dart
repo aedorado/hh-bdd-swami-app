@@ -1,6 +1,10 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
+import 'package:hh_bbds_app/models/podo/audio.dart';
+import 'package:hh_bbds_app/ui/audio/audio_list_screen.dart';
+import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
 var audioTitleStyle = TextStyle(
@@ -17,7 +21,8 @@ class AudioPlayScreen extends StatefulWidget {
 
 class _AudioPlayScreenState extends State<AudioPlayScreen> {
   bool playing = false;
-  bool isFavorite = false;
+
+  Box<Audio> favoriteAudiosBox = Hive.box<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
 
   @override
   Widget build(BuildContext context) {
@@ -81,12 +86,12 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                         children: [
                           SliderTheme(
                             data: SliderThemeData(
-                              // thumbColor: Color(0xFFEB1555),
-                              inactiveTrackColor: Color(0xFF8D8E98),
-                              // activeTrackColor: Colors.white,
+                              thumbColor: Colors.blue,
+                              activeTrackColor: Colors.blue,
+                              inactiveTrackColor: Colors.grey[350],
                               // overlayColor: Color(0x99EB1555),
-                              // thumbShape: RoundSliderThumbShape(enabledThumbRadius: 15.0),
-                              // overlayShape: RoundSliderOverlayShape(overlayRadius: 30.0),
+                              thumbShape: RoundSliderThumbShape(enabledThumbRadius: 10.0),
+                              overlayShape: RoundSliderOverlayShape(overlayRadius: 18.0),
                             ),
                             child: Consumer<CurrentAudio>(
                               builder: (context, currentAudio, child) => Slider(
@@ -103,9 +108,9 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                           Consumer<CurrentAudio>(
                               builder: (context, currentAudio, child) => Row(
                                 children: [
-                                  Text(currentAudio.currentAudioPosition.toString().split('.').first),
+                                  if (currentAudio.totalAudioDuration != null) Text(currentAudio.currentAudioPosition.toString().split('.').first),
                                   Spacer(),
-                                  Text(currentAudio.totalAudioDuration.toString().split('.').first)
+                                  if (currentAudio.totalAudioDuration != null) Text(currentAudio.totalAudioDuration.toString().split('.').first)
                                 ],
                               )
                           ),
@@ -124,7 +129,7 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                               },
                               child: Container(
                                 child: Center(
-                                    child: Icon( currentAudio.isPlaying ? Icons.pause : Icons.play_arrow, size: 50,
+                                    child: Icon( currentAudio.isPlaying ? Icons.pause : Icons.play_arrow, size: 50, color: Colors.blue,
                                     )),
                               ),
                             ),
@@ -137,20 +142,27 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          InkWell(
-                            onTap: () {
-                              setState(() {
-                                isFavorite = !isFavorite;
-                              });
-                            },
-                            child: Container(
-                              child: Center(
-                                  child: IconTheme(
-                                      data: new IconThemeData(color: Colors.redAccent),
-                                      child: Icon(
-                                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                                        size: 50,
-                                      ))),
+                          Consumer<CurrentAudio>(
+                            builder: (context, currentAudio, child) => InkWell(
+                              onTap: () {
+                                String favoritesActionPerformed;
+                                if (favoriteAudiosBox.get(currentAudio.audio.id) == null) {
+                                  favoritesActionPerformed = FAVORITES_ACTION_ADD;
+                                  favoriteAudiosBox.put(currentAudio.audio.id, currentAudio.audio);
+                                } else {
+                                  favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
+                                  favoriteAudiosBox.delete(currentAudio.audio.id);
+                                }
+                                ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(currentAudio.audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
+                              },
+                              child: Consumer<CurrentAudio>(
+                                builder: (context, currentAudio, child) => Container(
+                                  child: Center(
+                                      child: IconTheme(
+                                          data: new IconThemeData(color: Colors.redAccent),
+                                          child: Icon(favoriteAudiosBox.get(currentAudio.audio.id) == null ? Icons.favorite_border : Icons.favorite, size: 36,))),
+                                ),
+                              ),
                             ),
                           ),
                         ],
