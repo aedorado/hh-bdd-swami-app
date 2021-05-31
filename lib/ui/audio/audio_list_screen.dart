@@ -307,6 +307,10 @@ class AudioListScreenPage extends StatelessWidget {
                                         favoriteAudiosBox.put(snapshot.data[index].id, snapshot.data[index]);
                                         ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(snapshot.data[index], item, favoriteAudiosBox).build(context));
                                         break;
+                                      case PLAY_NEXT:
+                                        bool isAdded = audioQueue.addNext(snapshot.data[index]);
+                                        ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(isAdded, snapshot.data[index], audioQueue).build(context));
+                                        break;
                                       case ADD_TO_QUEUE:
                                         bool isAdded = audioQueue.addAudio(snapshot.data[index]);
                                         ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(isAdded, snapshot.data[index], audioQueue).build(context));

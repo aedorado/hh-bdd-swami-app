@@ -51,9 +51,20 @@ class AudioQueue extends ChangeNotifier {
   // [a0, a1, a2, a3, a4]
   //      ^
   //      nowPlaying = 1
-  void addNext(Audio audio) {
-    this.addAudioAt(nowPlaying + 1, audio);
-    notifyListeners();
+  bool addNext(Audio audio) {
+    if (this.audioList.firstWhere((audioFromList) => audioFromList.id == audio.id, orElse: () => null) == null) {
+      this.addAudioAt(nowPlaying + 1, audio);
+      notifyListeners();
+      return true;
+    } else {
+      // TODO: handle case when the audio is already there
+      // 3 cases
+      // the audio playing currently is added to play next
+      // the audio is to be moved up
+      // the audio is to be moved down
+      int presentIndex = this.audioList.indexOf(audio);
+    }
+    return false;
   }
   
   Audio next() {

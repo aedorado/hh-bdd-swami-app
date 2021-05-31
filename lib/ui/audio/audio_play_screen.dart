@@ -6,6 +6,7 @@ import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/ui/audio/audio_list_screen.dart';
 import 'package:hh_bbds_app/ui/audio/audio_queue_screen.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 var audioTitleStyle = TextStyle(
@@ -41,8 +42,8 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
         ),
         child: Column(
           children: [
-            Expanded(
-              flex: 1,
+            Padding(
+              padding: const EdgeInsets.all(4),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -50,10 +51,10 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                     onTap: () {
                       Navigator.push(context, MaterialPageRoute(builder: (context) => AudioQueueScreen()));
                     },
-                    child: Icon(Icons.queue_music),
+                    child: Icon(Icons.queue_music, size: 32),
                   )
                 ],
-              )
+              ),
             ),
             Expanded(
               flex: 6,
@@ -106,6 +107,7 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                                 activeTrackColor: Colors.blue,
                                 inactiveTrackColor: Colors.grey[350],
                                 // overlayColor: Color(0x99EB1555),
+                                trackHeight: 8,
                                 thumbShape: RoundSliderThumbShape(enabledThumbRadius: 10.0),
                                 overlayShape: RoundSliderOverlayShape(overlayRadius: 18.0),
                               ),
@@ -133,54 +135,170 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
-                      child: Row(
+                      child: Consumer<CurrentAudio>(
+                        builder: (context, currentAudio, child) => Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Consumer<CurrentAudio>(
-                            builder: (context, currentAudio, child) => InkWell(
-                              onTap: () {
-                                currentAudio.isPlaying ? currentAudio.pauseAudio() : currentAudio.playAudio();
-                              },
-                              child: Container(
+                          Flexible(
+                            child: Container(
+                              child: InkWell(
+                                onTap: () {
+                                  currentAudio.isPlaying ? currentAudio.pauseAudio() : currentAudio.playAudio();
+                                },
                                 child: Center(
-                                    child: Icon( currentAudio.isPlaying ? Icons.pause : Icons.play_arrow, size: 50, color: Colors.blue,
-                                    )),
+                                    child: Icon(Icons.skip_previous, size: 45, color: Color(0xFF1976D2),)
+                                ),
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Consumer<CurrentAudio>(
-                            builder: (context, currentAudio, child) => InkWell(
-                              onTap: () {
-                                String favoritesActionPerformed;
-                                if (favoriteAudiosBox.get(currentAudio.audio.id) == null) {
-                                  favoritesActionPerformed = FAVORITES_ACTION_ADD;
-                                  favoriteAudiosBox.put(currentAudio.audio.id, currentAudio.audio);
-                                } else {
-                                  favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
-                                  favoriteAudiosBox.delete(currentAudio.audio.id);
-                                }
-                                ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(currentAudio.audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
-                              },
-                              child: Consumer<CurrentAudio>(
-                                builder: (context, currentAudio, child) => Container(
+                          Flexible(
+                            flex: 1,
+                            child: Container(
+                              width: 54,
+                              decoration: BoxDecoration(
+                                color: Color(0xFF004BA0),
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: InkWell(
+                                onTap: () {
+                                  currentAudio.isPlaying ? currentAudio.pauseAudio() : currentAudio.playAudio();
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(2.0),
                                   child: Center(
-                                      child: IconTheme(
-                                          data: new IconThemeData(color: Colors.redAccent),
-                                          child: Icon(favoriteAudiosBox.get(currentAudio.audio.id) == null ? Icons.favorite_border : Icons.favorite, size: 36,))),
+                                    child: Icon( currentAudio.isPlaying ? Icons.pause : Icons.play_arrow, size: 50, color: Colors.white,
+                                    )
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Flexible(
+                            child: Container(
+                              child: InkWell(
+                                onTap: () {
+                                  currentAudio.isPlaying ? currentAudio.pauseAudio() : currentAudio.playAudio();
+                                },
+                                child: Center(
+                                    child: Icon(Icons.skip_next, size: 45, color: Color(0xFF1976D2),)
                                 ),
                               ),
                             ),
                           ),
                         ],
+                        ),
                       ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
+                      child: Consumer<CurrentAudio>(
+                        builder: (context, currentAudio, child) => Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Container(
+                              child: InkWell(
+                                onTap: () {
+                                  String favoritesActionPerformed;
+                                  if (favoriteAudiosBox.get(currentAudio.audio.id) == null) {
+                                    favoritesActionPerformed = FAVORITES_ACTION_ADD;
+                                    favoriteAudiosBox.put(currentAudio.audio.id, currentAudio.audio);
+                                  } else {
+                                    favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
+                                    favoriteAudiosBox.delete(currentAudio.audio.id);
+                                  }
+                                  ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(currentAudio.audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
+                                },
+                                child: ValueListenableBuilder(
+                                  valueListenable: favoriteAudiosBox.listenable(),
+                                  builder: (context, box, widget) {
+                                    return IconTheme(
+                                        data: new IconThemeData(color: Colors.redAccent),
+                                        child: Icon((box.get(currentAudio.audio.id) == null) ? Icons.favorite_border : Icons.favorite,
+                                          size: 36,
+                                        )
+                                    );
+                                  }
+                                ),
+                              ),
+                            ),
+                            Container(
+                              child: InkWell(
+                                onTap: () {
+                                  String favoritesActionPerformed;
+                                  if (favoriteAudiosBox.get(currentAudio.audio.id) == null) {
+                                    favoritesActionPerformed = FAVORITES_ACTION_ADD;
+                                    favoriteAudiosBox.put(currentAudio.audio.id, currentAudio.audio);
+                                  } else {
+                                    favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
+                                    favoriteAudiosBox.delete(currentAudio.audio.id);
+                                  }
+                                  ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(currentAudio.audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
+                                },
+                                child: Container(
+                                  child: Center(
+                                    child: IconTheme(
+                                        data: new IconThemeData(color: Color(0xFF42A5F5)),
+                                        child: Icon(
+                                          favoriteAudiosBox.get(currentAudio.audio.id) == null
+                                              ? Icons.shuffle : Icons.shuffle_on,
+                                          size: 36,)
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              child: InkWell(
+                                onTap: () {
+                                  String favoritesActionPerformed;
+                                  if (favoriteAudiosBox.get(currentAudio.audio.id) == null) {
+                                    favoritesActionPerformed = FAVORITES_ACTION_ADD;
+                                    favoriteAudiosBox.put(currentAudio.audio.id, currentAudio.audio);
+                                  } else {
+                                    favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
+                                    favoriteAudiosBox.delete(currentAudio.audio.id);
+                                  }
+                                  ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(currentAudio.audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
+                                },
+                                child: Container(
+                                  child: Center(
+                                    child: IconTheme(
+                                        data: new IconThemeData(color: Color(0xFF42A5F5)),
+                                        child: Icon(
+                                          favoriteAudiosBox.get(currentAudio.audio.id) == null
+                                              ? Icons.repeat : Icons.repeat_on,
+                                          size: 36,)
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              child: InkWell(
+                                onTap: () {
+                                  String favoritesActionPerformed;
+                                  if (favoriteAudiosBox.get(currentAudio.audio.id) == null) {
+                                    favoritesActionPerformed = FAVORITES_ACTION_ADD;
+                                    favoriteAudiosBox.put(currentAudio.audio.id, currentAudio.audio);
+                                  } else {
+                                    favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
+                                    favoriteAudiosBox.delete(currentAudio.audio.id);
+                                  }
+                                  ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(currentAudio.audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
+                                },
+                                child: Container(
+                                  child: Center(
+                                    child: IconTheme(
+                                        data: new IconThemeData(color: Color(0xFF42A5F5)),
+                                        child: Icon(Icons.queue_music, size: 36,)
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        ),
                     ),
                     Spacer(),
                   ],
