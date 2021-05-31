@@ -97,39 +97,38 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
-                      child: Column(
-                        children: [
-                          SliderTheme(
-                            data: SliderThemeData(
-                              thumbColor: Colors.blue,
-                              activeTrackColor: Colors.blue,
-                              inactiveTrackColor: Colors.grey[350],
-                              // overlayColor: Color(0x99EB1555),
-                              thumbShape: RoundSliderThumbShape(enabledThumbRadius: 10.0),
-                              overlayShape: RoundSliderOverlayShape(overlayRadius: 18.0),
-                            ),
-                            child: Consumer<CurrentAudio>(
-                              builder: (context, currentAudio, child) => Slider(
-                                min: 0,
-                                max: (currentAudio.totalAudioDuration == null) ? 0.0 : currentAudio.totalAudioDuration.inMilliseconds.toDouble(),
-                                value: (currentAudio.currentAudioPosition == null || currentAudio.audioPlayerState == AudioPlayerState.COMPLETED)
-                                          ? 0.0 : currentAudio.currentAudioPosition.inMilliseconds.toDouble(),
-                                onChanged: (double value) {
-                                  currentAudio.seekAudio(Duration(milliseconds: value.toInt()));
-                                },
+                      child: Consumer<CurrentAudio>(
+                        builder: (context, currentAudio, child) => Column(
+                          children: [
+                            SliderTheme(
+                              data: SliderThemeData(
+                                thumbColor: Colors.blue,
+                                activeTrackColor: Colors.blue,
+                                inactiveTrackColor: Colors.grey[350],
+                                // overlayColor: Color(0x99EB1555),
+                                thumbShape: RoundSliderThumbShape(enabledThumbRadius: 10.0),
+                                overlayShape: RoundSliderOverlayShape(overlayRadius: 18.0),
                               ),
+                              child: Slider(
+                                  min: 0,
+                                  max: (currentAudio.totalAudioDuration == null) ? 0.0 : currentAudio.totalAudioDuration.inMilliseconds.toDouble(),
+                                  value: (currentAudio.currentAudioPosition == null || currentAudio.audioPlayerState == AudioPlayerState.COMPLETED)
+                                            ? 0.0 : currentAudio.currentAudioPosition.inMilliseconds.toDouble(),
+                                  onChanged: (double value) {
+                                    currentAudio.seekAudio(Duration(milliseconds: value.toInt()));
+                                  },
+                                ),
                             ),
-                          ),
-                          Consumer<CurrentAudio>(
-                              builder: (context, currentAudio, child) => Row(
+                            if (currentAudio.showMiniPlayer() && currentAudio.totalAudioDuration != null)
+                              Row(
                                 children: [
-                                  if (currentAudio.totalAudioDuration != null) Text(currentAudio.currentAudioPosition.toString().split('.').first),
+                                  Text(currentAudio.currentAudioPosition.toString().split('.').first),
                                   Spacer(),
-                                  if (currentAudio.totalAudioDuration != null) Text(currentAudio.totalAudioDuration.toString().split('.').first)
+                                  Text(currentAudio.totalAudioDuration.toString().split('.').first)
                                 ],
                               )
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     Padding(

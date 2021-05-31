@@ -24,7 +24,7 @@ class _AudioListScreenState extends State<AudioListScreen> {
   final _animationDuration = 250;
   int selectedSuggestion = 0;
 
-  final List audioListScreenSuggestions = ['TRACKS', 'SERIES', 'SEMINARS', 'YEAR', 'PLAYLIST'];
+  final List audioListScreenSuggestions = ['TRACKS', 'SERIES', 'SEMINARS', 'YEAR'];
   final List audioListScreenFutures = [
     fetchAudios('https://mocki.io/v1/00c25346-891a-4a2a-987e-4a9c1a6c637e'),
     fetchAudios('https://mocki.io/v1/707d651f-aa2f-4d0a-90a9-2db94623350b'),
@@ -68,27 +68,33 @@ class _AudioListScreenState extends State<AudioListScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            ColoredBox(
-                color: Color(0xFFBDBDBD),
-                child: Container(
-                  height: 56,
-                  child: SingleChildScrollView(
-                    physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        ListView.builder(
+            Container(
+              height: 56,
+              decoration: BoxDecoration(
+                color: const Color(0xFFBDBDBD),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          ListView.builder(
                             scrollDirection: Axis.horizontal,
                             shrinkWrap: true,
                             itemCount: audioListScreenSuggestions.length,
                             itemBuilder: (BuildContext context, int index) {
                               return _audioListSuggestionBox(index, audioListScreenSuggestions[index]);
                             }
-                        ),
-                      ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
+                ],
+              ),
             ),
             Expanded(
               child: PageView.builder(
@@ -206,47 +212,58 @@ class AudioListScreenPage extends StatelessWidget {
                   itemCount: snapshot.data.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Container(
-                      height: 80,
+                      height: 60,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           // Image
                           Expanded(
-                            flex: 2,
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  top: 2, left: 2, right: 2, bottom: 2),
-                              child: CircleAvatar(
-                                  backgroundImage: NetworkImage(
-                                      'https://i.postimg.cc/RZJ6HJrw/c.jpg')),
-                            ),
-                          ),
-                          // Title
-                          Expanded(
-                            flex: 6,
-                            child: Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Consumer<CurrentAudio>(
-                                builder: (_, currentAudio, child) => InkWell(
-                                  onTap: () {
-                                    currentAudio.audio = snapshot.data[index];
-                                    currentAudio.playAudio();
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen()));
-                                  },
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 16),),
-                                      Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 12),),
-                                    ],
-                                  ),
+                            flex: 7,
+                            child: Consumer<CurrentAudio>(
+                              builder: (context, currentAudio, child) => InkWell(
+                                onTap: () {
+                                  currentAudio.audio = snapshot.data[index];
+                                  currentAudio.playAudio();
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen()));
+                                },
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 1,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 2, left: 4, right: 2, bottom: 2),
+                                        child: CircleAvatar(
+                                            backgroundImage: NetworkImage('https://i.postimg.cc/RZJ6HJrw/c.jpg')),
+                                      ),
+                                    ),
+                                    Expanded(
+                                        flex: 6,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(12.0),
+                                          child: InkWell(
+                                              onTap: () {
+                                                currentAudio.audio = snapshot.data[index];
+                                                currentAudio.playAudio();
+                                                Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen()));
+                                              },
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 16),),
+                                                  Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 12),),
+                                                ],
+                                              ),
+                                            ),
+                                        )
+                                    ),
+                                  ],
                                 ),
                               ),
                             )
                           ),
-                          // Favorite Icon
                           Expanded(flex: 1,
                             child: InkWell(
                               onTap: () {
@@ -321,33 +338,6 @@ class AudioListScreenPage extends StatelessWidget {
       },
     );
   }
-
-  Widget _getFavoriteSnackBar(Audio a, String favoritesActionPerformed) {
-    String snackBarText;
-
-    if (favoritesActionPerformed == FAVORITES_ACTION_REMOVE) {
-      snackBarText = 'Removed from Favorites';
-    } else {
-      snackBarText = 'Added to Favorites' ;
-    }
-
-    return SnackBar(
-      action: SnackBarAction(
-        label: 'Undo',
-        onPressed: () {
-          // Some code to undo the change.
-          if (favoritesActionPerformed == FAVORITES_ACTION_REMOVE) {
-            favoriteAudiosBox.put(a.id, a);
-          } else {
-            favoriteAudiosBox.delete(a.id);
-          }
-        },
-      ),
-      content: Text(snackBarText),
-      duration: Duration(milliseconds: 1000),
-    );
-  }
-
 }
 
 class FavoritesSnackBar extends StatelessWidget {
@@ -418,10 +408,4 @@ class QueueModificationSnackBar extends StatelessWidget {
   }
 
 }
-
-
-
-
-
-
 

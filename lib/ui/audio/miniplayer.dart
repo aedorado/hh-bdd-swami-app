@@ -27,7 +27,7 @@ class Miniplayer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<CurrentAudio>(
       builder: (context, currentAudio, child) => AnimatedContainer(
-        height: currentAudio.isPlaying ? 80 : 0,
+        height: currentAudio.showMiniPlayer() ? 80 : 0,
         duration: Duration(milliseconds: 200),
         // Provide an optional curve to make the animation feel smoother.
         curve: Curves.easeIn,

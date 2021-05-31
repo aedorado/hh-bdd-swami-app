@@ -72,4 +72,8 @@ class CurrentAudio extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool showMiniPlayer() {
+    return this.audioPlayerState == AudioPlayerState.PLAYING || this.audioPlayerState == AudioPlayerState.PAUSED;
+  }
+
 }

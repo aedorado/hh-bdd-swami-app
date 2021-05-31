@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
+import 'package:hh_bbds_app/change_notifiers/audio_queue.dart';
 import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/ui/audio/audio_list_screen.dart';
@@ -36,34 +37,47 @@ class FavoriteAudios extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Expanded(
-                                flex: 2,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 2, left: 2, right: 2, bottom: 2),
-                                  child: CircleAvatar(
-                                      backgroundImage: NetworkImage(
-                                          'https://i.postimg.cc/RZJ6HJrw/c.jpg')),
-                                ),
-                              ),
-                              Expanded(
-                                  flex: 6,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(12.0),
-                                    child: Consumer<CurrentAudio>(
-                                      builder: (_, currentAudio, child) => InkWell(
-                                        onTap: () {
-                                          currentAudio.audio = favoriteAudiosBox.getAt(index);
-                                          currentAudio.playAudio();
-                                          Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen()));
-                                        },
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text('${favoriteAudiosBox.getAt(index).name}', style: TextStyle(fontSize: 16),),
-                                            Text('${favoriteAudiosBox.getAt(index).name}', style: TextStyle(fontSize: 12),),
-                                          ],
-                                        ),
+                                  flex: 7,
+                                  child: Consumer<CurrentAudio>(
+                                    builder: (context, currentAudio, child) => InkWell(
+                                      onTap: () {
+                                        currentAudio.audio = favoriteAudiosBox.getAt(index);
+                                        currentAudio.playAudio();
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen()));
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            flex: 1,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 2, left: 4, right: 2, bottom: 2),
+                                              child: CircleAvatar(
+                                                  backgroundImage: NetworkImage('https://i.postimg.cc/RZJ6HJrw/c.jpg')),
+                                            ),
+                                          ),
+                                          Expanded(
+                                              flex: 6,
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(12.0),
+                                                child: InkWell(
+                                                  onTap: () {
+                                                    currentAudio.audio = favoriteAudiosBox.getAt(index);
+                                                    currentAudio.playAudio();
+                                                    Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen()));
+                                                  },
+                                                  child: Column(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text('${favoriteAudiosBox.getAt(index).name}', style: TextStyle(fontSize: 16),),
+                                                      Text('${favoriteAudiosBox.getAt(index).name}', style: TextStyle(fontSize: 12),),
+                                                    ],
+                                                  ),
+                                                ),
+                                              )
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   )
@@ -87,24 +101,29 @@ class FavoriteAudios extends StatelessWidget {
                                 flex: 1,
                                 child: Padding(
                                   padding: EdgeInsets.only(left: 2, right: 4),
-                                  child: PopupMenuButton(
-                                    onSelected: (item) {
-                                      switch (item) {
-                                        case FAVORITES_ACTION_REMOVE:
-                                          ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(favoriteAudiosBox.getAt(index), item, favoriteAudiosBox).build(context));
-                                          favoriteAudiosBox.delete(favoriteAudiosBox.getAt(index).id);
-                                          break;
-                                        case 'delete':
-                                        //TODO: delete item
-                                      }
-                                    },
-                                    itemBuilder: (context) {
-                                      return [
-                                        PopupMenuItem(value: FAVORITES_ACTION_REMOVE, child: Text('Remove from Favorites'),),
-                                        PopupMenuItem(value: PLAY_NEXT, child: Text('Play Next'),),
-                                        PopupMenuItem(value: ADD_TO_QUEUE, child: Text('Add to Queue'),),
-                                      ];
-                                    },
+                                  child: Consumer<AudioQueue>(
+                                    builder: (context, audioQueue, child) => PopupMenuButton(
+                                      onSelected: (item) {
+                                        switch (item) {
+                                          case FAVORITES_ACTION_REMOVE:
+                                            ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(favoriteAudiosBox.getAt(index), item, favoriteAudiosBox).build(context));
+                                            favoriteAudiosBox.delete(favoriteAudiosBox.getAt(index).id);
+                                            break;
+                                          case ADD_TO_QUEUE:
+                                            bool isAdded = audioQueue.addAudio(favoriteAudiosBox.getAt(index));
+                                            ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(isAdded, favoriteAudiosBox.getAt(index), audioQueue).build(context));
+                                            break;
+                                          //TODO: delete item
+                                        }
+                                      },
+                                      itemBuilder: (context) {
+                                        return [
+                                          PopupMenuItem(value: FAVORITES_ACTION_REMOVE, child: Text('Remove from Favorites'),),
+                                          PopupMenuItem(value: PLAY_NEXT, child: Text('Play Next'),),
+                                          PopupMenuItem(value: ADD_TO_QUEUE, child: Text('Add to Queue'),),
+                                        ];
+                                      },
+                                    ),
                                   ),
                                 ),
 
@@ -131,7 +150,6 @@ class FavoriteAudios extends StatelessWidget {
                               //         child: Icon((index == currentAudio.currentAudioIndex && currentAudio.isPlaying) ? Icons.pause : Icons.play_arrow)),
                               //   ),
                               // ),
-                              // Divider(color: Colors.black, height: 1,),
                             ],
                             //: Center(child: Text('${favoriteAudiosBox.getAt(index).name}', style: TextStyle(fontSize: 18),)),
                           ),
