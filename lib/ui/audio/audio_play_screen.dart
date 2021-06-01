@@ -16,6 +16,13 @@ var audioTitleStyle = TextStyle(
   decoration: TextDecoration.none,
 );
 
+var audioSubtitleStyle = TextStyle(
+  // fontWeight: FontWeight.bold,
+  color: Colors.black,
+  fontSize: 14.0,
+  decoration: TextDecoration.none,
+);
+
 class AudioPlayScreen extends StatefulWidget {
   @override
   _AudioPlayScreenState createState() => _AudioPlayScreenState();
@@ -30,284 +37,298 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("BDD Swami App"), backgroundColor: Colors.blue[800]),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.blue[800],
-                Colors.blue[200],
-              ]),
-        ),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => AudioQueueScreen()));
-                    },
-                    child: Icon(Icons.queue_music, size: 32),
-                  )
-                ],
-              ),
-            ),
-            Expanded(
-              flex: 6,
-              child: Padding(
-                padding:
-                    const EdgeInsets.only(left: 48, right: 48, top: 24, bottom: 12),
-                child: Container(
-                  height: MediaQuery.of(context).size.height * 0.35,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      image: DecorationImage(
-                          image: NetworkImage(
-                              "https://i1.sndcdn.com/artworks-000674039176-uw34hj-t500x500.jpg"),
-                          fit: BoxFit.cover)),
+      body: SafeArea(
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.blue[800],
+                  Colors.blue[200],
+                ]),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => AudioQueueScreen()));
+                      },
+                      child: Icon(Icons.queue_music, size: 32),
+                    )
+                  ],
                 ),
               ),
-            ),
-            Expanded(
-              flex: 2,
-              child: Center(
-                child: Consumer<CurrentAudio>(
-                  builder: (context, currentAudio, child) => Padding(
-                    padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
-                    child: Text(
-                      currentAudio.audio.name,
-                      style: audioTitleStyle,
-                      textAlign: TextAlign.center,
+              Expanded(
+                flex: 6,
+                child: Padding(
+                  padding:
+                  const EdgeInsets.only(left: 48, right: 48, top: 24, bottom: 12),
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * 0.35,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        image: DecorationImage(
+                            image: NetworkImage(
+                                "https://i1.sndcdn.com/artworks-000674039176-uw34hj-t500x500.jpg"),
+                            fit: BoxFit.cover)),
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 2,
+                child: Center(
+                  child: Consumer<CurrentAudio>(
+                    builder: (context, currentAudio, child) => Padding(
+                      padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
+                      child: Column(
+                        children: [
+                          Text(currentAudio.audio.name, style: audioTitleStyle, textAlign: TextAlign.center,),
+                          Text(currentAudio.audio.name, style: audioSubtitleStyle, textAlign: TextAlign.center,),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            Expanded(
-              flex: 4,
-              child: Container(
-                decoration: BoxDecoration(
+              Expanded(
+                flex: 5,
+                child: Container(
+                  decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25)),
-                ),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
-                      child: Consumer<CurrentAudio>(
-                        builder: (context, currentAudio, child) => Column(
-                          children: [
-                            SliderTheme(
-                              data: SliderThemeData(
-                                thumbColor: Colors.blue,
-                                activeTrackColor: Colors.blue,
-                                inactiveTrackColor: Colors.grey[350],
-                                // overlayColor: Color(0x99EB1555),
-                                trackHeight: 8,
-                                thumbShape: RoundSliderThumbShape(enabledThumbRadius: 10.0),
-                                overlayShape: RoundSliderOverlayShape(overlayRadius: 18.0),
-                              ),
-                              child: Slider(
-                                  min: 0,
-                                  max: (currentAudio.totalAudioDuration == null) ? 0.0 : currentAudio.totalAudioDuration.inMilliseconds.toDouble(),
-                                  value: (currentAudio.currentAudioPosition == null || currentAudio.audioPlayerState == AudioPlayerState.COMPLETED)
-                                            ? 0.0 : currentAudio.currentAudioPosition.inMilliseconds.toDouble(),
-                                  onChanged: (double value) {
-                                    currentAudio.seekAudio(Duration(milliseconds: value.toInt()));
-                                  },
+                  ),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
+                          child: Consumer<CurrentAudio>(
+                            builder: (context, currentAudio, child) => Column(
+                              children: [
+                                SliderTheme(
+                                  data: SliderThemeData(
+                                    thumbColor: Colors.blue,
+                                    activeTrackColor: Colors.blue,
+                                    inactiveTrackColor: Colors.grey[350],
+                                    // overlayColor: Color(0x99EB1555),
+                                    trackHeight: 8,
+                                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 10.0),
+                                    overlayShape: RoundSliderOverlayShape(overlayRadius: 18.0),
+                                  ),
+                                  child: Slider(
+                                    min: 0,
+                                    max: (currentAudio.totalAudioDuration == null) ? 0.0 : currentAudio.totalAudioDuration.inMilliseconds.toDouble(),
+                                    value: (currentAudio.currentAudioPosition == null || currentAudio.audioPlayerState == AudioPlayerState.COMPLETED)
+                                        ? 0.0 : currentAudio.currentAudioPosition.inMilliseconds.toDouble(),
+                                    onChanged: (double value) {
+                                      currentAudio.seekAudio(Duration(milliseconds: value.toInt()));
+                                    },
+                                  ),
                                 ),
+                                if (currentAudio.showMiniPlayer() && currentAudio.totalAudioDuration != null)
+                                  Row(
+                                    children: [
+                                      Text(currentAudio.currentAudioPosition.toString().split('.').first),
+                                      Spacer(),
+                                      Text(currentAudio.totalAudioDuration.toString().split('.').first)
+                                    ],
+                                  )
+                              ],
                             ),
-                            if (currentAudio.showMiniPlayer() && currentAudio.totalAudioDuration != null)
-                              Row(
-                                children: [
-                                  Text(currentAudio.currentAudioPosition.toString().split('.').first),
-                                  Spacer(),
-                                  Text(currentAudio.totalAudioDuration.toString().split('.').first)
-                                ],
-                              )
-                          ],
+                          ),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
-                      child: Consumer<CurrentAudio>(
-                        builder: (context, currentAudio, child) => Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Flexible(
-                            child: Container(
-                              child: InkWell(
-                                onTap: () {
-                                  currentAudio.isPlaying ? currentAudio.pauseAudio() : currentAudio.playAudio();
-                                },
-                                child: Center(
-                                    child: Icon(Icons.skip_previous, size: 45, color: Color(0xFF1976D2),)
-                                ),
-                              ),
-                            ),
-                          ),
-                          Flexible(
-                            flex: 1,
-                            child: Container(
-                              width: 54,
-                              decoration: BoxDecoration(
-                                color: Color(0xFF004BA0),
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              child: InkWell(
-                                onTap: () {
-                                  currentAudio.isPlaying ? currentAudio.pauseAudio() : currentAudio.playAudio();
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(2.0),
-                                  child: Center(
-                                    child: Icon( currentAudio.isPlaying ? Icons.pause : Icons.play_arrow, size: 50, color: Colors.white,
-                                    )
+                      Expanded(
+                        flex: 2,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
+                          child: Consumer<CurrentAudio>(
+                            builder: (context, currentAudio, child) => Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Flexible(
+                                  child: Container(
+                                    child: InkWell(
+                                      onTap: () {
+                                        currentAudio.isPlaying ? currentAudio.pauseAudio() : currentAudio.playAudio();
+                                      },
+                                      child: Center(
+                                          child: Icon(Icons.skip_previous, size: 45, color: Color(0xFF1976D2),)
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
-                          ),
-                          Flexible(
-                            child: Container(
-                              child: InkWell(
-                                onTap: () {
-                                  currentAudio.isPlaying ? currentAudio.pauseAudio() : currentAudio.playAudio();
-                                },
-                                child: Center(
-                                    child: Icon(Icons.skip_next, size: 45, color: Color(0xFF1976D2),)
+                                Flexible(
+                                  flex: 1,
+                                  child: Container(
+                                    width: 56,
+                                    height: 56,
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFF004BA0),
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    child: InkWell(
+                                      onTap: () {
+                                        currentAudio.isPlaying ? currentAudio.pauseAudio() : currentAudio.playAudio();
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(2.0),
+                                        child: Center(
+                                            child: Icon( currentAudio.isPlaying ? Icons.pause : Icons.play_arrow, size: 50, color: Colors.white,
+                                            )
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                Flexible(
+                                  child: Container(
+                                    child: InkWell(
+                                      onTap: () {
+                                        currentAudio.isPlaying ? currentAudio.pauseAudio() : currentAudio.playAudio();
+                                      },
+                                      child: Center(
+                                          child: Icon(Icons.skip_next, size: 45, color: Color(0xFF1976D2),)
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
-                      child: Consumer<CurrentAudio>(
-                        builder: (context, currentAudio, child) => Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Container(
-                              child: InkWell(
-                                onTap: () {
-                                  String favoritesActionPerformed;
-                                  if (favoriteAudiosBox.get(currentAudio.audio.id) == null) {
-                                    favoritesActionPerformed = FAVORITES_ACTION_ADD;
-                                    favoriteAudiosBox.put(currentAudio.audio.id, currentAudio.audio);
-                                  } else {
-                                    favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
-                                    favoriteAudiosBox.delete(currentAudio.audio.id);
-                                  }
-                                  ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(currentAudio.audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
-                                },
-                                child: ValueListenableBuilder(
-                                  valueListenable: favoriteAudiosBox.listenable(),
-                                  builder: (context, box, widget) {
-                                    return IconTheme(
-                                        data: new IconThemeData(color: Colors.redAccent),
-                                        child: Icon((box.get(currentAudio.audio.id) == null) ? Icons.favorite_border : Icons.favorite,
-                                          size: 36,
-                                        )
-                                    );
-                                  }
-                                ),
-                              ),
-                            ),
-                            Container(
-                              child: InkWell(
-                                onTap: () {
-                                  String favoritesActionPerformed;
-                                  if (favoriteAudiosBox.get(currentAudio.audio.id) == null) {
-                                    favoritesActionPerformed = FAVORITES_ACTION_ADD;
-                                    favoriteAudiosBox.put(currentAudio.audio.id, currentAudio.audio);
-                                  } else {
-                                    favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
-                                    favoriteAudiosBox.delete(currentAudio.audio.id);
-                                  }
-                                  ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(currentAudio.audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
-                                },
-                                child: Container(
-                                  child: Center(
-                                    child: IconTheme(
-                                        data: new IconThemeData(color: Color(0xFF42A5F5)),
-                                        child: Icon(
-                                          favoriteAudiosBox.get(currentAudio.audio.id) == null
-                                              ? Icons.shuffle : Icons.shuffle_on,
-                                          size: 36,)
+                      Expanded(
+                        flex: 2,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
+                          child: Consumer<CurrentAudio>(
+                            builder: (context, currentAudio, child) => Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Container(
+                                  child: InkWell(
+                                    onTap: () {
+                                      String favoritesActionPerformed;
+                                      if (favoriteAudiosBox.get(currentAudio.audio.id) == null) {
+                                        favoritesActionPerformed = FAVORITES_ACTION_ADD;
+                                        favoriteAudiosBox.put(currentAudio.audio.id, currentAudio.audio);
+                                      } else {
+                                        favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
+                                        favoriteAudiosBox.delete(currentAudio.audio.id);
+                                      }
+                                      ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(currentAudio.audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
+                                    },
+                                    child: ValueListenableBuilder(
+                                        valueListenable: favoriteAudiosBox.listenable(),
+                                        builder: (context, box, widget) {
+                                          return IconTheme(
+                                              data: new IconThemeData(color: Colors.redAccent),
+                                              child: Icon((box.get(currentAudio.audio.id) == null) ? Icons.favorite_border : Icons.favorite,
+                                                size: 36,
+                                              )
+                                          );
+                                        }
                                     ),
                                   ),
                                 ),
-                              ),
-                            ),
-                            Container(
-                              child: InkWell(
-                                onTap: () {
-                                  String favoritesActionPerformed;
-                                  if (favoriteAudiosBox.get(currentAudio.audio.id) == null) {
-                                    favoritesActionPerformed = FAVORITES_ACTION_ADD;
-                                    favoriteAudiosBox.put(currentAudio.audio.id, currentAudio.audio);
-                                  } else {
-                                    favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
-                                    favoriteAudiosBox.delete(currentAudio.audio.id);
-                                  }
-                                  ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(currentAudio.audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
-                                },
-                                child: Container(
-                                  child: Center(
-                                    child: IconTheme(
-                                        data: new IconThemeData(color: Color(0xFF42A5F5)),
-                                        child: Icon(
-                                          favoriteAudiosBox.get(currentAudio.audio.id) == null
-                                              ? Icons.repeat : Icons.repeat_on,
-                                          size: 36,)
+                                Container(
+                                  child: InkWell(
+                                    onTap: () {
+                                      String favoritesActionPerformed;
+                                      if (favoriteAudiosBox.get(currentAudio.audio.id) == null) {
+                                        favoritesActionPerformed = FAVORITES_ACTION_ADD;
+                                        favoriteAudiosBox.put(currentAudio.audio.id, currentAudio.audio);
+                                      } else {
+                                        favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
+                                        favoriteAudiosBox.delete(currentAudio.audio.id);
+                                      }
+                                      ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(currentAudio.audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
+                                    },
+                                    child: Container(
+                                      child: Center(
+                                        child: IconTheme(
+                                            data: new IconThemeData(color: Color(0xFF42A5F5)),
+                                            child: Icon(
+                                              favoriteAudiosBox.get(currentAudio.audio.id) == null
+                                                  ? Icons.shuffle : Icons.shuffle_on,
+                                              size: 36,)
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ),
-                            Container(
-                              child: InkWell(
-                                onTap: () {
-                                  String favoritesActionPerformed;
-                                  if (favoriteAudiosBox.get(currentAudio.audio.id) == null) {
-                                    favoritesActionPerformed = FAVORITES_ACTION_ADD;
-                                    favoriteAudiosBox.put(currentAudio.audio.id, currentAudio.audio);
-                                  } else {
-                                    favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
-                                    favoriteAudiosBox.delete(currentAudio.audio.id);
-                                  }
-                                  ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(currentAudio.audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
-                                },
-                                child: Container(
-                                  child: Center(
-                                    child: IconTheme(
-                                        data: new IconThemeData(color: Color(0xFF42A5F5)),
-                                        child: Icon(Icons.queue_music, size: 36,)
+                                Container(
+                                  child: InkWell(
+                                    onTap: () {
+                                      String favoritesActionPerformed;
+                                      if (favoriteAudiosBox.get(currentAudio.audio.id) == null) {
+                                        favoritesActionPerformed = FAVORITES_ACTION_ADD;
+                                        favoriteAudiosBox.put(currentAudio.audio.id, currentAudio.audio);
+                                      } else {
+                                        favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
+                                        favoriteAudiosBox.delete(currentAudio.audio.id);
+                                      }
+                                      ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(currentAudio.audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
+                                    },
+                                    child: Container(
+                                      child: Center(
+                                        child: IconTheme(
+                                            data: new IconThemeData(color: Color(0xFF42A5F5)),
+                                            child: Icon(
+                                              favoriteAudiosBox.get(currentAudio.audio.id) == null
+                                                  ? Icons.repeat : Icons.repeat_on,
+                                              size: 36,)
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
+                                Container(
+                                  child: InkWell(
+                                    onTap: () {
+                                      String favoritesActionPerformed;
+                                      if (favoriteAudiosBox.get(currentAudio.audio.id) == null) {
+                                        favoritesActionPerformed = FAVORITES_ACTION_ADD;
+                                        favoriteAudiosBox.put(currentAudio.audio.id, currentAudio.audio);
+                                      } else {
+                                        favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
+                                        favoriteAudiosBox.delete(currentAudio.audio.id);
+                                      }
+                                      ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(currentAudio.audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
+                                    },
+                                    child: Container(
+                                      child: Center(
+                                        child: IconTheme(
+                                            data: new IconThemeData(color: Color(0xFF42A5F5)),
+                                            child: Icon(Icons.queue_music, size: 36,)
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                        ),
-                    ),
-                    Spacer(),
-                  ],
+                      ),
+                      Spacer()
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
+
