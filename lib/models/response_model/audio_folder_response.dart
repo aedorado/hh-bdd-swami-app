@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:hh_bbds_app/models/podo/audio_folder.dart';
 
 class AudioFolderResponse {
@@ -15,7 +14,6 @@ class AudioFolderResponse {
         audioFolders.add(new AudioFolder.fromJson(v));
       });
       this.audioFolders = audioFolders;
-      debugPrint('${audioFolders.length}');
     }
   }
 

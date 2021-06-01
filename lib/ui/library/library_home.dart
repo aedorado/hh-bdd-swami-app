@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
 import 'package:hh_bbds_app/ui/audio/audio_list_screen.dart';
-import 'package:hh_bbds_app/ui/audio/audio_play_screen.dart';
-import 'package:provider/provider.dart';
 
 // const kShadowColor = Color.fromRGBO(72, 76, 82, 0.16);
 var dividerTextStyle = TextStyle(

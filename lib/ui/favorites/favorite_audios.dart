@@ -60,20 +60,13 @@ class FavoriteAudios extends StatelessWidget {
                                               flex: 6,
                                               child: Padding(
                                                 padding: const EdgeInsets.all(12.0),
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    currentAudio.audio = favoriteAudiosBox.getAt(index);
-                                                    currentAudio.playAudio();
-                                                    Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen()));
-                                                  },
-                                                  child: Column(
-                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Text('${favoriteAudiosBox.getAt(index).name}', style: TextStyle(fontSize: 16),),
-                                                      Text('${favoriteAudiosBox.getAt(index).name}', style: TextStyle(fontSize: 12),),
-                                                    ],
-                                                  ),
+                                                child: Column(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text('${favoriteAudiosBox.getAt(index).name}', style: TextStyle(fontSize: 16),),
+                                                    Text('${favoriteAudiosBox.getAt(index).name}', style: TextStyle(fontSize: 12),),
+                                                  ],
                                                 ),
                                               )
                                           ),

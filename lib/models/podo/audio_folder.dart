@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 class AudioFolder {
   String id;
   String name;
@@ -13,7 +11,6 @@ class AudioFolder {
     name = json['name'];
     contentUrl = json['content_url'];
     totalContents = json['total_contents'];
-    debugPrint(this.contentUrl);
   }
 
   Map<String, dynamic> toJson() {
