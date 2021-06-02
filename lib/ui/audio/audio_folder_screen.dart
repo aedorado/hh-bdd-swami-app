@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:hh_bbds_app/change_notifiers/audio_queue.dart';
+import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
+import 'package:hh_bbds_app/middleware/audio_queue_interface.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/models/podo/audio_folder.dart';
 import 'package:hh_bbds_app/network/audio.dart';
 import 'package:hh_bbds_app/ui/audio/audio_list_screen.dart';
+import 'package:hh_bbds_app/ui/audio/audio_play_screen.dart';
 import 'package:hh_bbds_app/ui/audio/miniplayer.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
+import 'package:provider/provider.dart';
 
 class AudioFolderScreen extends StatelessWidget {
 
@@ -49,7 +54,7 @@ class AudioFolderScreen extends StatelessWidget {
                         physics: BouncingScrollPhysics(),
                         slivers: [
                           SliverAppBar(
-                            expandedHeight: 225.0,
+                            expandedHeight: 300.0,
                             floating: true,
                             pinned: true,
                             snap: false,
@@ -78,12 +83,16 @@ class AudioFolderScreen extends StatelessWidget {
                                       color: Color(0xFF004BA0),
                                       borderRadius: BorderRadius.circular(30),
                                     ),
-                                    child: InkWell(
-                                      onTap: () {
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(2.0),
-                                        child: Center(child: Icon(Icons.play_arrow, size: 36, color: Colors.white,)),
+                                    child: Consumer2<AudioQueue, CurrentAudio>(
+                                      builder: (context, audioQueue, currentAudio, child) => InkWell(
+                                        onTap: () {
+                                          AudioQueueInterface(audioQueue, currentAudio).playAudioFolder(snapshot.data);
+                                          Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen()));
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(2.0),
+                                          child: Center(child: Icon(Icons.play_arrow, size: 36, color: Colors.white,)),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -109,16 +118,6 @@ class AudioFolderScreen extends StatelessWidget {
                             delegate: SliverChildBuilderDelegate(
                               (BuildContext context, int index) {
                                 return AudioListScreenRow(audio: snapshot.data[index], favoriteAudiosBox: favoriteAudiosBox,);
-                                // );
-                                //   Card(
-                                //   margin: EdgeInsets.all(15),
-                                //   child: Container(
-                                //     color: Colors.blue[100 * (index % 9 + 1)],
-                                //     height: 80,
-                                //     alignment: Alignment.center,
-                                //     child: Text("Item $index", style: TextStyle(fontSize: 30),),
-                                //   ),
-                                // );
                               },
                               childCount: snapshot.data.length, // 1000 list items
                             ),

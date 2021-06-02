@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 
 class AudioQueue extends ChangeNotifier {
@@ -6,10 +7,12 @@ class AudioQueue extends ChangeNotifier {
   bool repeat;
   int nowPlaying;
   List<Audio> audioList;
+  CurrentAudio currentAudio;
 
   AudioQueue() {
     this.nowPlaying = -1;
     this.audioList = [];
+    this.currentAudio = new CurrentAudio();
   }
 
   bool addAudio(Audio a) {
@@ -109,6 +112,27 @@ class AudioQueue extends ChangeNotifier {
       concatenate.write(item.id + ", ");
     });
     return concatenate.toString();
+  }
+
+  addAllOverwrite(List<Audio> data) {
+    this.resetQueue();
+    this.audioList = data;
+  }
+
+  void resetQueue() {
+    this.nowPlaying = -1;
+    this.audioList = [];
+  }
+
+  void addAndPlay(Audio a) {
+    if (nowPlaying == -1) {
+      this.audioList.add(a);
+      nowPlaying++;
+    } else {
+
+    }
+    this.currentAudio.audio = a;
+    this.currentAudio.playAudio();
   }
 
 }
