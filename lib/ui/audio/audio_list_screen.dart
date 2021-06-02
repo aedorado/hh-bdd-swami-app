@@ -1,4 +1,6 @@
-import 'package:audioplayers/audioplayers.dart';
+import 'package:hh_bbds_app/background/background_audio_controls.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/change_notifiers/audio_queue.dart';
@@ -13,6 +15,10 @@ import 'package:hh_bbds_app/ui/audio/miniplayer.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+
+_backgroundTaskEntrypoint() {
+  AudioServiceBackground.run(() => AudioPlayerBackgroundTasks());
+}
 
 class AudioListScreen extends StatefulWidget {
   @override
@@ -37,27 +43,33 @@ class _AudioListScreenState extends State<AudioListScreen> {
   ];
 
   CurrentAudio currentAudio;
-  AudioPlayer audioPlayer;
+  // AudioPlayer audioPlayer;
 
   @override
   void initState() {
+    initAudioService();
     super.initState();
   }
 
-  @override
-  void didChangeDependencies() {
-    currentAudio = Provider.of<CurrentAudio>(context, listen: false);
-    audioPlayer = Provider.of<CurrentAudio>(context, listen: false).audioPlayer;
+  initAudioService() async {
+    await AudioService.connect();
   }
+
+  // @override
+  // void didChangeDependencies() {
+  //   currentAudio = Provider.of<CurrentAudio>(context, listen: false);
+  //   audioPlayer = Provider.of<CurrentAudio>(context, listen: false).audioPlayer;
+  // }
 
   @override
   void dispose() {
-    currentAudio.audio = null;
-    currentAudio.audioPlayer.stop();
-    currentAudio.isPlaying = false;
-    currentAudio.currentAudioIndex = -1;
-    currentAudio.currentAudioPosition = Duration(seconds: 0);
-    currentAudio.audioPlayer.release();
+    AudioService.disconnect();
+    // currentAudio.audio = null;
+    // currentAudio.audioPlayer.stop();
+    // currentAudio.isPlaying = false;
+    // currentAudio.currentAudioIndex = -1;
+    // currentAudio.currentAudioPosition = Duration(seconds: 0);
+    // currentAudio.audioPlayer.release();
     super.dispose();
   }
 
@@ -202,7 +214,7 @@ class AudioListScreenRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 60,
+      height: 80,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -245,6 +257,37 @@ class AudioListScreenRow extends StatelessWidget {
                   ),
                 ),
               )
+          ),
+          Expanded(
+            flex: 1,
+            child: StreamBuilder<PlaybackState>(
+              stream: AudioService.playbackStateStream,
+              builder: (context, snapshot) {
+                final playing = snapshot.data?.playing ?? false;
+                return InkWell(
+                  onTap: () {
+                    if (playing) AudioService.pause();
+                    else {
+                      if (AudioService.running) {
+                        AudioService.play();
+                      } else {
+                        AudioService.start(backgroundTaskEntrypoint: _backgroundTaskEntrypoint, params: {"url": audio.url});
+                      }
+                    }
+                  },
+                  child: Icon(playing ? Icons.pause : Icons.play_arrow, size: 25,)
+                );
+              }
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: InkWell(
+              onTap: () {
+                AudioService.stop();
+              },
+              child: Icon(Icons.stop, size: 25,)
+            )
           ),
           Expanded(flex: 1,
             child: InkWell(

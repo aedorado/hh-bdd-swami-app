@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/change_notifiers/audio_queue.dart';
@@ -32,7 +33,9 @@ class BDDSApp extends StatelessWidget {
           create: (_) => AudioQueue(),
         ),
       ],
-      child: MaterialApp(home: Home()),
+      child: MaterialApp(
+          home: AudioServiceWidget(child: Home())
+      ),
     );
 
     // return ChangeNotifierProvider(
