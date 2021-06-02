@@ -13,32 +13,30 @@ class CurrentAudio extends ChangeNotifier {
 
   AudioPlayer audioPlayer;
 
-
-
   CurrentAudio() {
 
     this.audioPlayer = new AudioPlayer();
 
-    audioPlayer.onDurationChanged.listen((d) {
-      this.totalAudioDuration = d;
-      notifyListeners();
-    });
-
-    audioPlayer.onAudioPositionChanged.listen((p) {
-      this.currentAudioPosition = p;
-      notifyListeners();
-    });
-
-    audioPlayer.onPlayerCompletion.listen((event) {
-        this.currentAudioPosition = Duration(seconds: 0);
-        this.isPlaying = false;
-        notifyListeners();
-    });
-
-    audioPlayer.onPlayerStateChanged.listen((ps) {
-      this.audioPlayerState = ps;
-      notifyListeners();
-    });
+    // audioPlayer.onDurationChanged.listen((d) {
+    //   this.totalAudioDuration = d;
+    //   notifyListeners();
+    // });
+    //
+    // audioPlayer.onAudioPositionChanged.listen((p) {
+    //   this.currentAudioPosition = p;
+    //   notifyListeners();
+    // });
+    //
+    // audioPlayer.onPlayerCompletion.listen((event) {
+    //     this.currentAudioPosition = Duration(seconds: 0);
+    //     this.isPlaying = false;
+    //     notifyListeners();
+    // });
+    //
+    // audioPlayer.onPlayerStateChanged.listen((ps) {
+    //   this.audioPlayerState = ps;
+    //   notifyListeners();
+    // });
   }
 
   void playAudio() {

@@ -1,6 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
+import 'package:hh_bbds_app/change_notifiers/audio_queue.dart';
 import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/ui/audio/audio_list_screen.dart';
@@ -83,13 +84,13 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
               Expanded(
                 flex: 2,
                 child: Center(
-                  child: Consumer<CurrentAudio>(
-                    builder: (context, currentAudio, child) => Padding(
+                  child: Consumer<AudioQueue>(
+                    builder: (context, audioQueue, child) => Padding(
                       padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
                       child: Column(
                         children: [
-                          Text(currentAudio.audio.name, style: audioTitleStyle, textAlign: TextAlign.center,),
-                          Text(currentAudio.audio.name, style: audioSubtitleStyle, textAlign: TextAlign.center,),
+                          Text(audioQueue.currentAudio.audio.name, style: audioTitleStyle, textAlign: TextAlign.center,),
+                          Text(audioQueue.currentAudio.audio.name, style: audioSubtitleStyle, textAlign: TextAlign.center,),
                         ],
                       ),
                     ),
@@ -109,8 +110,8 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                         flex: 2,
                         child: Padding(
                           padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
-                          child: Consumer<CurrentAudio>(
-                            builder: (context, currentAudio, child) => Column(
+                          child: Consumer<AudioQueue>(
+                            builder: (context, audioQueue, child) => Column(
                               children: [
                                 SliderTheme(
                                   data: SliderThemeData(
@@ -124,20 +125,20 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                                   ),
                                   child: Slider(
                                     min: 0,
-                                    max: (currentAudio.totalAudioDuration == null) ? 0.0 : currentAudio.totalAudioDuration.inMilliseconds.toDouble(),
-                                    value: (currentAudio.currentAudioPosition == null || currentAudio.audioPlayerState == AudioPlayerState.COMPLETED)
-                                        ? 0.0 : currentAudio.currentAudioPosition.inMilliseconds.toDouble(),
+                                    max: (audioQueue.currentAudio.totalAudioDuration == null) ? 0.0 : audioQueue.currentAudio.totalAudioDuration.inMilliseconds.toDouble(),
+                                    value: (audioQueue.currentAudio.currentAudioPosition == null || audioQueue.currentAudio.audioPlayerState == AudioPlayerState.COMPLETED)
+                                        ? 0.0 : audioQueue.currentAudio.currentAudioPosition.inMilliseconds.toDouble(),
                                     onChanged: (double value) {
-                                      currentAudio.seekAudio(Duration(milliseconds: value.toInt()));
+                                      audioQueue.currentAudio.seekAudio(Duration(milliseconds: value.toInt()));
                                     },
                                   ),
                                 ),
-                                if (currentAudio.showMiniPlayer() && currentAudio.totalAudioDuration != null)
+                                if (audioQueue.currentAudio.showMiniPlayer() && audioQueue.currentAudio.totalAudioDuration != null)
                                   Row(
                                     children: [
-                                      Text(currentAudio.currentAudioPosition.toString().split('.').first),
+                                      Text(audioQueue.currentAudio.currentAudioPosition.toString().split('.').first),
                                       Spacer(),
-                                      Text(currentAudio.totalAudioDuration.toString().split('.').first)
+                                      Text(audioQueue.currentAudio.totalAudioDuration.toString().split('.').first)
                                     ],
                                   )
                               ],
@@ -149,15 +150,15 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                         flex: 2,
                         child: Padding(
                           padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
-                          child: Consumer<CurrentAudio>(
-                            builder: (context, currentAudio, child) => Row(
+                          child: Consumer2<CurrentAudio, AudioQueue>(
+                            builder: (context, currentAudio, audioQueue, child) => Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Flexible(
                                   child: Container(
                                     child: InkWell(
                                       onTap: () {
-                                        currentAudio.isPlaying ? currentAudio.pauseAudio() : currentAudio.playAudio();
+                                        audioQueue.currentAudio.isPlaying ? audioQueue.currentAudio.pauseAudio() : audioQueue.currentAudio.playAudio();
                                       },
                                       child: Center(
                                           child: Icon(Icons.skip_previous, size: 45, color: Color(0xFF1976D2),)
@@ -176,12 +177,12 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                                     ),
                                     child: InkWell(
                                       onTap: () {
-                                        currentAudio.isPlaying ? currentAudio.pauseAudio() : currentAudio.playAudio();
+                                        audioQueue.currentAudio.isPlaying ? audioQueue.currentAudio.pauseAudio() : audioQueue.currentAudio.playAudio();
                                       },
                                       child: Padding(
                                         padding: const EdgeInsets.all(2.0),
                                         child: Center(
-                                            child: Icon( currentAudio.isPlaying ? Icons.pause : Icons.play_arrow, size: 50, color: Colors.white,
+                                            child: Icon( audioQueue.currentAudio.isPlaying ? Icons.pause : Icons.play_arrow, size: 50, color: Colors.white,
                                             )
                                         ),
                                       ),
@@ -192,7 +193,7 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                                   child: Container(
                                     child: InkWell(
                                       onTap: () {
-                                        currentAudio.isPlaying ? currentAudio.pauseAudio() : currentAudio.playAudio();
+                                        audioQueue.currentAudio.isPlaying ? audioQueue.currentAudio.pauseAudio() : audioQueue.currentAudio.playAudio();
                                       },
                                       child: Center(
                                           child: Icon(Icons.skip_next, size: 45, color: Color(0xFF1976D2),)
@@ -209,29 +210,29 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                         flex: 2,
                         child: Padding(
                           padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
-                          child: Consumer<CurrentAudio>(
-                            builder: (context, currentAudio, child) => Row(
+                          child: Consumer2<CurrentAudio, AudioQueue>(
+                            builder: (context, currentAudio, audioQueue, child) => Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Container(
                                   child: InkWell(
                                     onTap: () {
                                       String favoritesActionPerformed;
-                                      if (favoriteAudiosBox.get(currentAudio.audio.id) == null) {
+                                      if (favoriteAudiosBox.get(audioQueue.currentAudio.audio.id) == null) {
                                         favoritesActionPerformed = FAVORITES_ACTION_ADD;
-                                        favoriteAudiosBox.put(currentAudio.audio.id, currentAudio.audio);
+                                        favoriteAudiosBox.put(audioQueue.currentAudio.audio.id, audioQueue.currentAudio.audio);
                                       } else {
                                         favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
-                                        favoriteAudiosBox.delete(currentAudio.audio.id);
+                                        favoriteAudiosBox.delete(audioQueue.currentAudio.audio.id);
                                       }
-                                      ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(currentAudio.audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
+                                      ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(audioQueue.currentAudio.audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
                                     },
                                     child: ValueListenableBuilder(
                                         valueListenable: favoriteAudiosBox.listenable(),
                                         builder: (context, box, widget) {
                                           return IconTheme(
                                               data: new IconThemeData(color: Colors.redAccent),
-                                              child: Icon((box.get(currentAudio.audio.id) == null) ? Icons.favorite_border : Icons.favorite,
+                                              child: Icon((box.get(audioQueue.currentAudio.audio.id) == null) ? Icons.favorite_border : Icons.favorite,
                                                 size: 36,
                                               )
                                           );
@@ -242,24 +243,15 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                                 Container(
                                   child: InkWell(
                                     onTap: () {
-                                      String favoritesActionPerformed;
-                                      if (favoriteAudiosBox.get(currentAudio.audio.id) == null) {
-                                        favoritesActionPerformed = FAVORITES_ACTION_ADD;
-                                        favoriteAudiosBox.put(currentAudio.audio.id, currentAudio.audio);
-                                      } else {
-                                        favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
-                                        favoriteAudiosBox.delete(currentAudio.audio.id);
-                                      }
-                                      ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(currentAudio.audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
+                                      debugPrint('Before: ${audioQueue.shuffle}');
+                                      audioQueue.shuffle = !audioQueue.shuffle;
+                                      debugPrint('After: ${audioQueue.shuffle}');
                                     },
                                     child: Container(
                                       child: Center(
                                         child: IconTheme(
-                                            data: new IconThemeData(color: Color(0xFF42A5F5)),
-                                            child: Icon(
-                                              favoriteAudiosBox.get(currentAudio.audio.id) == null
-                                                  ? Icons.shuffle : Icons.shuffle_on,
-                                              size: 36,)
+                                            data: new IconThemeData(),
+                                            child: Icon(audioQueue.shuffle ? Icons.shuffle_on : Icons.shuffle, size: 36,)
                                         ),
                                       ),
                                     ),
@@ -268,23 +260,21 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                                 Container(
                                   child: InkWell(
                                     onTap: () {
-                                      String favoritesActionPerformed;
-                                      if (favoriteAudiosBox.get(currentAudio.audio.id) == null) {
-                                        favoritesActionPerformed = FAVORITES_ACTION_ADD;
-                                        favoriteAudiosBox.put(currentAudio.audio.id, currentAudio.audio);
-                                      } else {
-                                        favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
-                                        favoriteAudiosBox.delete(currentAudio.audio.id);
-                                      }
-                                      ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(currentAudio.audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
+                                      // String favoritesActionPerformed;
+                                      // if (favoriteAudiosBox.get(currentAudio.audio.id) == null) {
+                                      //   favoritesActionPerformed = FAVORITES_ACTION_ADD;
+                                      //   favoriteAudiosBox.put(currentAudio.audio.id, currentAudio.audio);
+                                      // } else {
+                                      //   favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
+                                      //   favoriteAudiosBox.delete(currentAudio.audio.id);
+                                      // }
+                                      // ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(currentAudio.audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
                                     },
                                     child: Container(
                                       child: Center(
                                         child: IconTheme(
                                             data: new IconThemeData(color: Color(0xFF42A5F5)),
-                                            child: Icon(
-                                              favoriteAudiosBox.get(currentAudio.audio.id) == null
-                                                  ? Icons.repeat : Icons.repeat_on,
+                                              child: Icon(audioQueue.repeat ? Icons.repeat : Icons.repeat_on,
                                               size: 36,)
                                         ),
                                       ),

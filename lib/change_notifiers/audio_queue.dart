@@ -1,18 +1,45 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 
 class AudioQueue extends ChangeNotifier {
 
-  bool repeat;
+  bool repeat = true;
   int nowPlaying;
   List<Audio> audioList;
   CurrentAudio currentAudio;
+  bool shuffle = true;
 
   AudioQueue() {
     this.nowPlaying = -1;
     this.audioList = [];
     this.currentAudio = new CurrentAudio();
+
+    this.currentAudio.audioPlayer.onPlayerCompletion.listen((event) {
+      debugPrint('An audio got completed.');
+      this.currentAudio.currentAudioPosition = Duration(seconds: 0);
+      this.currentAudio.isPlaying = false;
+      // notifyListeners();
+      this.playNext();
+    });
+
+    this.currentAudio.audioPlayer.onDurationChanged.listen((d) {
+      this.currentAudio.totalAudioDuration = d;
+      notifyListeners();
+    });
+
+    this.currentAudio.audioPlayer.onAudioPositionChanged.listen((p) {
+      this.currentAudio.currentAudioPosition = p;
+      notifyListeners();
+    });
+
+    this.currentAudio.audioPlayer.onPlayerStateChanged.listen((ps) {
+      this.currentAudio.audioPlayerState = ps;
+      notifyListeners();
+    });
+
   }
 
   bool addAudio(Audio a) {
@@ -39,11 +66,15 @@ class AudioQueue extends ChangeNotifier {
 
   void removeAudioAt(int index) {
     this.audioList.removeAt(index);
+    this.nowPlaying = this.audioList.indexWhere((audioFromList) => audioFromList.id == this.currentAudio.audio.id);
+    debugPrint('${this.audioList}, Now Playing: $nowPlaying');
     notifyListeners();
   }
 
   void removeAudio(Audio a) {
     this.audioList.removeWhere((element) => element.id == a.id);
+    this.nowPlaying = this.audioList.indexWhere((audioFromList) => audioFromList.id == this.currentAudio.audio.id);
+    debugPrint('${this.audioList}, Now Playing: $nowPlaying');
     notifyListeners();
   }
   
@@ -96,6 +127,8 @@ class AudioQueue extends ChangeNotifier {
       this.audioList.insert(newIndex, audio);
       this.audioList.removeAt(oldIndex);
     }
+    this.nowPlaying = this.audioList.indexWhere((audioFromList) => audioFromList.id == this.currentAudio.audio.id);
+    debugPrint('${this.audioList}, Now Playing: $nowPlaying');
     // Audio audio = this.audioList.removeAt(oldIndex);
     // if (newIndex >= this.audioList.length - 1) {
     //   this.audioList.add(audio);
@@ -124,15 +157,30 @@ class AudioQueue extends ChangeNotifier {
     this.audioList = [];
   }
 
-  void addAndPlay(Audio a) {
-    if (nowPlaying == -1) {
-      this.audioList.add(a);
-      nowPlaying++;
-    } else {
+  void addAndPlay(Audio audio) {
+    int audioIndexInList = this.audioList.indexWhere((audioFromList) => audioFromList.id == audio.id);
+    if (audioIndexInList == -1) { // not found in list
+      this.audioList.add(audio);
+    }
+    this.nowPlaying = this.audioList.indexWhere((audioFromList) => audioFromList.id == audio.id);
+    this.currentAudio.audio = audio;
+    this.currentAudio.playAudio();
+    debugPrint('${this.audioList}, Now Playing: $nowPlaying');
+    notifyListeners();
+  }
+
+  void playNext() {
+    if (shuffle) {
+      debugPrint('Shuffling');
+      this.nowPlaying = new Random().nextInt(this.audioList.length);
+      this.currentAudio.audio = this.audioList.elementAt(this.nowPlaying);
+      this.currentAudio.playAudio();
+    }
+    if (repeat && nowPlaying == this.audioList.length -1) {
 
     }
-    this.currentAudio.audio = a;
-    this.currentAudio.playAudio();
+    debugPrint('${this.audioList}, Now Playing: $nowPlaying');
+    notifyListeners();
   }
 
 }

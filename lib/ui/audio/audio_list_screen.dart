@@ -210,11 +210,10 @@ class AudioListScreenRow extends StatelessWidget {
           // Image
           Expanded(
               flex: 7,
-              child: Consumer<CurrentAudio>(
-                builder: (context, currentAudio, child) => InkWell(
+              child: Consumer<AudioQueue>(
+                builder: (context, audioQueue, child) => InkWell(
                   onTap: () {
-                    currentAudio.audio = audio;
-                    currentAudio.playAudio();
+                    audioQueue.addAndPlay(audio);
                     Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen()));
                   },
                   child: Row(

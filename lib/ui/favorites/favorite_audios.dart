@@ -38,11 +38,10 @@ class FavoriteAudios extends StatelessWidget {
                             children: [
                               Expanded(
                                   flex: 7,
-                                  child: Consumer<CurrentAudio>(
-                                    builder: (context, currentAudio, child) => InkWell(
+                                  child: Consumer<AudioQueue>(
+                                    builder: (context, audioQueue, child) => InkWell(
                                       onTap: () {
-                                        currentAudio.audio = favoriteAudiosBox.getAt(index);
-                                        currentAudio.playAudio();
+                                        audioQueue.addAndPlay(favoriteAudiosBox.getAt(index));
                                         Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen()));
                                       },
                                       child: Row(
