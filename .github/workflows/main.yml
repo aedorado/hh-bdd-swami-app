@@ -6,7 +6,8 @@ on:
     branches:
       - develop
       - master
-name: Test, Build and Release apk
+      - dirty
+name: Build and Release
 jobs:
   build_apk:
     name: Build

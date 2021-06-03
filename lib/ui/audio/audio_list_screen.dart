@@ -3,8 +3,6 @@ import 'package:just_audio/just_audio.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
-import 'package:hh_bbds_app/change_notifiers/audio_queue.dart';
-import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/models/podo/audio_folder.dart';
 import 'package:hh_bbds_app/network/audio.dart';
@@ -14,7 +12,6 @@ import 'package:hh_bbds_app/ui/audio/audio_play_screen.dart';
 import 'package:hh_bbds_app/ui/audio/miniplayer.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:provider/provider.dart';
 
 _backgroundTaskEntrypoint() {
   AudioServiceBackground.run(() => AudioPlayerBackgroundTasks());
@@ -42,7 +39,7 @@ class _AudioListScreenState extends State<AudioListScreen> {
     fetchAudios('https://mocki.io/v1/00c25346-891a-4a2a-987e-4a9c1a6c637e'),
   ];
 
-  CurrentAudio currentAudio;
+  // CurrentAudio currentAudio;
   // AudioPlayer audioPlayer;
 
   @override
@@ -222,10 +219,9 @@ class AudioListScreenRow extends StatelessWidget {
           // Image
           Expanded(
               flex: 7,
-              child: Consumer<AudioQueue>(
-                builder: (context, audioQueue, child) => InkWell(
+              child: InkWell(
                   onTap: () {
-                    audioQueue.addAndPlay(audio);
+                    // audioQueue.addAndPlay(audio);
                     Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen()));
                   },
                   child: Row(
@@ -256,7 +252,6 @@ class AudioListScreenRow extends StatelessWidget {
                     ],
                   ),
                 ),
-              )
           ),
           Expanded(
             flex: 1,
@@ -320,8 +315,7 @@ class AudioListScreenRow extends StatelessWidget {
             flex: 1,
             child: Padding(
               padding: EdgeInsets.only(left: 2, right: 4),
-              child: Consumer<AudioQueue>(
-                builder: (context, audioQueue, child) => PopupMenuButton(
+              child: PopupMenuButton(
                   onSelected: (item) {
                     switch (item) {
                       case FAVORITES_ACTION_REMOVE:
@@ -333,12 +327,12 @@ class AudioListScreenRow extends StatelessWidget {
                         ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(audio, item, favoriteAudiosBox).build(context));
                         break;
                       case PLAY_NEXT:
-                        bool isAdded = audioQueue.addNext(audio);
-                        ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(isAdded, audio, audioQueue).build(context));
+                        // bool isAdded = audioQueue.addNext(audio);
+                        // ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(isAdded, audio, audioQueue).build(context));
                         break;
                       case ADD_TO_QUEUE:
-                        bool isAdded = audioQueue.addAudio(audio);
-                        ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(isAdded, audio, audioQueue).build(context));
+                        // bool isAdded = audioQueue.addAudio(audio);
+                        // ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(isAdded, audio, audioQueue).build(context));
                         break;
                     }
                   },
@@ -354,7 +348,6 @@ class AudioListScreenRow extends StatelessWidget {
                 ),
               ),
             ),
-          ),
         ],
         //: Center(child: Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 18),)),
       ),
@@ -432,8 +425,7 @@ class AudioFolderPage extends StatelessWidget {
                             flex: 1,
                             child: Padding(
                               padding: EdgeInsets.only(left: 2, right: 4),
-                              child: Consumer<AudioQueue>(
-                                builder: (context, audioQueue, child) => PopupMenuButton(
+                              child: PopupMenuButton(
                                   onSelected: (item) {
                                     switch (item) {
                                       case FAVORITES_ACTION_REMOVE:
@@ -464,7 +456,6 @@ class AudioFolderPage extends StatelessWidget {
                                     ];
                                   },
                                 ),
-                              ),
                             ),
                           ),
                         ],
@@ -520,33 +511,33 @@ class FavoritesSnackBar extends StatelessWidget {
 
 }
 
-class QueueModificationSnackBar extends StatelessWidget {
-
-  bool isAdded;
-  Audio audio;
-  AudioQueue audioQueue;
-  // String favoritesActionPerformed;
-  // Box<Audio> favoriteAudiosBox = Hive.box<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
-
-  QueueModificationSnackBar(this.isAdded, this.audio, this.audioQueue);
-
-  String snackBarText;
-
-  @override
-  SnackBar build(BuildContext context) {
-    return SnackBar(
-      action: this.isAdded ? SnackBarAction(
-        label: 'Undo',
-        onPressed: () {
-          if (this.isAdded) {
-            this.audioQueue.removeAudio(this.audio);
-          }
-        },
-      ): null,
-      content: Text(this.isAdded ? 'Added to Queue': 'Already added to Queue'),
-      duration: Duration(milliseconds: 1000),
-    );
-  }
-
-}
+// class QueueModificationSnackBar extends StatelessWidget {
+//
+//   bool isAdded;
+//   Audio audio;
+//   AudioQueue audioQueue;
+//   // String favoritesActionPerformed;
+//   // Box<Audio> favoriteAudiosBox = Hive.box<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
+//
+//   QueueModificationSnackBar(this.isAdded, this.audio, this.audioQueue);
+//
+//   String snackBarText;
+//
+//   @override
+//   SnackBar build(BuildContext context) {
+//     return SnackBar(
+//       action: this.isAdded ? SnackBarAction(
+//         label: 'Undo',
+//         onPressed: () {
+//           if (this.isAdded) {
+//             this.audioQueue.removeAudio(this.audio);
+//           }
+//         },
+//       ): null,
+//       content: Text(this.isAdded ? 'Added to Queue': 'Already added to Queue'),
+//       duration: Duration(milliseconds: 1000),
+//     );
+//   }
+//
+// }
 

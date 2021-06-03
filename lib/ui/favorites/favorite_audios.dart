@@ -1,8 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
-import 'package:hh_bbds_app/change_notifiers/audio_queue.dart';
-import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
+// import 'package:hh_bbds_app/change_notifiers/audio_queue.dart';
+// import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/ui/audio/audio_list_screen.dart';
 import 'package:hh_bbds_app/ui/audio/audio_play_screen.dart';
@@ -38,10 +38,8 @@ class FavoriteAudios extends StatelessWidget {
                             children: [
                               Expanded(
                                   flex: 7,
-                                  child: Consumer<AudioQueue>(
-                                    builder: (context, audioQueue, child) => InkWell(
+                                  child: InkWell(
                                       onTap: () {
-                                        audioQueue.addAndPlay(favoriteAudiosBox.getAt(index));
                                         Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen()));
                                       },
                                       child: Row(
@@ -72,7 +70,6 @@ class FavoriteAudios extends StatelessWidget {
                                         ],
                                       ),
                                     ),
-                                  )
                               ),
                               Expanded(flex: 1,
                                 child: InkWell(
@@ -93,8 +90,7 @@ class FavoriteAudios extends StatelessWidget {
                                 flex: 1,
                                 child: Padding(
                                   padding: EdgeInsets.only(left: 2, right: 4),
-                                  child: Consumer<AudioQueue>(
-                                    builder: (context, audioQueue, child) => PopupMenuButton(
+                                  child: PopupMenuButton(
                                       onSelected: (item) {
                                         switch (item) {
                                           case FAVORITES_ACTION_REMOVE:
@@ -102,8 +98,7 @@ class FavoriteAudios extends StatelessWidget {
                                             favoriteAudiosBox.delete(favoriteAudiosBox.getAt(index).id);
                                             break;
                                           case ADD_TO_QUEUE:
-                                            bool isAdded = audioQueue.addAudio(favoriteAudiosBox.getAt(index));
-                                            ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(isAdded, favoriteAudiosBox.getAt(index), audioQueue).build(context));
+                                            // ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(true, favoriteAudiosBox.getAt(index), audioQueue).build(context));
                                             break;
                                           //TODO: delete item
                                         }
@@ -116,9 +111,7 @@ class FavoriteAudios extends StatelessWidget {
                                         ];
                                       },
                                     ),
-                                  ),
                                 ),
-
                               ),
                               // Expanded(
                               //   flex: 1,

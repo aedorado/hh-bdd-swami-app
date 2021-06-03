@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hh_bbds_app/change_notifiers/audio_queue.dart';
-import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
-import 'package:hh_bbds_app/middleware/audio_queue_interface.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/models/podo/audio_folder.dart';
 import 'package:hh_bbds_app/network/audio.dart';
@@ -83,10 +80,9 @@ class AudioFolderScreen extends StatelessWidget {
                                       color: Color(0xFF004BA0),
                                       borderRadius: BorderRadius.circular(30),
                                     ),
-                                    child: Consumer2<AudioQueue, CurrentAudio>(
-                                      builder: (context, audioQueue, currentAudio, child) => InkWell(
+                                    child: InkWell(
                                         onTap: () {
-                                          AudioQueueInterface(audioQueue, currentAudio).playAudioFolder(snapshot.data);
+                                          // AudioQueueInterface(audioQueue, currentAudio).playAudioFolder(snapshot.data);
                                           Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen()));
                                         },
                                         child: Padding(
@@ -94,7 +90,6 @@ class AudioFolderScreen extends StatelessWidget {
                                           child: Center(child: Icon(Icons.play_arrow, size: 36, color: Colors.white,)),
                                         ),
                                       ),
-                                    ),
                                   ),
                                 ),
                                 Padding(
