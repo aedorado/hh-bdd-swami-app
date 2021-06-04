@@ -1,10 +1,9 @@
+import 'package:hh_bbds_app/adapter/adapter.dart';
 import 'package:hh_bbds_app/background/background_audio_controls.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
-import 'package:hh_bbds_app/change_notifiers/audio_queue.dart';
-import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/models/podo/audio_folder.dart';
 import 'package:hh_bbds_app/network/audio.dart';
@@ -14,7 +13,6 @@ import 'package:hh_bbds_app/ui/audio/audio_play_screen.dart';
 import 'package:hh_bbds_app/ui/audio/miniplayer.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:provider/provider.dart';
 
 _backgroundTaskEntrypoint() {
   AudioServiceBackground.run(() => AudioPlayerBackgroundTasks());
@@ -42,7 +40,7 @@ class _AudioListScreenState extends State<AudioListScreen> {
     fetchAudios('https://mocki.io/v1/00c25346-891a-4a2a-987e-4a9c1a6c637e'),
   ];
 
-  CurrentAudio currentAudio;
+  // CurrentAudio currentAudio;
   // AudioPlayer audioPlayer;
 
   @override
@@ -96,12 +94,12 @@ class _AudioListScreenState extends State<AudioListScreen> {
                       child: Row(
                         children: [
                           ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            shrinkWrap: true,
-                            itemCount: audioListScreenSuggestions.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return _audioListSuggestionBox(index, audioListScreenSuggestions[index]);
-                            }
+                              scrollDirection: Axis.horizontal,
+                              shrinkWrap: true,
+                              itemCount: audioListScreenSuggestions.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return _audioListSuggestionBox(index, audioListScreenSuggestions[index]);
+                              }
                           ),
                         ],
                       ),
@@ -186,14 +184,14 @@ class AudioListPage extends StatelessWidget {
         if (snapshot.hasData) {
           // return Text(snapshot.data!.title);
           return Container(
-            child: ListView.builder(
-              physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              itemCount: snapshot.data.length,
-              itemBuilder: (BuildContext context, int index) {
-                return AudioListScreenRow(audio: snapshot.data[index], favoriteAudiosBox: favoriteAudiosBox,);
-              })
+              child: ListView.builder(
+                  physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return AudioListScreenRow(audio: snapshot.data[index], favoriteAudiosBox: favoriteAudiosBox,);
+                  })
           );
         } else if (snapshot.hasError) {
           return Text("${snapshot.error}");
@@ -221,73 +219,103 @@ class AudioListScreenRow extends StatelessWidget {
         children: [
           // Image
           Expanded(
-              flex: 7,
-              child: Consumer<AudioQueue>(
-                builder: (context, audioQueue, child) => InkWell(
-                  onTap: () {
-                    audioQueue.addAndPlay(audio);
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen()));
-                  },
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              top: 2, left: 4, right: 2, bottom: 2),
-                          child: CircleAvatar(
-                              backgroundImage: NetworkImage('https://i.postimg.cc/RZJ6HJrw/c.jpg')),
-                        ),
-                      ),
-                      Expanded(
-                          flex: 6,
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('${audio.name}', style: TextStyle(fontSize: 16),),
-                                Text('${audio.name}', style: TextStyle(fontSize: 12),),
-                              ],
-                            ),
-                          )
-                      ),
-                    ],
-                  ),
-                ),
-              )
-          ),
-          Expanded(
-            flex: 1,
+            flex: 8,
             child: StreamBuilder<PlaybackState>(
-              stream: AudioService.playbackStateStream,
-              builder: (context, snapshot) {
-                final playing = snapshot.data?.playing ?? false;
-                return InkWell(
-                  onTap: () {
-                    if (playing) AudioService.pause();
-                    else {
-                      if (AudioService.running) {
-                        AudioService.play();
-                      } else {
-                        AudioService.start(backgroundTaskEntrypoint: _backgroundTaskEntrypoint, params: {"url": audio.url});
+                stream: AudioService.playbackStateStream,
+                builder: (context, snapshot) {
+                  final playing = snapshot.data?.playing ?? false;
+                  return InkWell(
+                    onTap: () async {
+                      // audioQueue.addAndPlay(audio);
+                      // if (!playing) AudioService.pause();
+                      MediaItem mediaItem = Adapter.audioToMediaItem(audio);
+                      // if (!playing) {
+                      if (!AudioService.running) {
+                        AudioService.start(backgroundTaskEntrypoint: _backgroundTaskEntrypoint);//, params: {"url": audio.url});
+                        await AudioService.connect();
                       }
-                    }
-                  },
-                  child: Icon(playing ? Icons.pause : Icons.play_arrow, size: 25,)
-                );
-              }
+                      if (AudioService.currentMediaItem?.id != mediaItem.id){
+                        AudioService.playMediaItem(mediaItem);
+                      }
+                      // }
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen()));
+                    },
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                top: 2, left: 4, right: 2, bottom: 2),
+                            child: CircleAvatar(
+                                backgroundImage: NetworkImage('https://i.postimg.cc/RZJ6HJrw/c.jpg')),
+                          ),
+                        ),
+                        Expanded(
+                            flex: 6,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('${audio.name}', style: TextStyle(fontSize: 16),),
+                                  Text('${audio.name}', style: TextStyle(fontSize: 12),),
+                                ],
+                              ),
+                            )
+                        ),
+                        StreamBuilder<MediaItem>(
+                            stream: AudioService.currentMediaItemStream,
+                            builder: (context, currentMediaItemSnapshot) {
+                              return Icon(playing && currentMediaItemSnapshot.data?.id == audio.id ? Icons.pause : Icons.play_arrow, size: 25,);
+                            }
+                        )
+                      ],
+                    ),
+                  );
+                }
             ),
           ),
+          // Expanded(
+          //   flex: 1,
+          //   child: StreamBuilder<PlaybackState>(
+          //     stream: AudioService.playbackStateStream,
+          //     builder: (context, snapshot) {
+          //       final playing = snapshot.data?.playing ?? false;
+          //       return InkWell(
+          //         onTap: () async {
+          //           if (playing) AudioService.pause();
+          //           else {
+          //             MediaItem mediaItem = Adapter.audioToMediaItem(audio);
+          //             if (AudioService.running) {
+          //               AudioService.play();
+          //             } else {
+          //               AudioService.start(backgroundTaskEntrypoint: _backgroundTaskEntrypoint);//, params: {"url": audio.url});
+          //               await AudioService.connect();
+          //             }
+          //             await AudioService.playMediaItem(mediaItem);
+          //           }
+          //         },
+          //         child: StreamBuilder<MediaItem>(
+          //           stream: AudioService.currentMediaItemStream,
+          //           builder: (context, currentMediaItemSnapshot) {
+          //             debugPrint('cMI: ${currentMediaItemSnapshot.data?.toString()}');
+          //             return Icon(playing && currentMediaItemSnapshot.data?.id == audio.id ? Icons.pause : Icons.play_arrow, size: 25,);
+          //           }
+          //         )
+          //       );
+          //     }
+          //   ),
+          // ),
           Expanded(
-            flex: 1,
-            child: InkWell(
-              onTap: () {
-                AudioService.stop();
-              },
-              child: Icon(Icons.stop, size: 25,)
-            )
+              flex: 1,
+              child: InkWell(
+                  onTap: () {
+                    AudioService.stop();
+                  },
+                  child: Icon(Icons.stop, size: 25,)
+              )
           ),
           Expanded(flex: 1,
             child: InkWell(
@@ -320,38 +348,36 @@ class AudioListScreenRow extends StatelessWidget {
             flex: 1,
             child: Padding(
               padding: EdgeInsets.only(left: 2, right: 4),
-              child: Consumer<AudioQueue>(
-                builder: (context, audioQueue, child) => PopupMenuButton(
-                  onSelected: (item) {
-                    switch (item) {
-                      case FAVORITES_ACTION_REMOVE:
-                        favoriteAudiosBox.delete(audio.id);
-                        ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(audio, item, favoriteAudiosBox).build(context));
-                        break;
-                      case FAVORITES_ACTION_ADD:
-                        favoriteAudiosBox.put(audio.id, audio);
-                        ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(audio, item, favoriteAudiosBox).build(context));
-                        break;
-                      case PLAY_NEXT:
-                        bool isAdded = audioQueue.addNext(audio);
-                        ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(isAdded, audio, audioQueue).build(context));
-                        break;
-                      case ADD_TO_QUEUE:
-                        bool isAdded = audioQueue.addAudio(audio);
-                        ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(isAdded, audio, audioQueue).build(context));
-                        break;
-                    }
-                  },
-                  itemBuilder: (context) {
-                    return [
-                      (favoriteAudiosBox.get(audio.id) == null) ?
-                      PopupMenuItem(value: FAVORITES_ACTION_ADD, child: Text('Add to Favorites'),) :
-                      PopupMenuItem(value: FAVORITES_ACTION_REMOVE, child: Text('Remove from Favorites'),),
-                      PopupMenuItem(value: PLAY_NEXT, child: Text('Play Next'),),
-                      PopupMenuItem(value: ADD_TO_QUEUE, child: Text('Add to Queue'),),
-                    ];
-                  },
-                ),
+              child: PopupMenuButton(
+                onSelected: (item) {
+                  switch (item) {
+                    case FAVORITES_ACTION_REMOVE:
+                      favoriteAudiosBox.delete(audio.id);
+                      ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(audio, item, favoriteAudiosBox).build(context));
+                      break;
+                    case FAVORITES_ACTION_ADD:
+                      favoriteAudiosBox.put(audio.id, audio);
+                      ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(audio, item, favoriteAudiosBox).build(context));
+                      break;
+                    case PLAY_NEXT:
+                    // bool isAdded = audioQueue.addNext(audio);
+                    // ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(isAdded, audio, audioQueue).build(context));
+                      break;
+                    case ADD_TO_QUEUE:
+                    // bool isAdded = audioQueue.addAudio(audio);
+                    // ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(isAdded, audio, audioQueue).build(context));
+                      break;
+                  }
+                },
+                itemBuilder: (context) {
+                  return [
+                    (favoriteAudiosBox.get(audio.id) == null) ?
+                    PopupMenuItem(value: FAVORITES_ACTION_ADD, child: Text('Add to Favorites'),) :
+                    PopupMenuItem(value: FAVORITES_ACTION_REMOVE, child: Text('Remove from Favorites'),),
+                    PopupMenuItem(value: PLAY_NEXT, child: Text('Play Next'),),
+                    PopupMenuItem(value: ADD_TO_QUEUE, child: Text('Add to Queue'),),
+                  ];
+                },
               ),
             ),
           ),
@@ -393,77 +419,75 @@ class AudioFolderPage extends StatelessWidget {
                         children: [
                           // Image
                           Expanded(
-                              flex: 7,
-                              child: InkWell(
-                                  onTap: () {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => AudioFolderScreen(snapshot.data[index])));
-                                  },
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        flex: 1,
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
-                                              top: 2, left: 4, right: 2, bottom: 2),
-                                          child: CircleAvatar(
-                                              backgroundImage: NetworkImage('https://i.postimg.cc/RZJ6HJrw/c.jpg')),
-                                        ),
-                                      ),
-                                      Expanded(
-                                          flex: 6,
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(12.0),
-                                            child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 16),),
-                                                Text('${snapshot.data[index].totalContents} audios', style: TextStyle(fontSize: 12),),
-                                              ],
-                                            ),
-                                          )
-                                      ),
-                                    ],
+                            flex: 7,
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => AudioFolderScreen(snapshot.data[index])));
+                              },
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 1,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 2, left: 4, right: 2, bottom: 2),
+                                      child: CircleAvatar(
+                                          backgroundImage: NetworkImage('https://i.postimg.cc/RZJ6HJrw/c.jpg')),
+                                    ),
                                   ),
-                                ),
+                                  Expanded(
+                                      flex: 6,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(12.0),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 16),),
+                                            Text('${snapshot.data[index].totalContents} audios', style: TextStyle(fontSize: 12),),
+                                          ],
+                                        ),
+                                      )
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                           // More Icon
                           Expanded(
                             flex: 1,
                             child: Padding(
                               padding: EdgeInsets.only(left: 2, right: 4),
-                              child: Consumer<AudioQueue>(
-                                builder: (context, audioQueue, child) => PopupMenuButton(
-                                  onSelected: (item) {
-                                    switch (item) {
-                                      case FAVORITES_ACTION_REMOVE:
-                                        // favoriteAudiosBox.delete(snapshot.data[index].id);
-                                        // ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(snapshot.data[index], item, favoriteAudiosBox).build(context));
-                                        break;
-                                      case FAVORITES_ACTION_ADD:
-                                        // favoriteAudiosBox.put(snapshot.data[index].id, snapshot.data[index]);
-                                        // ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(snapshot.data[index], item, favoriteAudiosBox).build(context));
-                                        break;
-                                      case PLAY_NEXT:
-                                        // bool isAdded = audioQueue.addNext(snapshot.data[index]);
-                                        // ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(isAdded, snapshot.data[index], audioQueue).build(context));
-                                        break;
-                                      case ADD_TO_QUEUE:
-                                        // bool isAdded = audioQueue.addAudio(snapshot.data[index]);
-                                        // ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(isAdded, snapshot.data[index], audioQueue).build(context));
-                                        break;
-                                    }
-                                  },
-                                  itemBuilder: (context) {
-                                    return [
-                                      // (favoriteAudiosBox.get(snapshot.data[index].id) == ndeull) ?
-                                      // PopupMenuItem(value: FAVORITES_ACTION_ADD, child: Text('Add to Favorites'),) :
-                                      // PopupMenuItem(value: FAVORITES_ACTION_REMOVE, child: Text('Remove from Favorites'),),
-                                      PopupMenuItem(value: PLAY_NEXT, child: Text('Play Next'),),
-                                      PopupMenuItem(value: ADD_TO_QUEUE, child: Text('Add to Queue'),),
-                                    ];
-                                  },
-                                ),
+                              child: PopupMenuButton(
+                                onSelected: (item) {
+                                  switch (item) {
+                                    case FAVORITES_ACTION_REMOVE:
+                                    // favoriteAudiosBox.delete(snapshot.data[index].id);
+                                    // ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(snapshot.data[index], item, favoriteAudiosBox).build(context));
+                                      break;
+                                    case FAVORITES_ACTION_ADD:
+                                    // favoriteAudiosBox.put(snapshot.data[index].id, snapshot.data[index]);
+                                    // ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(snapshot.data[index], item, favoriteAudiosBox).build(context));
+                                      break;
+                                    case PLAY_NEXT:
+                                    // bool isAdded = audioQueue.addNext(snapshot.data[index]);
+                                    // ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(isAdded, snapshot.data[index], audioQueue).build(context));
+                                      break;
+                                    case ADD_TO_QUEUE:
+                                    // bool isAdded = audioQueue.addAudio(snapshot.data[index]);
+                                    // ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(isAdded, snapshot.data[index], audioQueue).build(context));
+                                      break;
+                                  }
+                                },
+                                itemBuilder: (context) {
+                                  return [
+                                    // (favoriteAudiosBox.get(snapshot.data[index].id) == ndeull) ?
+                                    // PopupMenuItem(value: FAVORITES_ACTION_ADD, child: Text('Add to Favorites'),) :
+                                    // PopupMenuItem(value: FAVORITES_ACTION_REMOVE, child: Text('Remove from Favorites'),),
+                                    PopupMenuItem(value: PLAY_NEXT, child: Text('Play Next'),),
+                                    PopupMenuItem(value: ADD_TO_QUEUE, child: Text('Add to Queue'),),
+                                  ];
+                                },
                               ),
                             ),
                           ),
@@ -486,7 +510,7 @@ class FavoritesSnackBar extends StatelessWidget {
   Audio a;
   String favoritesActionPerformed;
   Box<Audio> favoriteAudiosBox = Hive.box<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
-  
+
   FavoritesSnackBar(this.a, this.favoritesActionPerformed, this.favoriteAudiosBox) {
     if (this.favoritesActionPerformed == FAVORITES_ACTION_REMOVE) {
       snackBarText = 'Removed from Favorites';
@@ -520,33 +544,32 @@ class FavoritesSnackBar extends StatelessWidget {
 
 }
 
-class QueueModificationSnackBar extends StatelessWidget {
-
-  bool isAdded;
-  Audio audio;
-  AudioQueue audioQueue;
-  // String favoritesActionPerformed;
-  // Box<Audio> favoriteAudiosBox = Hive.box<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
-
-  QueueModificationSnackBar(this.isAdded, this.audio, this.audioQueue);
-
-  String snackBarText;
-
-  @override
-  SnackBar build(BuildContext context) {
-    return SnackBar(
-      action: this.isAdded ? SnackBarAction(
-        label: 'Undo',
-        onPressed: () {
-          if (this.isAdded) {
-            this.audioQueue.removeAudio(this.audio);
-          }
-        },
-      ): null,
-      content: Text(this.isAdded ? 'Added to Queue': 'Already added to Queue'),
-      duration: Duration(milliseconds: 1000),
-    );
-  }
-
-}
-
+// class QueueModificationSnackBar extends StatelessWidget {
+//
+//   bool isAdded;
+//   Audio audio;
+//   AudioQueue audioQueue;
+//   // String favoritesActionPerformed;
+//   // Box<Audio> favoriteAudiosBox = Hive.box<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
+//
+//   QueueModificationSnackBar(this.isAdded, this.audio, this.audioQueue);
+//
+//   String snackBarText;
+//
+//   @override
+//   SnackBar build(BuildContext context) {
+//     return SnackBar(
+//       action: this.isAdded ? SnackBarAction(
+//         label: 'Undo',
+//         onPressed: () {
+//           if (this.isAdded) {
+//             this.audioQueue.removeAudio(this.audio);
+//           }
+//         },
+//       ): null,
+//       content: Text(this.isAdded ? 'Added to Queue': 'Already added to Queue'),
+//       duration: Duration(milliseconds: 1000),
+//     );
+//   }
+//
+// }

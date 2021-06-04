@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
-import 'package:hh_bbds_app/change_notifiers/audio_queue.dart';
-import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/ui/audio/audio_list_screen.dart';
 import 'package:hive/hive.dart';
@@ -16,11 +14,9 @@ class AudioQueueScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Audio Queue'),),
-      body: Consumer<AudioQueue>(
-        builder: (context, audioQueue, child) =>
-          ReorderableListView(
+      body: ReorderableListView(
               children: <Widget>[
-                for (int index = 0; index < audioQueue.size(); index++)
+                for (int index = 0; index < -1; index++)
                   Container(
                     key: Key('$index'),
                     height: 80,
@@ -42,45 +38,34 @@ class AudioQueueScreen extends StatelessWidget {
                             flex: 6,
                             child: Padding(
                               padding: const EdgeInsets.all(12.0),
-                              child: Consumer<CurrentAudio>(
-                                builder: (_, currentAudio, child) => InkWell(
+                              child: InkWell(
                                   onTap: () {
-                                    currentAudio.audio = audioQueue.getAt(index);
-                                    currentAudio.playAudio();
+                                    // currentAudio.audio = audioQueue.getAt(index);
+                                    // currentAudio.playAudio();
                                     Navigator.pop(context);
                                   },
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text('${audioQueue.getAt(index).name}', style: TextStyle(fontSize: 16),),
-                                      Text('${audioQueue.getAt(index).name}', style: TextStyle(fontSize: 12),),
+                                      // Text('${audioQueue.getAt(index).name}', style: TextStyle(fontSize: 16),),
+                                      // Text('${audioQueue.getAt(index).name}', style: TextStyle(fontSize: 12),),
                                     ],
                                   ),
                                 ),
-                              ),
                             )
                         ),
                         // Favorite Icon
                         Expanded(flex: 1,
                           child: InkWell(
                             onTap: () {
-                              String favoritesActionPerformed;
-                              if (favoriteAudiosBox.get(audioQueue.getAt(index).id) == null) {
-                                favoritesActionPerformed = FAVORITES_ACTION_ADD;
-                                favoriteAudiosBox.put(audioQueue.getAt(index).id, audioQueue.getAt(index));
-                              } else {
-                                favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
-                                favoriteAudiosBox.delete(audioQueue.getAt(index).id);
-                              }
-                              ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(audioQueue.getAt(index), favoritesActionPerformed, favoriteAudiosBox).build(context));
                             },
                             child: ValueListenableBuilder(
                                 valueListenable: favoriteAudiosBox.listenable(),
                                 builder: (context, box, widget) {
                                   return IconTheme(
                                       data: new IconThemeData(color: Colors.redAccent),
-                                      child: Icon((box.get(audioQueue.getAt(index).id) == null) ? Icons.favorite_border : Icons.favorite,
+                                      child: Icon(true ? Icons.favorite_border : Icons.favorite,
                                         size: 24,
                                       )
                                   );
@@ -96,24 +81,24 @@ class AudioQueueScreen extends StatelessWidget {
                             child: PopupMenuButton(
                                 onSelected: (item) {
                                   switch (item) {
-                                    case FAVORITES_ACTION_REMOVE:
-                                      favoriteAudiosBox.delete(audioQueue.getAt(index).id);
-                                      ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(audioQueue.getAt(index), item, favoriteAudiosBox).build(context));
-                                      break;
-                                    case FAVORITES_ACTION_ADD:
-                                      favoriteAudiosBox.put(audioQueue.getAt(index).id, audioQueue.getAt(index));
-                                      ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(audioQueue.getAt(index), item, favoriteAudiosBox).build(context));
-                                      break;
-                                    case REMOVE_FROM_QUEUE:
-                                      audioQueue.removeAudioAt(index);
-                                      break;
+                                    // case FAVORITES_ACTION_REMOVE:
+                                    //   favoriteAudiosBox.delete(audioQueue.getAt(index).id);
+                                    //   ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(audioQueue.getAt(index), item, favoriteAudiosBox).build(context));
+                                    //   break;
+                                    // case FAVORITES_ACTION_ADD:
+                                    //   favoriteAudiosBox.put(audioQueue.getAt(index).id, audioQueue.getAt(index));
+                                    //   ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(audioQueue.getAt(index), item, favoriteAudiosBox).build(context));
+                                    //   break;
+                                    // case REMOVE_FROM_QUEUE:
+                                    //   audioQueue.removeAudioAt(index);
+                                    //   break;
                                   }
                                 },
                                 itemBuilder: (context) {
                                   return [
-                                    (favoriteAudiosBox.get(audioQueue.getAt(index).id) == null) ?
-                                    PopupMenuItem(value: FAVORITES_ACTION_ADD, child: Text('Add to Favorites'),) :
-                                    PopupMenuItem(value: FAVORITES_ACTION_REMOVE, child: Text('Remove from Favorites'),),
+                                    // (favoriteAudiosBox.get(audioQueue.getAt(index).id) == null) ?
+                                    // PopupMenuItem(value: FAVORITES_ACTION_ADD, child: Text('Add to Favorites'),) :
+                                    // PopupMenuItem(value: FAVORITES_ACTION_REMOVE, child: Text('Remove from Favorites'),),
                                     PopupMenuItem(value: REMOVE_FROM_QUEUE, child: Text('Remove from Queue'),),
                                   ];
                                 },
@@ -131,12 +116,11 @@ class AudioQueueScreen extends StatelessWidget {
               //     ),
               ],
               onReorder: (int oldIndex, int newIndex) {
-                debugPrint(audioQueue.toString());
-                audioQueue.rearrange(oldIndex, newIndex);
-                debugPrint(audioQueue.toString());
+                // debugPrint(audioQueue.toString());
+                // audioQueue.rearrange(oldIndex, newIndex);
+                // debugPrint(audioQueue.toString());
               },
-          )
-      ),
+          ),
     );
   }
 }

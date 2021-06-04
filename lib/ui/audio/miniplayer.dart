@@ -1,6 +1,6 @@
-import 'package:audioplayers/audioplayers.dart';
+// import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
+// import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
 import 'package:hh_bbds_app/ui/audio/audio_play_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -25,9 +25,8 @@ class Miniplayer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<CurrentAudio>(
-      builder: (context, currentAudio, child) => AnimatedContainer(
-        height: currentAudio.showMiniPlayer() ? 80 : 0,
+    return AnimatedContainer(
+        height: false ? 80 : 0,
         duration: Duration(milliseconds: 200),
         // Provide an optional curve to make the animation feel smoother.
         curve: Curves.easeIn,
@@ -50,10 +49,12 @@ class Miniplayer extends StatelessWidget {
                   ),
                   child: Slider(
                     min: 0,
-                    max: (currentAudio.totalAudioDuration == null) ? 0.0 : currentAudio.totalAudioDuration.inMilliseconds.toDouble(),
-                    value: (currentAudio.currentAudioPosition == null || currentAudio.audioPlayerState == AudioPlayerState.COMPLETED)
-                        ? 0.0 : currentAudio.currentAudioPosition.inMilliseconds.toDouble(),
-                    onChanged: null,
+                    max: 1,
+                    value: 0,
+                    // max: (currentAudio.totalAudioDuration == null) ? 0.0 : currentAudio.totalAudioDuration.inMilliseconds.toDouble(),
+                    // value: (currentAudio.currentAudioPosition == null || currentAudio.audioPlayerState == AudioPlayerState.COMPLETED)
+                    //     ? 0.0 : currentAudio.currentAudioPosition.inMilliseconds.toDouble(),
+                    // onChanged: null,
                   ),
                 ),
               ),
@@ -73,8 +74,8 @@ class Miniplayer extends StatelessWidget {
                     ),
                     Expanded(flex: 4, child: Center(child: Column(
                       children: [
-                        Text(currentAudio.audio == null ? '' : currentAudio.audio.name, style: TextStyle(fontSize: 15), overflow: TextOverflow.ellipsis,),
-                        Text(currentAudio.audio == null ? '' : currentAudio.audio.name, style: TextStyle(fontSize: 9), overflow: TextOverflow.ellipsis,),
+                        // Text(currentAudio.audio == null ? '' : currentAudio.audio.name, style: TextStyle(fontSize: 15), overflow: TextOverflow.ellipsis,),
+                        // Text(currentAudio.audio == null ? '' : currentAudio.audio.name, style: TextStyle(fontSize: 9), overflow: TextOverflow.ellipsis,),
                       ],
                     ))),
                     Expanded(
@@ -82,20 +83,20 @@ class Miniplayer extends StatelessWidget {
                         child: InkWell(
                             onTap: () {
                               // if audio is playing and user clicks on the button for the audio that is playing then pause audio
-                              if (currentAudio.isPlaying) {
-                                currentAudio.pauseAudio();
-                              } else if (!currentAudio.isPlaying) { // if not audio is playing, simply start playing current audio
-                                currentAudio.playAudio();
-                              }
+                              // if (currentAudio.isPlaying) {
+                              //   currentAudio.pauseAudio();
+                              // } else if (!currentAudio.isPlaying) { // if not audio is playing, simply start playing current audio
+                              //   currentAudio.playAudio();
+                              // }
                             },
-                            child: Icon(currentAudio.isPlaying ? Icons.pause : Icons.play_arrow))),
+                            child: Icon(true ? Icons.pause : Icons.play_arrow))),
                   ],),
                 ),
               ),
             ],
           ),
         ),
-      ),
-    );
+      );
+
   }
 }
