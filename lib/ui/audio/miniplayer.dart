@@ -26,7 +26,7 @@ class Miniplayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-        height: true ? 80 : 0,
+        height: false ? 80 : 0,
         duration: Duration(milliseconds: 200),
         // Provide an optional curve to make the animation feel smoother.
         curve: Curves.easeIn,
@@ -49,6 +49,8 @@ class Miniplayer extends StatelessWidget {
                   ),
                   child: Slider(
                     min: 0,
+                    max: 1,
+                    value: 0,
                     // max: (currentAudio.totalAudioDuration == null) ? 0.0 : currentAudio.totalAudioDuration.inMilliseconds.toDouble(),
                     // value: (currentAudio.currentAudioPosition == null || currentAudio.audioPlayerState == AudioPlayerState.COMPLETED)
                     //     ? 0.0 : currentAudio.currentAudioPosition.inMilliseconds.toDouble(),

@@ -1,3 +1,4 @@
+import 'package:hh_bbds_app/adapter/adapter.dart';
 import 'package:hh_bbds_app/background/background_audio_controls.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:audio_service/audio_service.dart';
@@ -260,17 +261,26 @@ class AudioListScreenRow extends StatelessWidget {
               builder: (context, snapshot) {
                 final playing = snapshot.data?.playing ?? false;
                 return InkWell(
-                  onTap: () {
+                  onTap: () async {
                     if (playing) AudioService.pause();
                     else {
+                      MediaItem mediaItem = Adapter.audioToMediaItem(audio);
                       if (AudioService.running) {
                         AudioService.play();
                       } else {
-                        AudioService.start(backgroundTaskEntrypoint: _backgroundTaskEntrypoint, params: {"url": audio.url});
+                        AudioService.start(backgroundTaskEntrypoint: _backgroundTaskEntrypoint);//, params: {"url": audio.url});
+                        await AudioService.connect();
                       }
+                      await AudioService.playMediaItem(mediaItem);
                     }
                   },
-                  child: Icon(playing ? Icons.pause : Icons.play_arrow, size: 25,)
+                  child: StreamBuilder<MediaItem>(
+                    stream: AudioService.currentMediaItemStream,
+                    builder: (context, currentMediaItemSnapshot) {
+                      debugPrint('cMI: ${currentMediaItemSnapshot.data?.toString()}');
+                      return Icon(playing && currentMediaItemSnapshot.data?.id == audio.id ? Icons.pause : Icons.play_arrow, size: 25,);
+                    }
+                  )
                 );
               }
             ),

@@ -119,6 +119,8 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                                   ),
                                   child: Slider(
                                     min: 0,
+                                    max: 1,
+                                    value: 0,
                                     // max: (audioQueue.currentAudio.totalAudioDuration == null) ? 0.0 : audioQueue.currentAudio.totalAudioDuration.inMilliseconds.toDouble(),
                                     // value: (audioQueue.currentAudio.currentAudioPosition == null || audioQueue.currentAudio.audioPlayerState == AudioPlayerState.COMPLETED)
                                     //     ? 0.0 : audioQueue.currentAudio.currentAudioPosition.inMilliseconds.toDouble(),
