@@ -6,7 +6,6 @@ on:
     branches:
       - develop
       - master
-      - dirty
 name: Build and Release
 jobs:
   build_apk:

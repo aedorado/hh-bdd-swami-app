@@ -33,6 +33,7 @@ dependencies:
   path_provider: ^1.6.28
   audio_service: ^0.16.2+1
   just_audio: ^0.6.15+1
+  audio_video_progress_bar: ^0.4.0
 
 dev_dependencies:
   hive_generator:
