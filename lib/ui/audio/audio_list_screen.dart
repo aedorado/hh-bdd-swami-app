@@ -231,7 +231,10 @@ class AudioListScreenRow extends StatelessWidget {
                       MediaItem mediaItem = Adapter.audioToMediaItem(audio);
                       // if (!playing) {
                       if (!AudioService.running) {
-                        AudioService.start(backgroundTaskEntrypoint: _backgroundTaskEntrypoint);//, params: {"url": audio.url});
+                        AudioService.start(
+                            androidNotificationIcon: 'mipmap/ic_launcher',
+                            backgroundTaskEntrypoint: _backgroundTaskEntrypoint
+                        );//, params: {"url": audio.url});
                         await AudioService.connect();
                       }
                       if (AudioService.currentMediaItem?.id != mediaItem.id){

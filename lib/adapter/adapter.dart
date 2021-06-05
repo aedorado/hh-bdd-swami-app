@@ -10,7 +10,8 @@ class Adapter {
       title: audio.name,
       artUri: 'https://bddswami.com/wp-content/uploads/2020/07/rs01-1.jpg',
       extras: {
-        'url': audio.url
+        'url': audio.url,
+        'subtitle': audio.name,
       }
     );
   }

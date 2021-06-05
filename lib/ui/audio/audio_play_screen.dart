@@ -3,6 +3,7 @@ import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
+import 'package:hh_bbds_app/streams/streams.dart';
 import 'package:hh_bbds_app/ui/audio/audio_queue_screen.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -35,14 +36,36 @@ class MediaState {
   MediaState(this.mediaItem, this.position, this.playbackState) {
     // debugPrint('MID=${this.mediaItem.duration.toString()} POS=${this.position.toString()} PBStatePlaying=${this.playbackState.playing} ProsState=${this.playbackState.processingState.toString()}');
   }
-}
 
-Stream<MediaState> get _mediaStateStream =>
-    Rx.combineLatest3<MediaItem, Duration, PlaybackState, MediaState>(
-        AudioService.currentMediaItemStream,
-        AudioService.positionStream,
-        AudioService.playbackStateStream,
-            (mediaItem, position, playBackState) => MediaState(mediaItem, position, playBackState));
+  bool showMiniPlayer() {
+    return (this.playbackState != null
+        && (this.playbackState.processingState == AudioProcessingState.ready
+            || this.playbackState.processingState == AudioProcessingState.completed));
+  }
+
+  Duration getMaxDuration() {
+    if (this.mediaItem != null) {
+      return this.mediaItem.duration;
+    }
+    return Duration(milliseconds: 0);
+  }
+
+  Duration getCurrentDuration() {
+    if (this.position != null) {
+      return this.position;
+    }
+    return Duration(milliseconds: 0);
+  }
+
+  String getMediaItemTitle() {
+    return (this.mediaItem != null) ? this.mediaItem.title: '';
+  }
+
+  String getMediaItemSubtitle() {
+    return (this.mediaItem != null) ? this.mediaItem.extras['subtitle']: '';
+  }
+
+}
 
 class _AudioPlayScreenState extends State<AudioPlayScreen> {
   bool playing = false;
@@ -65,7 +88,7 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                 ]),
           ),
           child: StreamBuilder<MediaState>(
-              stream: _mediaStateStream,
+              stream: CustomStream.mediaStateStream,
               builder: (context, snapshot) {
                 return Column(
                   children: [
@@ -146,18 +169,13 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                                   children: [
                                     Flexible(
                                       child: Container(
-                                        child: StreamBuilder<MediaState>(
-                                            stream: _mediaStateStream,
-                                            builder: (context, snapshot) {
-                                              return InkWell(
-                                                onTap: () {
+                                        child: InkWell(
+                                          onTap: () {
 
-                                                },
-                                                child: Center(
-                                                    child: Icon(Icons.skip_previous, size: 40, color: Color(0xFF1976D2),)
-                                                ),
-                                              );
-                                            }
+                                          },
+                                          child: Center(
+                                              child: Icon(Icons.skip_previous, size: 40, color: Color(0xFF1976D2),)
+                                          ),
                                         ),
                                       ),
                                     ),

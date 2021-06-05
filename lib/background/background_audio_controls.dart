@@ -47,17 +47,17 @@ class AudioPlayerBackgroundTasks extends BackgroundAudioTask {
   Future<void> _broadcastState() async {
     await AudioServiceBackground.setState(
       controls: [
-        MediaControl.skipToPrevious,
+        // MediaControl.skipToPrevious,
         if (_audioPlayer.playing) MediaControl.pause else MediaControl.play,
         MediaControl.stop,
-        MediaControl.skipToNext,
+        // MediaControl.skipToNext,
       ],
       systemActions: [
         MediaAction.seekTo,
         MediaAction.seekForward,
         MediaAction.seekBackward,
       ],
-      androidCompactActions: [0, 1, 3],
+      // androidCompactActions: [0, 1, 3],
       processingState: _getProcessingState(),
       playing: _audioPlayer.playing,
       position: _audioPlayer.position,
