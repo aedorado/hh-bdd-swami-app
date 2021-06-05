@@ -53,20 +53,20 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
               builder: (context, snapshot) {
                 return Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => AudioQueueScreen()));
-                            },
-                            child: Icon(Icons.queue_music, size: 32),
-                          )
-                        ],
-                      ),
-                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.all(4),
+                    //   child: Row(
+                    //     mainAxisAlignment: MainAxisAlignment.end,
+                    //     children: [
+                    //       InkWell(
+                    //         onTap: () {
+                    //           Navigator.push(context, MaterialPageRoute(builder: (context) => AudioQueueScreen()));
+                    //         },
+                    //         child: Icon(Icons.queue_music, size: 32),
+                    //       )
+                    //     ],
+                    //   ),
+                    // ),
                     Expanded(
                       flex: 6,
                       child: Padding(
@@ -223,70 +223,70 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                                         ),
                                       ),
                                     ),
-                                    Container(
-                                      child: InkWell(
-                                        onTap: () {
-                                          // debugPrint('Before: ${audioQueue.shuffle}');
-                                          // audioQueue.shuffle = !audioQueue.shuffle;
-                                          // debugPrint('After: ${audioQueue.shuffle}');
-                                        },
-                                        child: Container(
-                                          child: Center(
-                                            child: IconTheme(
-                                                data: new IconThemeData(),
-                                                child: Icon(true ? Icons.shuffle_on : Icons.shuffle, size: 36,)
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      child: InkWell(
-                                        onTap: () {
-                                          // String favoritesActionPerformed;
-                                          // if (favoriteAudiosBox.get(currentAudio.audio.id) == null) {
-                                          //   favoritesActionPerformed = FAVORITES_ACTION_ADD;
-                                          //   favoriteAudiosBox.put(currentAudio.audio.id, currentAudio.audio);
-                                          // } else {
-                                          //   favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
-                                          //   favoriteAudiosBox.delete(currentAudio.audio.id);
-                                          // }
-                                          // ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(currentAudio.audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
-                                        },
-                                        child: Container(
-                                          child: Center(
-                                            child: IconTheme(
-                                                data: new IconThemeData(color: Color(0xFF42A5F5)),
-                                                child: Icon(true ? Icons.repeat : Icons.repeat_on,
-                                                  size: 36,)
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      child: InkWell(
-                                        onTap: () {
-                                          String favoritesActionPerformed;
-                                          // if (favoriteAudiosBox.get(currentAudio.audio.id) == null) {
-                                          //   favoritesActionPerformed = FAVORITES_ACTION_ADD;
-                                          //   favoriteAudiosBox.put(currentAudio.audio.id, currentAudio.audio);
-                                          // } else {
-                                          //   favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
-                                          //   favoriteAudiosBox.delete(currentAudio.audio.id);
-                                          // }
-                                          // ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(currentAudio.audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
-                                        },
-                                        child: Container(
-                                          child: Center(
-                                            child: IconTheme(
-                                                data: new IconThemeData(color: Color(0xFF42A5F5)),
-                                                child: Icon(Icons.queue_music, size: 36,)
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
+                                    // Container(
+                                    //   child: InkWell(
+                                    //     onTap: () {
+                                    //       // debugPrint('Before: ${audioQueue.shuffle}');
+                                    //       // audioQueue.shuffle = !audioQueue.shuffle;
+                                    //       // debugPrint('After: ${audioQueue.shuffle}');
+                                    //     },
+                                    //     child: Container(
+                                    //       child: Center(
+                                    //         child: IconTheme(
+                                    //             data: new IconThemeData(),
+                                    //             child: Icon(true ? Icons.shuffle_on : Icons.shuffle, size: 36,)
+                                    //         ),
+                                    //       ),
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                    // Container(
+                                    //   child: InkWell(
+                                    //     onTap: () {
+                                    //       // String favoritesActionPerformed;
+                                    //       // if (favoriteAudiosBox.get(currentAudio.audio.id) == null) {
+                                    //       //   favoritesActionPerformed = FAVORITES_ACTION_ADD;
+                                    //       //   favoriteAudiosBox.put(currentAudio.audio.id, currentAudio.audio);
+                                    //       // } else {
+                                    //       //   favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
+                                    //       //   favoriteAudiosBox.delete(currentAudio.audio.id);
+                                    //       // }
+                                    //       // ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(currentAudio.audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
+                                    //     },
+                                    //     child: Container(
+                                    //       child: Center(
+                                    //         child: IconTheme(
+                                    //             data: new IconThemeData(color: Color(0xFF42A5F5)),
+                                    //             child: Icon(true ? Icons.repeat : Icons.repeat_on,
+                                    //               size: 36,)
+                                    //         ),
+                                    //       ),
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                    // Container(
+                                    //   child: InkWell(
+                                    //     onTap: () {
+                                    //       String favoritesActionPerformed;
+                                    //       // if (favoriteAudiosBox.get(currentAudio.audio.id) == null) {
+                                    //       //   favoritesActionPerformed = FAVORITES_ACTION_ADD;
+                                    //       //   favoriteAudiosBox.put(currentAudio.audio.id, currentAudio.audio);
+                                    //       // } else {
+                                    //       //   favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
+                                    //       //   favoriteAudiosBox.delete(currentAudio.audio.id);
+                                    //       // }
+                                    //       // ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(currentAudio.audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
+                                    //     },
+                                    //     child: Container(
+                                    //       child: Center(
+                                    //         child: IconTheme(
+                                    //             data: new IconThemeData(color: Color(0xFF42A5F5)),
+                                    //             child: Icon(Icons.queue_music, size: 36,)
+                                    //         ),
+                                    //       ),
+                                    //     ),
+                                    //   ),
+                                    // ),
                                   ],
                                 ),
 
