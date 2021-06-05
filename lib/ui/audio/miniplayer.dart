@@ -1,5 +1,7 @@
 // import 'package:audioplayers/audioplayers.dart';
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:hh_bbds_app/models/podo/media_state.dart';
 import 'package:hh_bbds_app/streams/streams.dart';
 // import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
 import 'package:hh_bbds_app/ui/audio/audio_play_screen.dart';
@@ -83,6 +85,16 @@ class Miniplayer extends StatelessWidget {
                             flex: 1,
                             child: InkWell(
                                 onTap: () {
+                                  if (snapshot.hasData) {
+                                    if (snapshot.data.shouldPause()) {
+                                      AudioService.pause();
+                                    } else {
+                                      if (snapshot.data.shouldReplay()) {
+                                        AudioService.seekTo(Duration(milliseconds: 0));
+                                      }
+                                      AudioService.play();
+                                    }
+                                  }
                                   // if audio is playing and user clicks on the button for the audio that is playing then pause audio
                                   // if (currentAudio.isPlaying) {
                                   //   currentAudio.pauseAudio();
@@ -90,7 +102,7 @@ class Miniplayer extends StatelessWidget {
                                   //   currentAudio.playAudio();
                                   // }
                                 },
-                                child: Icon(true ? Icons.pause : Icons.play_arrow))),
+                                child: Icon(snapshot.hasData && snapshot.data.shouldPause() ? Icons.pause : Icons.play_arrow))),
                       ],),
                     ),
                   ),

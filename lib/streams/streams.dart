@@ -1,6 +1,6 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:hh_bbds_app/models/podo/media_state.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:hh_bbds_app/ui/audio/audio_play_screen.dart';
 
 class CustomStream {
 
