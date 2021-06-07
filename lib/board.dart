@@ -10,31 +10,21 @@ class BoardApp extends StatefulWidget {
 class _BoardAppState extends State<BoardApp> {
   var snapshot = FirebaseFirestore.instance.collection("board").snapshots();
 
-  // FirebaseFirestore.instance.collection("board").get().then((querySnapshot) {
-  //   querySnapshot.docs.forEach((result) {
-  //     print(result.data());
-  //   });
-  // });
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("Board App"),
-        ),
-        body: StreamBuilder<QuerySnapshot>(
-            stream: snapshot,
-            builder: (context, snapshot) {
-              if (!snapshot.hasData)
-                return CircularProgressIndicator();
-              else {
-                return new ListView.builder(
-                    itemCount: snapshot.data!.size,
-                    itemBuilder: (context, index) {
-                      return Text('${snapshot.data!.docs[index]['title']}');
-                    });
-              }
-              ;
-            }));
+    return StreamBuilder<QuerySnapshot>(
+      stream: snapshot,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData)
+          return CircularProgressIndicator();
+        else {
+          return new ListView.builder(
+              itemCount: snapshot.data!.size,
+              itemBuilder: (context, index) {
+                return Text('${snapshot.data!.docs[index]['title']}');
+              });
+        };
+      }
+    );
   }
 }
