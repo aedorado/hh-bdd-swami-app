@@ -17,9 +17,10 @@ class AudioAdapter extends TypeAdapter<Audio> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Audio(
+      id: fields[0] as String,
       name: fields[1] as String,
       url: fields[2] as String,
-    )..id = fields[0] as String;
+    );
   }
 
   @override

@@ -12,10 +12,9 @@ import 'package:provider/provider.dart';
 
 class AudioFolderScreen extends StatelessWidget {
 
-  AudioFolder audioFolder;
-  String contentUrl;
+  late AudioFolder audioFolder;
   Box<Audio> favoriteAudiosBox = Hive.box<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
-  Future<List<Audio>> audioListFuture; // = fetchAudios('https://mocki.io/v1/00c25346-891a-4a2a-987e-4a9c1a6c637e');
+  late Future<List<Audio>> audioListFuture; // = fetchAudios('https://mocki.io/v1/00c25346-891a-4a2a-987e-4a9c1a6c637e');
 
   AudioFolderScreen(AudioFolder audioFolder) {
     this.audioFolder = audioFolder;
@@ -41,9 +40,9 @@ class AudioFolderScreen extends StatelessWidget {
                           physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                           scrollDirection: Axis.vertical,
                           shrinkWrap: true,
-                          itemCount: snapshot.data.length,
+                          itemCount: snapshot.data?.length,
                           itemBuilder: (BuildContext context, int index) {
-                            return AudioListScreenRow(audio: snapshot.data[index], favoriteAudiosBox: favoriteAudiosBox,);
+                            return AudioListScreenRow(audio: snapshot.data![index], favoriteAudiosBox: favoriteAudiosBox,);
                           }
                         )
                       );
@@ -112,9 +111,9 @@ class AudioFolderScreen extends StatelessWidget {
                           SliverList(
                             delegate: SliverChildBuilderDelegate(
                               (BuildContext context, int index) {
-                                return AudioListScreenRow(audio: snapshot.data[index], favoriteAudiosBox: favoriteAudiosBox,);
+                                return AudioListScreenRow(audio: snapshot.data?[index], favoriteAudiosBox: favoriteAudiosBox,);
                               },
-                              childCount: snapshot.data.length, // 1000 list items
+                              childCount: snapshot.data?.length,
                             ),
                           ),
                         ],

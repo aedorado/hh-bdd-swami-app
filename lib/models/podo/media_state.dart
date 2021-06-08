@@ -1,7 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 
 class MediaState {
-  final MediaItem mediaItem;
+  final MediaItem? mediaItem;
   final Duration position;
   final PlaybackState playbackState;
 
@@ -15,9 +15,9 @@ class MediaState {
             || this.playbackState.processingState == AudioProcessingState.completed));
   }
 
-  Duration getMaxDuration() {
+  Duration? getMaxDuration() {
     if (this.mediaItem != null) {
-      return this.mediaItem.duration;
+      return this.mediaItem?.duration!;
     }
     return Duration(milliseconds: 0);
   }
@@ -30,11 +30,11 @@ class MediaState {
   }
 
   String getMediaItemTitle() {
-    return (this.mediaItem != null) ? this.mediaItem.title: '';
+    return (this.mediaItem != null) ? this.mediaItem!.title: '';
   }
 
   String getMediaItemSubtitle() {
-    return (this.mediaItem != null) ? this.mediaItem.extras['subtitle']: '';
+    return (this.mediaItem != null) ? this.mediaItem!.extras!['subtitle']: '';
   }
   
   bool shouldPause() {

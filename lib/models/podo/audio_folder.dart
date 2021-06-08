@@ -1,10 +1,10 @@
 class AudioFolder {
-  String id;
-  String name;
-  String contentUrl;
-  String totalContents;
+  late String id;
+  late String name;
+  late String contentUrl;
+  late String totalContents;
 
-  AudioFolder({this.id, this.name, this.contentUrl, this.totalContents});
+  AudioFolder({required this.id, required this.name, required this.contentUrl, required this.totalContents});
 
   AudioFolder.fromJson(Map<String, dynamic> json) {
     id = json['id'];

@@ -1,26 +1,23 @@
-// import 'package:audioplayers/audioplayers.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/models/podo/media_state.dart';
 import 'package:hh_bbds_app/streams/streams.dart';
-// import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
 import 'package:hh_bbds_app/ui/audio/audio_play_screen.dart';
-import 'package:provider/provider.dart';
 
 // This class provides a custom shape to the slider for Miniplayer
 class CustomTrackShape extends RoundedRectSliderTrackShape {
   Rect getPreferredRect({
-    @required RenderBox parentBox,
+    required RenderBox parentBox,
     Offset offset = Offset.zero,
-    @required SliderThemeData sliderTheme,
+    required SliderThemeData sliderTheme,
     bool isEnabled = false,
     bool isDiscrete = false,
   }) {
-    final double trackHeight = sliderTheme.trackHeight;
+    final double? trackHeight = sliderTheme.trackHeight;
     final double trackLeft = offset.dx;
     final double trackTop = 0;
     final double trackWidth = parentBox.size.width;
-    return Rect.fromLTWH(trackLeft, trackTop, trackWidth, trackHeight);
+    return Rect.fromLTWH(trackLeft, trackTop, trackWidth, trackHeight!);
   }
 }
 
@@ -32,7 +29,7 @@ class Miniplayer extends StatelessWidget {
       stream: CustomStream.mediaStateStream,
       builder: (context, snapshot) {
         return AnimatedContainer(
-            height: snapshot.hasData && snapshot.data.showMiniPlayer() ? 80 : 0,
+            height: snapshot.hasData && snapshot.data!.showMiniPlayer() ? 80 : 0,
             duration: Duration(milliseconds: 200),
             // Provide an optional curve to make the animation feel smoother.
             curve: Curves.easeIn,
@@ -55,8 +52,8 @@ class Miniplayer extends StatelessWidget {
                       ),
                       child: Slider(
                         min: 0,
-                        max: snapshot.hasData ? snapshot.data.getMaxDuration().inMilliseconds.toDouble() + 100 : 1,
-                        value: snapshot.hasData ? snapshot.data.getCurrentDuration().inMilliseconds.toDouble() : 0,
+                        max: snapshot.hasData ? snapshot.data!.getMaxDuration()?.inMilliseconds.toDouble() + 100 : 1,
+                        value: snapshot.hasData ? snapshot.data!.getCurrentDuration().inMilliseconds.toDouble() : 0,
                         onChanged: null,
                       ),
                     ),
@@ -77,8 +74,8 @@ class Miniplayer extends StatelessWidget {
                         ),
                         Expanded(flex: 4, child: Center(child: snapshot.hasData ? Column(
                           children: [
-                            Text(snapshot.data.getMediaItemTitle(), style: TextStyle(fontSize: 15), overflow: TextOverflow.ellipsis,),
-                            Text(snapshot.data.getMediaItemSubtitle(), style: TextStyle(fontSize: 9), overflow: TextOverflow.ellipsis,),
+                            Text(snapshot.data!.getMediaItemTitle(), style: TextStyle(fontSize: 15), overflow: TextOverflow.ellipsis,),
+                            Text(snapshot.data!.getMediaItemSubtitle(), style: TextStyle(fontSize: 9), overflow: TextOverflow.ellipsis,),
                           ],
                         ): Container())),
                         Expanded(
@@ -86,10 +83,10 @@ class Miniplayer extends StatelessWidget {
                             child: InkWell(
                                 onTap: () {
                                   if (snapshot.hasData) {
-                                    if (snapshot.data.shouldPause()) {
+                                    if (snapshot.data!.shouldPause()) {
                                       AudioService.pause();
                                     } else {
-                                      if (snapshot.data.shouldReplay()) {
+                                      if (snapshot.data!.shouldReplay()) {
                                         AudioService.seekTo(Duration(milliseconds: 0));
                                       }
                                       AudioService.play();
@@ -102,7 +99,7 @@ class Miniplayer extends StatelessWidget {
                                   //   currentAudio.playAudio();
                                   // }
                                 },
-                                child: Icon(snapshot.hasData && snapshot.data.shouldPause() ? Icons.pause : Icons.play_arrow))),
+                                child: Icon(snapshot.hasData && snapshot.data!.shouldPause() ? Icons.pause : Icons.play_arrow))),
                       ],),
                     ),
                   ),

@@ -83,9 +83,7 @@ class GalleryCard extends StatelessWidget {
       padding: const EdgeInsets.all(4.0),
       child: InkWell(
         onTap: () => {
-          if (route != null) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => route)),
-          }
+          Navigator.push(context, MaterialPageRoute(builder: (context) => route)),
         },
         child: Container(
           decoration: BoxDecoration(

@@ -1,13 +1,12 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/models/podo/media_state.dart';
 import 'package:hh_bbds_app/streams/streams.dart';
-import 'package:hh_bbds_app/ui/audio/audio_queue_screen.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 
 var audioTitleStyle = TextStyle(
   // fontWeight: FontWeight.bold,
@@ -44,8 +43,8 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Colors.blue[800],
-                  Colors.blue[200],
+                  Colors.blue[800]!,
+                  Colors.blue[200]!,
                 ]),
           ),
           child: StreamBuilder<MediaState>(
@@ -106,21 +105,23 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                         ),
                         child: Column(
                           children: [
-                            Expanded(
-                              flex: 2,
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 40, right: 40, top: 20, bottom: 10),
-                                child: ProgressBar(
-                                  progress: snapshot.hasData && snapshot.data.position != null ? snapshot.data.position : Duration(milliseconds: 0),
-                                  buffered: snapshot.hasData && snapshot.data.playbackState != null ? snapshot.data.playbackState.bufferedPosition : Duration(milliseconds: 0),
-                                  total: snapshot.hasData && snapshot.data.mediaItem != null ? snapshot.data.mediaItem.duration : Duration(milliseconds: 0),
-                                  onSeek: (duration) {
-                                    print('User selected a new time: $duration');
-                                    AudioService.seekTo(duration);
-                                  },
-                                ),
-                              ),
-                            ),
+                            // Expanded(
+                            //   flex: 2,
+                            //   child: Padding(
+                            //     padding: const EdgeInsets.only(left: 40, right: 40, top: 20, bottom: 10),
+                            //     child: ProgressBar(
+                            //       progress: snapshot.hasData ? snapshot.data?.position : Duration(milliseconds: 0),
+                            //       // progress: snapshot.hasData && snapshot.data!.position != null ? snapshot.data?.position: Duration(milliseconds: 0),
+                            //       // buffered: snapshot.hasData && snapshot.data.playbackState != null ? snapshot.data.playbackState.bufferedPosition : Duration(milliseconds: 0),
+                            //       // total: snapshot.hasData ? snapshot.data.mediaItem?.duration! : Duration(milliseconds: 0),
+                            //       // snapshot.hasData && snapshot.data.mediaItem != null ? snapshot.data.mediaItem.duration : Duration(milliseconds: 0),
+                            //       onSeek: (duration) {
+                            //         print('User selected a new time: $duration');
+                            //         AudioService.seekTo(duration);
+                            //       },
+                            //     ),
+                            //   ),
+                            // ),
                             Expanded(
                               flex: 2,
                               child: Padding(
@@ -157,12 +158,12 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                                             // playing & completed
                                             //
 
-                                            if ((snapshot.hasData && snapshot.data.playbackState != null && snapshot.data.playbackState?.playing)) {
+                                            if ((snapshot.hasData && snapshot.data?.playbackState != null && snapshot.data?.playbackState.playing == true)) {
                                               AudioService.pause();
                                             } else {
                                               if (snapshot.hasData
-                                                  && snapshot.data.playbackState != null
-                                                  && snapshot.data.playbackState.processingState == AudioProcessingState.completed) {
+                                                  && snapshot.data?.playbackState != null
+                                                  && snapshot.data?.playbackState.processingState == AudioProcessingState.completed) {
                                                 AudioService.seekTo(Duration(milliseconds: 0));
                                               }
                                               AudioService.play();
@@ -172,9 +173,9 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                                             padding: const EdgeInsets.all(2.0),
                                             child: Center(
                                                 child: Icon( (snapshot.hasData
-                                                    && snapshot.data.playbackState != null
-                                                    && snapshot.data.playbackState.playing
-                                                    && snapshot.data.playbackState.processingState != AudioProcessingState.completed)
+                                                    && snapshot.data?.playbackState != null
+                                                    && snapshot.data?.playbackState.playing == true
+                                                    && snapshot.data?.playbackState.processingState != AudioProcessingState.completed)
                                                     ? Icons.pause
                                                     : Icons.play_arrow,
                                                   size: 44,

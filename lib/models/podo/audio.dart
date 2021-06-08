@@ -6,13 +6,13 @@ part 'audio.g.dart';
 class Audio {
 
   @HiveField(0)
-  String id;
+  late String id;
 
   @HiveField(1)
-  String name;
+  late String name;
   
   @HiveField(2)
-  String url;
+  late String url;
 
   Audio({required this.id, required this.name, required this.url});
 

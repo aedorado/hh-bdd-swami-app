@@ -169,7 +169,7 @@ class _AudioListScreenState extends State<AudioListScreen> {
 
 class AudioListPage extends StatelessWidget {
 
-  Future<List<Audio>> audioListFuture;
+  late Future<List<Audio>> audioListFuture;
   Box<Audio> favoriteAudiosBox = Hive.box<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
 
   AudioListPage(Future<List<Audio>> audioListFuture) {
@@ -188,9 +188,9 @@ class AudioListPage extends StatelessWidget {
                   physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
-                  itemCount: snapshot.data.length,
+                  itemCount: snapshot.data?.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return AudioListScreenRow(audio: snapshot.data[index], favoriteAudiosBox: favoriteAudiosBox,);
+                    return AudioListScreenRow(audio: snapshot.data![index], favoriteAudiosBox: favoriteAudiosBox,);
                   })
           );
         } else if (snapshot.hasError) {
@@ -204,10 +204,12 @@ class AudioListPage extends StatelessWidget {
 
 class AudioListScreenRow extends StatelessWidget {
 
-  final Audio audio;
+  final Audio? audio;
   final Box<Audio> favoriteAudiosBox;
 
-  const AudioListScreenRow({Key key, this.audio, this.favoriteAudiosBox}) : super(key: key);
+  const AudioListScreenRow({Key? key, this.audio, required this.favoriteAudiosBox}) : super(key: key);
+
+  // const AudioListScreenRow({Key key, this.audio, required this.favoriteAudiosBox}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -228,7 +230,7 @@ class AudioListScreenRow extends StatelessWidget {
                     onTap: () async {
                       // audioQueue.addAndPlay(audio);
                       // if (!playing) AudioService.pause();
-                      MediaItem mediaItem = Adapter.audioToMediaItem(audio);
+                      MediaItem mediaItem = Adapter.audioToMediaItem(audio!);
                       // if (!playing) {
                       if (!AudioService.running) {
                         AudioService.start(
@@ -262,16 +264,16 @@ class AudioListScreenRow extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('${audio.name}', style: TextStyle(fontSize: 16),),
-                                  Text('${audio.name}', style: TextStyle(fontSize: 12),),
+                                  Text('${audio?.name}', style: TextStyle(fontSize: 16),),
+                                  Text('${audio?.name}', style: TextStyle(fontSize: 12),),
                                 ],
                               ),
                             )
                         ),
-                        StreamBuilder<MediaItem>(
+                        StreamBuilder<MediaItem?>(
                             stream: AudioService.currentMediaItemStream,
                             builder: (context, currentMediaItemSnapshot) {
-                              return Icon(playing && currentMediaItemSnapshot.data?.id == audio.id ? Icons.pause : Icons.play_arrow, size: 25,);
+                              return Icon(playing && currentMediaItemSnapshot.data?.id == audio?.id ? Icons.pause : Icons.play_arrow, size: 25,);
                             }
                         )
                       ],
@@ -324,21 +326,21 @@ class AudioListScreenRow extends StatelessWidget {
             child: InkWell(
               onTap: () {
                 String favoritesActionPerformed;
-                if (favoriteAudiosBox.get(audio.id) == null) {
+                if (favoriteAudiosBox.get(audio!.id) == null) {
                   favoritesActionPerformed = FAVORITES_ACTION_ADD;
-                  favoriteAudiosBox.put(audio.id, audio);
+                  favoriteAudiosBox.put(audio!.id, audio!);
                 } else {
                   favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
-                  favoriteAudiosBox.delete(audio.id);
+                  favoriteAudiosBox.delete(audio!.id);
                 }
-                ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
+                ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(audio!, favoritesActionPerformed, favoriteAudiosBox).build(context));
               },
               child: ValueListenableBuilder(
                   valueListenable: favoriteAudiosBox.listenable(),
-                  builder: (context, box, widget) {
+                  builder: (context, Box<Audio> box, widget) {
                     return IconTheme(
                         data: new IconThemeData(color: Colors.redAccent),
-                        child: Icon((box.get(audio.id) == null) ? Icons.favorite_border : Icons.favorite,
+                        child: Icon((box.get(audio!.id) == null) ? Icons.favorite_border : Icons.favorite,
                           size: 24,
                         )
                     );
@@ -352,15 +354,15 @@ class AudioListScreenRow extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.only(left: 2, right: 4),
               child: PopupMenuButton(
-                onSelected: (item) {
+                onSelected: (String item) {
                   switch (item) {
                     case FAVORITES_ACTION_REMOVE:
-                      favoriteAudiosBox.delete(audio.id);
-                      ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(audio, item, favoriteAudiosBox).build(context));
+                      favoriteAudiosBox.delete(audio!.id);
+                      ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(audio!, item, favoriteAudiosBox).build(context));
                       break;
                     case FAVORITES_ACTION_ADD:
-                      favoriteAudiosBox.put(audio.id, audio);
-                      ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(audio, item, favoriteAudiosBox).build(context));
+                      favoriteAudiosBox.put(audio!.id, audio!);
+                      ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(audio!, item, favoriteAudiosBox).build(context));
                       break;
                     case PLAY_NEXT:
                     // bool isAdded = audioQueue.addNext(audio);
@@ -374,7 +376,7 @@ class AudioListScreenRow extends StatelessWidget {
                 },
                 itemBuilder: (context) {
                   return [
-                    (favoriteAudiosBox.get(audio.id) == null) ?
+                    (favoriteAudiosBox.get(audio!.id) == null) ?
                     PopupMenuItem(value: FAVORITES_ACTION_ADD, child: Text('Add to Favorites'),) :
                     PopupMenuItem(value: FAVORITES_ACTION_REMOVE, child: Text('Remove from Favorites'),),
                     PopupMenuItem(value: PLAY_NEXT, child: Text('Play Next'),),
@@ -393,7 +395,7 @@ class AudioListScreenRow extends StatelessWidget {
 
 class AudioFolderPage extends StatelessWidget {
 
-  Future<List<AudioFolder>> audioFolderFuture;
+  late Future<List<AudioFolder>> audioFolderFuture;
 
   AudioFolderPage(Future<List<AudioFolder>> audioFolderFuture) {
     this.audioFolderFuture = audioFolderFuture;
@@ -411,7 +413,7 @@ class AudioFolderPage extends StatelessWidget {
                   physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
-                  itemCount: snapshot.data.length,
+                  itemCount: snapshot.data?.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Container(
                       // TODO: Make sure the rows on all the screens are of equal height
@@ -425,7 +427,7 @@ class AudioFolderPage extends StatelessWidget {
                             flex: 7,
                             child: InkWell(
                               onTap: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => AudioFolderScreen(snapshot.data[index])));
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => AudioFolderScreen(snapshot.data![index])));
                               },
                               child: Row(
                                 children: [
@@ -446,8 +448,8 @@ class AudioFolderPage extends StatelessWidget {
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 16),),
-                                            Text('${snapshot.data[index].totalContents} audios', style: TextStyle(fontSize: 12),),
+                                            Text('${snapshot.data![index].name}', style: TextStyle(fontSize: 16),),
+                                            Text('${snapshot.data![index].totalContents} audios', style: TextStyle(fontSize: 12),),
                                           ],
                                         ),
                                       )
@@ -513,6 +515,7 @@ class FavoritesSnackBar extends StatelessWidget {
   Audio a;
   String favoritesActionPerformed;
   Box<Audio> favoriteAudiosBox = Hive.box<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
+  late String snackBarText;
 
   FavoritesSnackBar(this.a, this.favoritesActionPerformed, this.favoriteAudiosBox) {
     if (this.favoritesActionPerformed == FAVORITES_ACTION_REMOVE) {
@@ -522,7 +525,6 @@ class FavoritesSnackBar extends StatelessWidget {
     }
   }
 
-  String snackBarText;
 
   @override
   SnackBar build(BuildContext context) {

@@ -9,11 +9,11 @@ import 'package:just_audio/just_audio.dart';
 class AudioPlayerBackgroundTasks extends BackgroundAudioTask {
 
   final _audioPlayer = AudioPlayer();
-  AudioProcessingState _skipState;
-  StreamSubscription<PlaybackEvent> _eventSubscription;
+  AudioProcessingState? _skipState;
+  StreamSubscription<PlaybackEvent>? _eventSubscription;
 
   @override
-  Future<void> onStart(Map<String, dynamic> params) async {
+  Future<void> onStart(Map<String, dynamic>? params) async {
     final session = await AudioSession.instance;
     await session.configure(AudioSessionConfiguration.speech());
 
@@ -66,7 +66,7 @@ class AudioPlayerBackgroundTasks extends BackgroundAudioTask {
     );
   }
 
-  AudioProcessingState _getProcessingState() {
+  AudioProcessingState? _getProcessingState() {
     if (_skipState != null) return _skipState;
     switch (_audioPlayer.processingState) {
       case ProcessingState.idle:
@@ -127,7 +127,7 @@ class AudioPlayerBackgroundTasks extends BackgroundAudioTask {
 
   @override
   Future<void> onPlayMediaItem(MediaItem mediaItem) async {
-    Duration d = await _audioPlayer.setUrl(mediaItem.extras['url']);
+    Duration? d = await _audioPlayer.setUrl(mediaItem.extras?['url']);
     _audioPlayer.play();
     this.onUpdateMediaItem(mediaItem.copyWith(duration: d));
     // AudioServiceBackground.setState(

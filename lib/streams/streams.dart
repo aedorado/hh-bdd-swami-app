@@ -5,7 +5,7 @@ import 'package:rxdart/rxdart.dart';
 class CustomStream {
 
   static Stream<MediaState> get mediaStateStream =>
-      Rx.combineLatest3<MediaItem, Duration, PlaybackState, MediaState>(
+      Rx.combineLatest3<MediaItem?, Duration, PlaybackState, MediaState>(
           AudioService.currentMediaItemStream,
           AudioService.positionStream,
           AudioService.playbackStateStream,

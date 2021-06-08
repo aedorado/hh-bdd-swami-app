@@ -1,10 +1,10 @@
 import 'package:hh_bbds_app/models/podo/audio_folder.dart';
 
 class AudioFolderResponse {
-  int totalFolders;
-  List<AudioFolder> audioFolders;
+  late int totalFolders;
+  late List<AudioFolder> audioFolders;
 
-  AudioFolderResponse({this.totalFolders, this.audioFolders});
+  AudioFolderResponse({required this.totalFolders, required this.audioFolders});
 
   AudioFolderResponse.fromJson(Map<String, dynamic> json) {
     totalFolders = json['total_folders'];
@@ -20,9 +20,7 @@ class AudioFolderResponse {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['total_folders'] = this.totalFolders;
-    if (this.audioFolders != null) {
-      data['audio_folders'] = this.audioFolders.map((v) => v.toJson()).toList();
-    }
+    data['audio_folders'] = this.audioFolders.map((v) => v.toJson()).toList();
     return data;
   }
 }

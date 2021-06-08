@@ -1,15 +1,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
-// import 'package:hh_bbds_app/change_notifiers/audio_queue.dart';
-// import 'package:hh_bbds_app/change_notifiers/current_audio.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/ui/audio/audio_list_screen.dart';
 import 'package:hh_bbds_app/ui/audio/audio_play_screen.dart';
 import 'package:hh_bbds_app/ui/audio/miniplayer.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:provider/provider.dart';
 
 class FavoriteAudios extends StatelessWidget {
   Box<Audio> favoriteAudiosBox = Hive.box<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
@@ -21,7 +18,7 @@ class FavoriteAudios extends StatelessWidget {
           children: [
             ValueListenableBuilder(
               valueListenable: favoriteAudiosBox.listenable(),
-              builder: (context, box, widget) {
+              builder: (context, Box<Audio> box, widget) {
                 return Expanded(
                   flex: 1,
                   child: ListView.builder(
@@ -61,8 +58,8 @@ class FavoriteAudios extends StatelessWidget {
                                                   mainAxisAlignment: MainAxisAlignment.center,
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
-                                                    Text('${favoriteAudiosBox.getAt(index).name}', style: TextStyle(fontSize: 16),),
-                                                    Text('${favoriteAudiosBox.getAt(index).name}', style: TextStyle(fontSize: 12),),
+                                                    Text('${favoriteAudiosBox.getAt(index)?.name}', style: TextStyle(fontSize: 16),),
+                                                    Text('${favoriteAudiosBox.getAt(index)?.name}', style: TextStyle(fontSize: 12),),
                                                   ],
                                                 ),
                                               )
@@ -75,12 +72,12 @@ class FavoriteAudios extends StatelessWidget {
                                 child: InkWell(
                                   onTap: () {
                                     String favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
-                                    ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(favoriteAudiosBox.getAt(index), favoritesActionPerformed, favoriteAudiosBox).build(context));
-                                    favoriteAudiosBox.delete(favoriteAudiosBox.getAt(index).id);
+                                    ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(favoriteAudiosBox.getAt(index)!, favoritesActionPerformed, favoriteAudiosBox).build(context));
+                                    favoriteAudiosBox.delete(favoriteAudiosBox.getAt(index)?.id);
                                   },
                                   child: IconTheme(
                                     data: new IconThemeData(color: Colors.redAccent),
-                                    child: Icon((box.get(favoriteAudiosBox.getAt(index).id) == null) ? Icons.favorite_border : Icons.favorite,
+                                    child: Icon((box.get(favoriteAudiosBox.getAt(index)?.id) == null) ? Icons.favorite_border : Icons.favorite,
                                       size: 24,
                                     )
                                   ),
@@ -91,11 +88,11 @@ class FavoriteAudios extends StatelessWidget {
                                 child: Padding(
                                   padding: EdgeInsets.only(left: 2, right: 4),
                                   child: PopupMenuButton(
-                                      onSelected: (item) {
+                                      onSelected: (String item) {
                                         switch (item) {
                                           case FAVORITES_ACTION_REMOVE:
-                                            ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(favoriteAudiosBox.getAt(index), item, favoriteAudiosBox).build(context));
-                                            favoriteAudiosBox.delete(favoriteAudiosBox.getAt(index).id);
+                                            ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(favoriteAudiosBox.getAt(index)!, item, favoriteAudiosBox).build(context));
+                                            favoriteAudiosBox.delete(favoriteAudiosBox.getAt(index)?.id);
                                             break;
                                           case ADD_TO_QUEUE:
                                             // ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(true, favoriteAudiosBox.getAt(index), audioQueue).build(context));
