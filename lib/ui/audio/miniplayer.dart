@@ -37,27 +37,29 @@ class Miniplayer extends StatelessWidget {
               color: Color(0xFF42A5F5),
               child: Column(
                 children: [
-                  SizedBox(
-                    height: 4,
-                    child: SliderTheme(
-                      data: SliderThemeData(
-                        trackShape: CustomTrackShape(),
-                        trackHeight: 2.0,
-                        // thumbColor: Color(0xFFEB1555),
-                        inactiveTrackColor: Color(0xFF8D8E98),
-                        // activeTrackColor: Colors.white,
-                        // overlayColor: Color(0x99EB1555),
-                        thumbShape: RoundSliderThumbShape(enabledThumbRadius: 0.0),
-                        // overlayShape: RoundSliderOverlayShape(overlayRadius: 30.0),
-                      ),
-                      child: Slider(
-                        min: 0,
-                        max: snapshot.hasData ? snapshot.data!.getMaxDuration()?.inMilliseconds.toDouble() + 100 : 1,
-                        value: snapshot.hasData ? snapshot.data!.getCurrentDuration().inMilliseconds.toDouble() : 0,
-                        onChanged: null,
-                      ),
-                    ),
-                  ),
+                  // SizedBox(
+                  //   height: 4,
+                  //   child:  SliderTheme(
+                  //     data: SliderThemeData(
+                  //       trackShape: CustomTrackShape(),
+                  //       trackHeight: 2.0,
+                  //       // thumbColor: Color(0xFFEB1555),
+                  //       inactiveTrackColor: Color(0xFF8D8E98),
+                  //       // activeTrackColor: Colors.white,
+                  //       // overlayColor: Color(0x99EB1555),
+                  //       thumbShape: RoundSliderThumbShape(enabledThumbRadius: 0.0),
+                  //       // overlayShape: RoundSliderOverlayShape(overlayRadius: 30.0),
+                  //     ),
+                  //     child: Slider(
+                  //       min: 0,
+                  //       // max: 0,
+                  //       // value: 0,
+                  //       // max: snapshot.hasData ? snapshot.data!.getMaxDuration()?.inMilliseconds.toDouble() : 1,
+                  //       // value: snapshot.hasData ? snapshot.data!.getCurrentDuration().inMilliseconds.toDouble() : 0,
+                  //       onChanged: null,
+                  //     ),
+                  //   ),
+                  // ),
                   InkWell(
                     onTap: () {
                       Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen()));

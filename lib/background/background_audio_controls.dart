@@ -16,7 +16,7 @@ class AudioPlayerBackgroundTasks extends BackgroundAudioTask {
   Future<void> onStart(Map<String, dynamic>? params) async {
     final session = await AudioSession.instance;
     await session.configure(AudioSessionConfiguration.speech());
-
+    debugPrint('HERE 1');
     AudioServiceBackground.setState(
         controls: [],
         playing: false,

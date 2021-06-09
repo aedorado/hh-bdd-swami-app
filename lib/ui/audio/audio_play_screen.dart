@@ -87,12 +87,12 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                       child: Center(
                         child: Padding(
                           padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
-                          child: Column(
+                          child: snapshot.hasData ? Column(
                             children: [
-                              // Text(audioQueue.currentAudio.audio.name, style: audioTitleStyle, textAlign: TextAlign.center,),
-                              // Text(audioQueue.currentAudio.audio.name, style: audioSubtitleStyle, textAlign: TextAlign.center,),
+                              Text(snapshot.data?.mediaItem?.title ?? '', style: audioTitleStyle, textAlign: TextAlign.center,),
+                              Text(snapshot.data?.mediaItem?.extras!['subtitle'] ?? '', style: audioSubtitleStyle, textAlign: TextAlign.center,),
                             ],
-                          ),
+                          ): Container(),
                         ),
                       ),
                     ),
@@ -105,23 +105,21 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                         ),
                         child: Column(
                           children: [
-                            // Expanded(
-                            //   flex: 2,
-                            //   child: Padding(
-                            //     padding: const EdgeInsets.only(left: 40, right: 40, top: 20, bottom: 10),
-                            //     child: ProgressBar(
-                            //       progress: snapshot.hasData ? snapshot.data?.position : Duration(milliseconds: 0),
-                            //       // progress: snapshot.hasData && snapshot.data!.position != null ? snapshot.data?.position: Duration(milliseconds: 0),
-                            //       // buffered: snapshot.hasData && snapshot.data.playbackState != null ? snapshot.data.playbackState.bufferedPosition : Duration(milliseconds: 0),
-                            //       // total: snapshot.hasData ? snapshot.data.mediaItem?.duration! : Duration(milliseconds: 0),
-                            //       // snapshot.hasData && snapshot.data.mediaItem != null ? snapshot.data.mediaItem.duration : Duration(milliseconds: 0),
-                            //       onSeek: (duration) {
-                            //         print('User selected a new time: $duration');
-                            //         AudioService.seekTo(duration);
-                            //       },
-                            //     ),
-                            //   ),
-                            // ),
+                            Expanded(
+                              flex: 2,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 40, right: 40, top: 20, bottom: 10),
+                                child: snapshot.hasData ? ProgressBar(
+                                  total: snapshot.data?.mediaItem?.duration ?? Duration.zero,
+                                  progress: snapshot.data?.position ?? Duration.zero,
+                                  buffered: snapshot.data?.playbackState == null ? Duration.zero : snapshot.data?.playbackState.bufferedPosition,
+                                  onSeek: (duration) {
+                                    print('User selected a new time: $duration');
+                                    AudioService.seekTo(duration);
+                                  },
+                                ): Container(),
+                              ),
+                            ),
                             Expanded(
                               flex: 2,
                               child: Padding(
