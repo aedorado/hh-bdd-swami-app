@@ -340,9 +340,7 @@ class AudioListScreenRow extends StatelessWidget {
                   builder: (context, Box<Audio> box, widget) {
                     return IconTheme(
                         data: new IconThemeData(color: Colors.redAccent),
-                        child: Icon((box.get(audio!.id) == null) ? Icons.favorite_border : Icons.favorite,
-                          size: 24,
-                        )
+                        child: Icon((box.get(audio!.id) == null) ? Icons.favorite_border : Icons.favorite, size: 24,)
                     );
                   }
               ),
@@ -364,23 +362,21 @@ class AudioListScreenRow extends StatelessWidget {
                       favoriteAudiosBox.put(audio!.id, audio!);
                       ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(audio!, item, favoriteAudiosBox).build(context));
                       break;
-                    case PLAY_NEXT:
-                    // bool isAdded = audioQueue.addNext(audio);
-                    // ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(isAdded, audio, audioQueue).build(context));
-                      break;
-                    case ADD_TO_QUEUE:
-                    // bool isAdded = audioQueue.addAudio(audio);
-                    // ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(isAdded, audio, audioQueue).build(context));
-                      break;
+                    // case PLAY_NEXT:
+                    // // bool isAdded = audioQueue.addNext(audio);
+                    // // ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(isAdded, audio, audioQueue).build(context));
+                    //   break;
+                    // case ADD_TO_QUEUE:
+                    // // bool isAdded = audioQueue.addAudio(audio);
+                    // // ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(isAdded, audio, audioQueue).build(context));
+                    //   break;
                   }
                 },
                 itemBuilder: (context) {
                   return [
                     (favoriteAudiosBox.get(audio!.id) == null) ?
-                    PopupMenuItem(value: FAVORITES_ACTION_ADD, child: Text('Add to Favorites'),) :
-                    PopupMenuItem(value: FAVORITES_ACTION_REMOVE, child: Text('Remove from Favorites'),),
-                    PopupMenuItem(value: PLAY_NEXT, child: Text('Play Next'),),
-                    PopupMenuItem(value: ADD_TO_QUEUE, child: Text('Add to Queue'),),
+                      PopupMenuItem(value: FAVORITES_ACTION_ADD, child: Text('Add to Favorites'),) :
+                      PopupMenuItem(value: FAVORITES_ACTION_REMOVE, child: Text('Remove from Favorites'),),
                   ];
                 },
               ),

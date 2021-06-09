@@ -1,9 +1,11 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:hh_bbds_app/adapter/adapter.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/models/podo/media_state.dart';
 import 'package:hh_bbds_app/streams/streams.dart';
+import 'package:hh_bbds_app/ui/audio/audio_list_screen.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
@@ -127,18 +129,18 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Flexible(
-                                      child: Container(
-                                        child: InkWell(
-                                          onTap: () {
-
-                                          },
-                                          child: Center(
-                                              child: Icon(Icons.skip_previous, size: 40, color: Color(0xFF1976D2),)
-                                          ),
-                                        ),
-                                      ),
-                                    ),
+                                    // Flexible(
+                                    //   child: Container(
+                                    //     child: InkWell(
+                                    //       onTap: () {
+                                    //
+                                    //       },
+                                    //       child: Center(
+                                    //           child: Icon(Icons.skip_previous, size: 40, color: Color(0xFF1976D2),)
+                                    //       ),
+                                    //     ),
+                                    //   ),
+                                    // ),
                                     Flexible(
                                       flex: 1,
                                       child: Container(
@@ -150,12 +152,6 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                                         ),
                                         child: InkWell(
                                           onTap: () {
-
-                                            //  PBS       ProcessingState
-                                            // playing & ready
-                                            // playing & completed
-                                            //
-
                                             if ((snapshot.hasData && snapshot.data?.playbackState != null && snapshot.data?.playbackState.playing == true)) {
                                               AudioService.pause();
                                             } else {
@@ -183,17 +179,17 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                                         ),
                                       ),
                                     ),
-                                    Flexible(
-                                      child: Container(
-                                        child: InkWell(
-                                          onTap: () {
-                                          },
-                                          child: Center(
-                                              child: Icon(Icons.skip_next, size: 40, color: Color(0xFF1976D2),)
-                                          ),
-                                        ),
-                                      ),
-                                    ),
+                                    // Flexible(
+                                    //   child: Container(
+                                    //     child: InkWell(
+                                    //       onTap: () {
+                                    //       },
+                                    //       child: Center(
+                                    //           child: Icon(Icons.skip_next, size: 40, color: Color(0xFF1976D2),)
+                                    //       ),
+                                    //     ),
+                                    //   ),
+                                    // ),
                                   ],
                                 ),
                               ),
@@ -208,15 +204,24 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                                   children: [
                                     Container(
                                       child: InkWell(
-                                        onTap: () {},
+                                        onTap: () {
+                                          String? currentMediaItemId = snapshot.data?.mediaItem?.id;
+                                          String favoritesActionPerformed;
+                                          if (favoriteAudiosBox.get(currentMediaItemId) == null) {
+                                            favoritesActionPerformed = FAVORITES_ACTION_ADD;
+                                            favoriteAudiosBox.put(currentMediaItemId, Adapter.mediaItemToAudio(snapshot.data?.mediaItem));
+                                          } else {
+                                            favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
+                                            favoriteAudiosBox.delete(currentMediaItemId);
+                                          }
+                                          ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(Adapter.mediaItemToAudio(snapshot.data?.mediaItem), favoritesActionPerformed, favoriteAudiosBox).build(context));
+                                        },
                                         child: ValueListenableBuilder(
                                             valueListenable: favoriteAudiosBox.listenable(),
-                                            builder: (context, box, widget) {
+                                            builder: (context, Box<Audio> box, widget) {
                                               return IconTheme(
                                                   data: new IconThemeData(color: Colors.redAccent),
-                                                  child: Icon(true ? Icons.favorite_border : Icons.favorite,
-                                                    size: 36,
-                                                  )
+                                                  child: Icon((box.get(snapshot.data?.mediaItem?.id) == null) ? Icons.favorite_border : Icons.favorite, size: 36,)
                                               );
                                             }
                                         ),

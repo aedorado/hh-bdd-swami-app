@@ -6,9 +6,7 @@ import 'package:hh_bbds_app/ui/audio/audio_list_screen.dart';
 import 'package:hh_bbds_app/ui/audio/audio_play_screen.dart';
 import 'package:hh_bbds_app/ui/audio/miniplayer.dart';
 import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
-import 'package:provider/provider.dart';
 
 class AudioFolderScreen extends StatelessWidget {
 

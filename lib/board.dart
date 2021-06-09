@@ -15,15 +15,14 @@ class _BoardAppState extends State<BoardApp> {
     return StreamBuilder<QuerySnapshot>(
       stream: snapshot,
       builder: (context, snapshot) {
-        if (!snapshot.hasData)
+        if (!snapshot.hasData) {
           return CircularProgressIndicator();
-        else {
-          return new ListView.builder(
-              itemCount: snapshot.data!.size,
-              itemBuilder: (context, index) {
-                return Text('${snapshot.data!.docs[index]['title']}');
-              });
-        };
+        }
+        return new ListView.builder(
+            itemCount: snapshot.data!.size,
+            itemBuilder: (context, index) {
+              return Text('${snapshot.data!.docs[index]['title']}');
+            });
       }
     );
   }

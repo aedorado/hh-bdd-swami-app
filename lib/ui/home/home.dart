@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/board.dart';
+import 'package:hh_bbds_app/ui/favorites/favorite_audios.dart';
 import 'package:hh_bbds_app/ui/library/library_home.dart';
 // import 'package:hh_bbds_app/ui/favorites/favorite_audios.dart';
 // import 'package:hh_bbds_app/ui/library/library_home.dart';
@@ -18,10 +19,9 @@ class _HomeState extends State<Home> {
 
   List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
-    // FavoriteAudios(),
-    BoardApp(),
+    FavoriteAudios(),
     LibraryHome(),
-    Text('Search', style: optionStyle,),
+    BoardApp(),
     Text('Alerts', style: optionStyle,),
   ];
 

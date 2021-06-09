@@ -1,12 +1,19 @@
 
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:hh_bbds_app/adapter/adapter.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
+import 'package:hh_bbds_app/background/background_audio_controls.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/ui/audio/audio_list_screen.dart';
 import 'package:hh_bbds_app/ui/audio/audio_play_screen.dart';
 import 'package:hh_bbds_app/ui/audio/miniplayer.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
+_backgroundTaskEntrypoint() {
+  AudioServiceBackground.run(() => AudioPlayerBackgroundTasks());
+}
 
 class FavoriteAudios extends StatelessWidget {
   Box<Audio> favoriteAudiosBox = Hive.box<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
@@ -36,7 +43,19 @@ class FavoriteAudios extends StatelessWidget {
                               Expanded(
                                   flex: 7,
                                   child: InkWell(
-                                      onTap: () {
+                                      onTap: () async {
+                                        MediaItem mediaItem = Adapter.audioToMediaItem(favoriteAudiosBox.getAt(index));
+                                        // if (!playing) {
+                                        if (!AudioService.running) {
+                                          AudioService.start(
+                                              androidNotificationIcon: 'mipmap/ic_launcher',
+                                              backgroundTaskEntrypoint: _backgroundTaskEntrypoint
+                                          );//, params: {"url": audio.url});
+                                          await AudioService.connect();
+                                        }
+                                        if (AudioService.currentMediaItem?.id != mediaItem.id) {
+                                          AudioService.playMediaItem(mediaItem);
+                                        }
                                         Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen()));
                                       },
                                       child: Row(
@@ -94,17 +113,11 @@ class FavoriteAudios extends StatelessWidget {
                                             ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(favoriteAudiosBox.getAt(index)!, item, favoriteAudiosBox).build(context));
                                             favoriteAudiosBox.delete(favoriteAudiosBox.getAt(index)?.id);
                                             break;
-                                          case ADD_TO_QUEUE:
-                                            // ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(true, favoriteAudiosBox.getAt(index), audioQueue).build(context));
-                                            break;
-                                          //TODO: delete item
                                         }
                                       },
                                       itemBuilder: (context) {
                                         return [
                                           PopupMenuItem(value: FAVORITES_ACTION_REMOVE, child: Text('Remove from Favorites'),),
-                                          PopupMenuItem(value: PLAY_NEXT, child: Text('Play Next'),),
-                                          PopupMenuItem(value: ADD_TO_QUEUE, child: Text('Add to Queue'),),
                                         ];
                                       },
                                     ),
