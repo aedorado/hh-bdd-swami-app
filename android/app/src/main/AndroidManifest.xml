@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
    <application
-        android:label="hh_bdd_swami_app"
+        android:label="HH BDD Swami"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

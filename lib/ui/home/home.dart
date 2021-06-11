@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hh_bbds_app/board.dart';
 import 'package:hh_bbds_app/ui/favorites/favorite_audios.dart';
 import 'package:hh_bbds_app/ui/library/library_home.dart';
-// import 'package:hh_bbds_app/ui/favorites/favorite_audios.dart';
-// import 'package:hh_bbds_app/ui/library/library_home.dart';
 
 import 'home_carousel.dart';
 
@@ -21,7 +18,7 @@ class _HomeState extends State<Home> {
     HomeScreen(),
     FavoriteAudios(),
     LibraryHome(),
-    BoardApp(),
+    Text('Search', style: optionStyle,),
     Text('Alerts', style: optionStyle,),
   ];
 
@@ -36,9 +33,6 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(title: Text("BDD Swami App")),
       body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
-      // drawer: Drawer(
-      //   child: HomeDrawer(),
-      // ),
       bottomNavigationBar: _bottomNavigationBar(),
     );
   }
@@ -49,7 +43,7 @@ class _HomeState extends State<Home> {
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Home"),
         BottomNavigationBarItem(icon: Icon(Icons.favorite_border), label: "Favorites"),
-        BottomNavigationBarItem(icon: Icon(Icons.grid_view), label: "Gallery"),
+        BottomNavigationBarItem(icon: Icon(Icons.grid_view), label: "Library"),
         BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
         BottomNavigationBarItem(icon: Icon(Icons.notifications_outlined), label: "Alerts")
       ],

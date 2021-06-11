@@ -1,13 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hh_bbds_app/adapter/adapter.dart';
 import 'package:hh_bbds_app/background/background_audio_controls.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/models/podo/audio_folder.dart';
-import 'package:hh_bbds_app/network/audio.dart';
-import 'package:hh_bbds_app/network/audio_folder.dart';
 import 'package:hh_bbds_app/ui/audio/audio_folder_screen.dart';
 import 'package:hh_bbds_app/ui/audio/audio_play_screen.dart';
 import 'package:hh_bbds_app/ui/audio/miniplayer.dart';
@@ -33,11 +31,16 @@ class _AudioListScreenState extends State<AudioListScreen> {
 
   final List audioListScreenSuggestions = ['TRACKS', 'SERIES', 'SEMINARS', 'YEAR'];
   final List audioListScreenFutures = [
-    fetchAudios('https://mocki.io/v1/00c25346-891a-4a2a-987e-4a9c1a6c637e'),
-    fetchAudioFolders('https://mocki.io/v1/0d9de1d0-332b-4748-bc5a-f5b79b952883'),
-    fetchAudioFolders('https://mocki.io/v1/0d9de1d0-332b-4748-bc5a-f5b79b952883'),
-    fetchAudios('https://mocki.io/v1/707d651f-aa2f-4d0a-90a9-2db94623350b'),
-    fetchAudios('https://mocki.io/v1/00c25346-891a-4a2a-987e-4a9c1a6c637e'),
+    FirebaseFirestore.instance.collection("audios").snapshots(),
+    FirebaseFirestore.instance.collection("audios").snapshots(),
+    FirebaseFirestore.instance.collection("audios").snapshots(),
+    FirebaseFirestore.instance.collection("audios").snapshots(),
+    FirebaseFirestore.instance.collection("audios").snapshots(),
+    // fetchAudios('https://mocki.io/v1/00c25346-891a-4a2a-987e-4a9c1a6c637e'),
+    // fetchAudioFolders('https://mocki.io/v1/0d9de1d0-332b-4748-bc5a-f5b79b952883'),
+    // fetchAudioFolders('https://mocki.io/v1/0d9de1d0-332b-4748-bc5a-f5b79b952883'),
+    // fetchAudios('https://mocki.io/v1/707d651f-aa2f-4d0a-90a9-2db94623350b'),
+    // fetchAudios('https://mocki.io/v1/00c25346-891a-4a2a-987e-4a9c1a6c637e'),
   ];
 
   // CurrentAudio currentAudio;
@@ -60,22 +63,10 @@ class _AudioListScreenState extends State<AudioListScreen> {
   // }
 
   @override
-  void dispose() {
-    AudioService.disconnect();
-    // currentAudio.audio = null;
-    // currentAudio.audioPlayer.stop();
-    // currentAudio.isPlaying = false;
-    // currentAudio.currentAudioIndex = -1;
-    // currentAudio.currentAudioPosition = Duration(seconds: 0);
-    // currentAudio.audioPlayer.release();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('BDDS Audio Library'),
+        title: Text('Audio Library'),
       ),
       body: SafeArea(
         child: Column(
@@ -112,9 +103,9 @@ class _AudioListScreenState extends State<AudioListScreen> {
               child: PageView.builder(
                 itemCount: audioListScreenSuggestions.length,
                 itemBuilder: (context, index) {
-                  if (index == 1 || index == 2) {
-                    return AudioFolderPage(audioListScreenFutures[index]);
-                  }
+                  // if (index == 1 || index == 2) {
+                  //   return AudioFolderPage(audioListScreenFutures[index]);
+                  // }
                   return AudioListPage(audioListScreenFutures[index]);
                 },
                 controller: _pageController,
@@ -169,17 +160,17 @@ class _AudioListScreenState extends State<AudioListScreen> {
 
 class AudioListPage extends StatelessWidget {
 
-  late Future<List<Audio>> audioListFuture;
+  late Stream<QuerySnapshot<Map<String, dynamic>>> audiosSnapshot;
   Box<Audio> favoriteAudiosBox = Hive.box<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
 
-  AudioListPage(Future<List<Audio>> audioListFuture) {
-    this.audioListFuture = audioListFuture;
+  AudioListPage(Stream<QuerySnapshot<Map<String, dynamic>>> audiosSnapshot) {
+    this.audiosSnapshot = audiosSnapshot;
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Audio>>(
-      future: this.audioListFuture,
+    return StreamBuilder<QuerySnapshot>(
+      stream: this.audiosSnapshot,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           // return Text(snapshot.data!.title);
@@ -188,9 +179,10 @@ class AudioListPage extends StatelessWidget {
                   physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
-                  itemCount: snapshot.data?.length,
+                  itemCount: snapshot.data!.size,
                   itemBuilder: (BuildContext context, int index) {
-                    return AudioListScreenRow(audio: snapshot.data![index], favoriteAudiosBox: favoriteAudiosBox,);
+                    Audio audio = Adapter.firebaseAudioSnapshotToAudio(snapshot.data!.docs[index]);
+                    return AudioListScreenRow(audio: audio, favoriteAudiosBox: favoriteAudiosBox,);
                   })
           );
         } else if (snapshot.hasError) {
@@ -228,21 +220,17 @@ class AudioListScreenRow extends StatelessWidget {
                   final playing = snapshot.data?.playing ?? false;
                   return InkWell(
                     onTap: () async {
-                      // audioQueue.addAndPlay(audio);
-                      // if (!playing) AudioService.pause();
                       MediaItem mediaItem = Adapter.audioToMediaItem(audio!);
-                      // if (!playing) {
+                      await AudioService.connect();
                       if (!AudioService.running) {
-                        AudioService.start(
+                        await AudioService.start(
                             androidNotificationIcon: 'mipmap/ic_launcher',
                             backgroundTaskEntrypoint: _backgroundTaskEntrypoint
                         );//, params: {"url": audio.url});
-                        await AudioService.connect();
                       }
                       if (AudioService.currentMediaItem?.id != mediaItem.id){
-                        AudioService.playMediaItem(mediaItem);
+                        await AudioService.playMediaItem(mediaItem);
                       }
-                      // }
                       Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen()));
                     },
                     child: Row(
@@ -282,46 +270,6 @@ class AudioListScreenRow extends StatelessWidget {
                 }
             ),
           ),
-          // Expanded(
-          //   flex: 1,
-          //   child: StreamBuilder<PlaybackState>(
-          //     stream: AudioService.playbackStateStream,
-          //     builder: (context, snapshot) {
-          //       final playing = snapshot.data?.playing ?? false;
-          //       return InkWell(
-          //         onTap: () async {
-          //           if (playing) AudioService.pause();
-          //           else {
-          //             MediaItem mediaItem = Adapter.audioToMediaItem(audio);
-          //             if (AudioService.running) {
-          //               AudioService.play();
-          //             } else {
-          //               AudioService.start(backgroundTaskEntrypoint: _backgroundTaskEntrypoint);//, params: {"url": audio.url});
-          //               await AudioService.connect();
-          //             }
-          //             await AudioService.playMediaItem(mediaItem);
-          //           }
-          //         },
-          //         child: StreamBuilder<MediaItem>(
-          //           stream: AudioService.currentMediaItemStream,
-          //           builder: (context, currentMediaItemSnapshot) {
-          //             debugPrint('cMI: ${currentMediaItemSnapshot.data?.toString()}');
-          //             return Icon(playing && currentMediaItemSnapshot.data?.id == audio.id ? Icons.pause : Icons.play_arrow, size: 25,);
-          //           }
-          //         )
-          //       );
-          //     }
-          //   ),
-          // ),
-          Expanded(
-              flex: 1,
-              child: InkWell(
-                  onTap: () {
-                    AudioService.stop();
-                  },
-                  child: Icon(Icons.stop, size: 25,)
-              )
-          ),
           Expanded(flex: 1,
             child: InkWell(
               onTap: () {
@@ -343,42 +291,6 @@ class AudioListScreenRow extends StatelessWidget {
                         child: Icon((box.get(audio!.id) == null) ? Icons.favorite_border : Icons.favorite, size: 24,)
                     );
                   }
-              ),
-            ),
-          ),
-          // More Icon
-          Expanded(
-            flex: 1,
-            child: Padding(
-              padding: EdgeInsets.only(left: 2, right: 4),
-              child: PopupMenuButton(
-                onSelected: (String item) {
-                  switch (item) {
-                    case FAVORITES_ACTION_REMOVE:
-                      favoriteAudiosBox.delete(audio!.id);
-                      ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(audio!, item, favoriteAudiosBox).build(context));
-                      break;
-                    case FAVORITES_ACTION_ADD:
-                      favoriteAudiosBox.put(audio!.id, audio!);
-                      ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(audio!, item, favoriteAudiosBox).build(context));
-                      break;
-                    // case PLAY_NEXT:
-                    // // bool isAdded = audioQueue.addNext(audio);
-                    // // ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(isAdded, audio, audioQueue).build(context));
-                    //   break;
-                    // case ADD_TO_QUEUE:
-                    // // bool isAdded = audioQueue.addAudio(audio);
-                    // // ScaffoldMessenger.of(context).showSnackBar(QueueModificationSnackBar(isAdded, audio, audioQueue).build(context));
-                    //   break;
-                  }
-                },
-                itemBuilder: (context) {
-                  return [
-                    (favoriteAudiosBox.get(audio!.id) == null) ?
-                      PopupMenuItem(value: FAVORITES_ACTION_ADD, child: Text('Add to Favorites'),) :
-                      PopupMenuItem(value: FAVORITES_ACTION_REMOVE, child: Text('Remove from Favorites'),),
-                  ];
-                },
               ),
             ),
           ),

@@ -3,7 +3,6 @@ import 'dart:async';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:just_audio/just_audio.dart';
 
 class AudioPlayerBackgroundTasks extends BackgroundAudioTask {
@@ -16,7 +15,6 @@ class AudioPlayerBackgroundTasks extends BackgroundAudioTask {
   Future<void> onStart(Map<String, dynamic>? params) async {
     final session = await AudioSession.instance;
     await session.configure(AudioSessionConfiguration.speech());
-    debugPrint('HERE 1');
     AudioServiceBackground.setState(
         controls: [],
         playing: false,
