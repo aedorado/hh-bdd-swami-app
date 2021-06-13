@@ -6,29 +6,25 @@ import 'package:hh_bbds_app/ui/library/library_home.dart';
 import 'home_carousel.dart';
 
 class Home extends StatefulWidget {
+  int selectedIndex;
+
+  Home({required this.selectedIndex});
+
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-  int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-
   List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
     FavoriteAudios(),
     LibraryHome(),
-    Text(
-      'Search',
-      style: optionStyle,
-    ),
     AlertScreen(),
   ];
 
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index;
+      widget.selectedIndex = index;
     });
   }
 
@@ -36,7 +32,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("BDD Swami App")),
-      body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
+      body: _widgetOptions.elementAt(widget.selectedIndex),
       bottomNavigationBar: _bottomNavigationBar(),
     );
   }
@@ -49,11 +45,11 @@ class _HomeState extends State<Home> {
         BottomNavigationBarItem(
             icon: Icon(Icons.favorite_border), label: "Favorites"),
         BottomNavigationBarItem(icon: Icon(Icons.grid_view), label: "Library"),
-        BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
+        // BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
         BottomNavigationBarItem(
             icon: Icon(Icons.notifications_outlined), label: "Alerts")
       ],
-      currentIndex: _selectedIndex,
+      currentIndex: widget.selectedIndex,
       selectedItemColor: Colors.amber[800],
       onTap: _onItemTapped,
     );

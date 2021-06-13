@@ -16,7 +16,6 @@ var kBodyTextStyle = TextStyle(
   fontWeight: FontWeight.normal,
   color: Colors.white,
   fontSize: 15.0,
-
 );
 
 var kCardDescriptionTextStyle = TextStyle(
@@ -24,7 +23,6 @@ var kCardDescriptionTextStyle = TextStyle(
   color: Colors.black,
   fontSize: 12.0,
 );
-
 
 var kCardTitleStyle = TextStyle(
   fontWeight: FontWeight.bold,
@@ -39,41 +37,9 @@ var kTitle2Style = TextStyle(
   decoration: TextDecoration.none,
 );
 
-var kHeadlineLabelStyle = TextStyle(
-  fontSize: 17.0,
-  fontWeight: FontWeight.w800,
-  color: kPrimaryLabelColor,
-  fontFamily: 'SF Pro Text',
-  decoration: TextDecoration.none,
-);
-var kSubtitleStyle = TextStyle(
-  fontSize: 16.0,
-  color: kSecondaryLabelColor,
-  decoration: TextDecoration.none,
-);
-
-var kActionTextStyle = TextStyle(
-  fontSize: 15.0,
-  color: kPrimaryColor,
-  fontWeight: FontWeight.w600,
-  decoration: TextDecoration.none,
-);
-
-var kLargeTitleStyle = TextStyle(
-  fontSize: 28.0,
-  fontWeight: FontWeight.bold,
-  color: kPrimaryLabelColor,
-  decoration: TextDecoration.none,
-);
-var kTitle1Style = TextStyle(
-  fontSize: 22.0,
-  fontWeight: FontWeight.bold,
-  color: kPrimaryLabelColor,
-  decoration: TextDecoration.none,
-);
-
 class HomeScreenCarouselCard {
-  HomeScreenCarouselCard({required this.title, required this.image, required this.description});
+  HomeScreenCarouselCard(
+      {required this.title, required this.image, required this.description});
   String title;
   String image;
   String description;
@@ -84,22 +50,21 @@ var homeCarouselCards = [
       title: 'Hare Krishna',
       image: 'https://pbs.twimg.com/media/Ed8kkw6XYAIJxBe.jpg',
       description:
-      'In this age of quarrel and hypocrisy, the only means of deliverance is the chanting of the holy names of the Lord. There is no other way. There is no other way. There is no other way.'),
+          'In this age of quarrel and hypocrisy, the only means of deliverance is the chanting of the holy names of the Lord. There is no other way. There is no other way. There is no other way.'),
   HomeScreenCarouselCard(
       title: 'Srimad Bhagvatam',
       image: 'https://bddswami.com/wp-content/uploads/2020/07/rs02-1.jpg',
       description:
-      'Śrī Caitanya Mahāprabhu very elaborately explained the harer nāma verse of the Bṛhan-nāradīya Purāṇa, and Sārvabhauma Bhaṭṭācārya was struck with wonder to hear His explanation.'),
+          'Śrī Caitanya Mahāprabhu very elaborately explained the harer nāma verse of the Bṛhan-nāradīya Purāṇa, and Sārvabhauma Bhaṭṭācārya was struck with wonder to hear His explanation.'),
   HomeScreenCarouselCard(
       title: 'Chaitanya Charitamrita',
       image: 'https://bddswami.com/wp-content/uploads/2020/07/rs01-1.jpg',
       description:
-      'Śrī Caitanya Mahāprabhu very elaborately explained the harer nāma verse of the Bṛhan-nāradīya Purāṇa, and Sārvabhauma Bhaṭṭācārya was struck with wonder to hear His explanation.'),
+          'Śrī Caitanya Mahāprabhu very elaborately explained the harer nāma verse of the Bṛhan-nāradīya Purāṇa, and Sārvabhauma Bhaṭṭācārya was struck with wonder to hear His explanation.'),
 ];
 
 // ignore: must_be_immutable
 class CarouselCard extends StatelessWidget {
-
   final HomeScreenCarouselCard card;
 
   CarouselCard({required this.card});
@@ -126,8 +91,8 @@ class CarouselCard extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: Container(
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.white.withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white.withOpacity(0.7),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -195,7 +160,6 @@ class _CarouselListState extends State<CarouselList> {
     });
   }
 
-
   Widget updateIndicators() {
     return Align(
       alignment: Alignment.bottomCenter,
@@ -204,7 +168,7 @@ class _CarouselListState extends State<CarouselList> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: homeCarouselCards.map(
-                (card) {
+            (card) {
               var index = homeCarouselCards.indexOf(card);
               return Container(
                 width: 7.0,
@@ -212,7 +176,9 @@ class _CarouselListState extends State<CarouselList> {
                 margin: EdgeInsets.symmetric(horizontal: 6.0),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: (currentPage % homeCarouselCards.length) == index ? Colors.red : Color(0xFFA6AEBD),
+                  color: (currentPage % homeCarouselCards.length) == index
+                      ? Colors.red
+                      : Color(0xFFA6AEBD),
                 ),
               );
             },

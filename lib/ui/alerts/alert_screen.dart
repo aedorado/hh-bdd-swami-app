@@ -74,7 +74,6 @@ class _AlertScreenState extends State<AlertScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     alertsBox.values.forEach((alert) => _data.add(Item(
           id: alert.id,
@@ -128,20 +127,21 @@ class _AlertScreenState extends State<AlertScreen> {
                   ),
                 );
               },
-              body: Container(
-                width: MediaQuery.of(context).size.width,
-                child: TextButton(
-                  onPressed: () async {
-                    if (await canLaunch(item.link)) {
-                      await launch(item.link);
-                    } else {
-                      throw 'Could not launch ${item.link}';
-                    }
-                  },
-                  child:
-                      item.buttonNeeded ? Text(item.buttonText) : Container(),
-                ),
-              ),
+              body: item.buttonNeeded
+                  ? Container(
+                      width: MediaQuery.of(context).size.width,
+                      child: TextButton(
+                        onPressed: () async {
+                          if (await canLaunch(item.link)) {
+                            await launch(item.link);
+                          } else {
+                            throw 'Could not launch ${item.link}';
+                          }
+                        },
+                        child: Text(item.buttonText),
+                      ),
+                    )
+                  : Container(),
               isExpanded: item.isExpanded,
             );
           }).toList(),

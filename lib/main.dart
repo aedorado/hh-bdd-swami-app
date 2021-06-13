@@ -71,7 +71,6 @@ class BDDSApp extends StatefulWidget {
   _BDDSAppState createState() => _BDDSAppState();
 }
 
-// TODO MaterialLocalizations EXCEPTION
 class _BDDSAppState extends State<BDDSApp> {
   @override
   void initState() {
@@ -106,28 +105,32 @@ class _BDDSAppState extends State<BDDSApp> {
       RemoteNotification notification = message.notification!;
       AndroidNotification android = message.notification!.android!;
       if (notification != null && android != null) {
-        showDialog(
-            context: context,
-            builder: (_) {
-              return AlertDialog(
-                title: Text(notification.title ?? ''),
-                content: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [Text(notification.body ?? '')],
-                  ),
-                ),
-              );
-            });
+        // showDialog(
+        //     context: context,
+        //     builder: (_) {
+        //       return AlertDialog(
+        //         title: Text(notification.title ?? ''),
+        //         content: SingleChildScrollView(
+        //           child: Column(
+        //             crossAxisAlignment: CrossAxisAlignment.start,
+        //             children: [Text(notification.body ?? '')],
+        //           ),
+        //         ),
+        //       );
+        //     });
         Box<Alert> alertsBox = Hive.box<Alert>(HIVE_BOX_ALERTS);
         alertsBox.put(message.messageId,
             Alert.fromFirebaseMessage(message.messageId, message.data));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => Home(selectedIndex: 1)));
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Home();
+    return Home(
+      selectedIndex: 0,
+    );
   }
 }
