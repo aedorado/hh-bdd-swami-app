@@ -1,5 +1,5 @@
-
 const String HIVE_BOX_FAVORITE_AUDIOS = 'hive_box_favorite_audios';
+const String HIVE_BOX_ALERTS = 'hive_box_alerts';
 
 const String FAVORITES_ACTION_ADD = 'item_added_to_favorites';
 const String FAVORITES_ACTION_REMOVE = 'item_removed_from_favorites';
