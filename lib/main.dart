@@ -7,6 +7,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/models/podo/alert.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
+import 'package:hh_bbds_app/network/remote_config.dart';
 import 'package:hh_bbds_app/ui/home/home.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
@@ -47,6 +48,9 @@ void main() async {
     sound: true,
   );
 
+  // Remote Config
+  await RemoteConfigService.setupRemoteConfigAsync();
+
   // Local Storage
   Directory document = await getApplicationDocumentsDirectory();
   Hive
@@ -72,6 +76,8 @@ class BDDSApp extends StatefulWidget {
 }
 
 class _BDDSAppState extends State<BDDSApp> {
+  int _homeScreenSelectedScreen = 0;
+
   @override
   void initState() {
     super.initState();
@@ -101,7 +107,7 @@ class _BDDSAppState extends State<BDDSApp> {
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('A new onMessageOpenedApp event was published!');
+      // print('A new onMessageOpenedApp event was published!');
       RemoteNotification notification = message.notification!;
       AndroidNotification android = message.notification!.android!;
       if (notification != null && android != null) {
@@ -123,6 +129,9 @@ class _BDDSAppState extends State<BDDSApp> {
             Alert.fromFirebaseMessage(message.messageId, message.data));
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => Home(selectedIndex: 1)));
+        setState(() {
+          _homeScreenSelectedScreen = 3;
+        });
       }
     });
   }
@@ -130,7 +139,7 @@ class _BDDSAppState extends State<BDDSApp> {
   @override
   Widget build(BuildContext context) {
     return Home(
-      selectedIndex: 0,
+      selectedIndex: this._homeScreenSelectedScreen,
     );
   }
 }

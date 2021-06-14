@@ -42,7 +42,7 @@ class Alert {
   // fromFirebaseMessage assumes receivedAt time is supposed to be determined
   Alert.fromFirebaseMessage(String? id, Map<String, dynamic> json) {
     this.id = id ?? Uuid().v4();
-    link = json['link'];
+    link = json['link'] ?? '';
     type = json['type'];
     title = json['title'];
     subtitle = json['subtitle'] ?? '';
