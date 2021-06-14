@@ -182,8 +182,14 @@ class AudioYearList extends StatelessWidget {
                 Text('${yearsList[index]}', style: TextStyle(fontSize: 24.0)),
             trailing: Icon(Icons.chevron_right),
             onTap: () {
-              // Navigator.push(context,
-              //     MaterialPageRoute(builder: (context) => AudioFolderScreen()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AudioFolderScreen(AudioFolder(
+                          id: "",
+                          contentUrl: "",
+                          name: "YEARLY",
+                          totalContents: "20"))));
             },
           );
         });
