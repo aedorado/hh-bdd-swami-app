@@ -178,18 +178,15 @@ class AudioYearList extends StatelessWidget {
         itemCount: yearsList.length,
         itemBuilder: (BuildContext content, int index) {
           return ListTile(
-            title:
-                Text('${yearsList[index]}', style: TextStyle(fontSize: 24.0)),
+            title: Text('${yearsList[index]}', style: TextStyle(fontSize: 24.0)),
             trailing: Icon(Icons.chevron_right),
             onTap: () {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => AudioFolderScreen(AudioFolder(
-                          id: "",
-                          contentUrl: "",
-                          name: "YEARLY",
-                          totalContents: "20"))));
+                      builder: (context) => AudioYearScreen(yearsList[index])
+                  )
+              );
             },
           );
         });

@@ -127,8 +127,8 @@ class _BDDSAppState extends State<BDDSApp> {
         Box<Alert> alertsBox = Hive.box<Alert>(HIVE_BOX_ALERTS);
         alertsBox.put(message.messageId,
             Alert.fromFirebaseMessage(message.messageId, message.data));
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => Home(selectedIndex: 1)));
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => Home(selectedIndex: 3)));
         setState(() {
           _homeScreenSelectedScreen = 3;
         });
