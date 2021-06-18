@@ -43,6 +43,7 @@ dependencies:
   url_launcher: ^6.0.6
   flutter_local_notifications: ^6.0.0
   firebase_remote_config: ^0.10.0+2
+  draggable_scrollbar: ^0.1.0
 
 
 dev_dependencies:
