@@ -87,20 +87,12 @@ class _AudioListScreenState extends State<AudioListScreen> {
                         Audio audio =
                             Adapter.firebaseAudioSnapshotToAudio(value.docs[0]);
                         MediaItem mediaItem = Adapter.audioToMediaItem(audio);
-                        await AudioService.connect();
-                        if (!AudioService.running) {
-                          await AudioService.start(
-                              androidNotificationIcon: 'mipmap/ic_launcher',
-                              backgroundTaskEntrypoint:
-                                  _backgroundTaskEntrypoint); //, params: {"url": audio.url});
-                        }
-                        if (AudioService.currentMediaItem?.id != mediaItem.id) {
-                          await AudioService.playMediaItem(mediaItem);
-                        }
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => AudioPlayScreen()));
+                                builder: (context) => AudioPlayScreen(
+                                      mediaItem: mediaItem,
+                                    )));
                       }
                     },
                   );
@@ -121,7 +113,6 @@ class _AudioListScreenState extends State<AudioListScreen> {
                         AudioFolder audioFolder =
                             Adapter.firebaseAudioFolderSnapshotToAudioFolder(
                                 value.docs[0]);
-                        debugPrint(audioFolder.toString());
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -319,20 +310,21 @@ class AudioListScreenRow extends StatelessWidget {
                   return InkWell(
                     onTap: () async {
                       MediaItem mediaItem = Adapter.audioToMediaItem(audio!);
-                      await AudioService.connect();
-                      if (!AudioService.running) {
-                        await AudioService.start(
-                            androidNotificationIcon: 'mipmap/ic_launcher',
-                            backgroundTaskEntrypoint:
-                                _backgroundTaskEntrypoint); //, params: {"url": audio.url});
-                      }
-                      if (AudioService.currentMediaItem?.id != mediaItem.id) {
-                        await AudioService.playMediaItem(mediaItem);
-                      }
+                      // await AudioService.connect();
+                      // if (!AudioService.running) {
+                      //   await AudioService.start(
+                      //       androidNotificationIcon: 'mipmap/ic_launcher',
+                      //       backgroundTaskEntrypoint:
+                      //           _backgroundTaskEntrypoint); //, params: {"url": audio.url});
+                      // }
+                      // if (AudioService.currentMediaItem?.id != mediaItem.id) {
+                      //   await AudioService.playMediaItem(mediaItem);
+                      // }
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => AudioPlayScreen()));
+                              builder: (context) =>
+                                  AudioPlayScreen(mediaItem: mediaItem)));
                     },
                     child: Row(
                       children: [

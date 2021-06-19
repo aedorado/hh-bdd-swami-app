@@ -17,8 +17,7 @@ class AudioFolderScreen extends StatelessWidget {
 
   AudioFolderScreen(AudioFolder audioFolder) {
     this.audioFolder = audioFolder;
-    this.ssy = FirebaseFirestore
-        .instance
+    this.ssy = FirebaseFirestore.instance
         .collection("audios")
         .where("series", isEqualTo: this.audioFolder.id)
         .snapshots();
@@ -27,30 +26,34 @@ class AudioFolderScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        // body: AudioListPage(this.audioListFuture),
-        body: Column(
-          children: [
-            Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: this.ssy,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    debugPrint('SNAP SIZE: ${snapshot.data!.size}');
-                    return AudioFolderScreenSliverList(snapshot);
-                  } else if (snapshot.hasError) {
-                    return Text("${snapshot.error}");
-                  }
-                  return Center(
-                      child: Container(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator()));
-                },
+      child: ColoredBox(
+        // TODO change to default scaffold color
+        color: Colors.white,
+        child: Scaffold(
+          // body: AudioListPage(this.audioListFuture),
+          body: Column(
+            children: [
+              Expanded(
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: this.ssy,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      debugPrint('SNAP SIZE: ${snapshot.data!.size}');
+                      return AudioFolderScreenSliverList(snapshot);
+                    } else if (snapshot.hasError) {
+                      return Text("${snapshot.error}");
+                    }
+                    return Center(
+                        child: Container(
+                            height: 24,
+                            width: 24,
+                            child: CircularProgressIndicator()));
+                  },
+                ),
               ),
-            ),
-            Miniplayer(),
-          ],
+              Miniplayer(),
+            ],
+          ),
         ),
       ),
     );
@@ -58,7 +61,6 @@ class AudioFolderScreen extends StatelessWidget {
 }
 
 class AudioFolderScreenSliverList extends StatelessWidget {
-
   Box<Audio> favoriteAudiosBox = Hive.box<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
   late AsyncSnapshot<QuerySnapshot<Object?>> snapshot;
 
@@ -72,14 +74,13 @@ class AudioFolderScreenSliverList extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget audioListSliver = Container(
         child: ListView.builder(
-            physics: BouncingScrollPhysics(
-                parent: AlwaysScrollableScrollPhysics()),
+            physics:
+                BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
             itemCount: this.snapshot.data!.size,
             itemBuilder: (BuildContext context, int index) {
-              Audio audio =
-              Adapter.firebaseAudioSnapshotToAudio(
+              Audio audio = Adapter.firebaseAudioSnapshotToAudio(
                   this.snapshot.data!.docs[index]);
               return AudioListScreenRow(
                 audio: audio,
@@ -99,9 +100,9 @@ class AudioFolderScreenSliverList extends StatelessWidget {
             children: <Widget>[
               Positioned.fill(
                   child: Image.network(
-                    "https://vrindavandarshan.in/upload_images/dailydarshan/2021-06-01-Mycnz.jpg",
-                    fit: BoxFit.cover,
-                  )),
+                "https://vrindavandarshan.in/upload_images/dailydarshan/2021-06-01-Mycnz.jpg",
+                fit: BoxFit.cover,
+              )),
             ],
           ),
         ),
@@ -131,9 +132,8 @@ class AudioFolderScreenSliverList extends StatelessWidget {
         ),
         SliverList(
           delegate: SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
-              Audio audio =
-              Adapter.firebaseAudioSnapshotToAudio(
+            (BuildContext context, int index) {
+              Audio audio = Adapter.firebaseAudioSnapshotToAudio(
                   this.snapshot.data!.docs[index]);
               return AudioListScreenRow(
                 audio: audio,
@@ -154,8 +154,7 @@ class AudioYearScreen extends StatelessWidget {
 
   AudioYearScreen(year) {
     this.year = year;
-    this.ssy = FirebaseFirestore
-        .instance
+    this.ssy = FirebaseFirestore.instance
         .collection("audios")
         .where("year", isEqualTo: year.toString())
         .snapshots();
