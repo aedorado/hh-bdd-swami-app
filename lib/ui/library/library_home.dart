@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/ui/audio/audio_list_screen.dart';
-import 'package:hh_bbds_app/ui/gallery/gallery_home.dart';
-// import 'package:hh_bbds_app/ui/audio/audio_list_screen.dart';
+import 'package:hh_bbds_app/ui/gallery/gallery_albums.dart';
 
-// const kShadowColor = Color.fromRGBO(72, 76, 82, 0.16);
 var dividerTextStyle = TextStyle(
-  // fontWeight: FontWeight.bold,
   color: Colors.black,
   fontSize: 20.0,
   decoration: TextDecoration.none,
@@ -45,9 +42,16 @@ class LibraryHome extends StatelessWidget {
                       displayString: "Radha Shyam Sundar",
                       displayImage:
                           "https://bddswami.com/wp-content/uploads/2020/07/rs02-1.jpg",
-                      route: GalleryHome(),
+                      route: GalleryAlbums(),
                     )),
-                // new Flexible(flex: 1, child: LibraryCard(displayString: "Maharaja", displayImage: "https://bddswami.com/wp-content/uploads/2020/07/rs01-1.jpg")),
+                new Flexible(
+                    flex: 1,
+                    child: LibraryCard(
+                      displayString: "Maharaja",
+                      displayImage:
+                          "https://bddswami.com/wp-content/uploads/2020/07/rs01-1.jpg",
+                      route: GalleryAlbums(),
+                    )),
               ],
             ),
           ),

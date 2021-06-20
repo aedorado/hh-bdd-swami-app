@@ -12,10 +12,10 @@ import 'package:hh_bbds_app/assets/constants.dart';
 
 class AudioFolderScreen extends StatelessWidget {
   late AudioFolder audioFolder;
-  // late Stream<QuerySnapshot<Map<String, dynamic>>> sss;
   late Stream<QuerySnapshot<Map<String, dynamic>>> ssy;
 
   AudioFolderScreen(AudioFolder audioFolder) {
+    // TODO remove series hardcoding from here
     this.audioFolder = audioFolder;
     this.ssy = FirebaseFirestore.instance
         .collection("audios")
@@ -72,21 +72,6 @@ class AudioFolderScreenSliverList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget audioListSliver = Container(
-        child: ListView.builder(
-            physics:
-                BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: this.snapshot.data!.size,
-            itemBuilder: (BuildContext context, int index) {
-              Audio audio = Adapter.firebaseAudioSnapshotToAudio(
-                  this.snapshot.data!.docs[index]);
-              return AudioListScreenRow(
-                audio: audio,
-                favoriteAudiosBox: favoriteAudiosBox,
-              );
-            }));
     return CustomScrollView(
       physics: BouncingScrollPhysics(),
       slivers: [
@@ -144,50 +129,6 @@ class AudioFolderScreenSliverList extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class AudioYearScreen extends StatelessWidget {
-  late int year;
-  late Stream<QuerySnapshot<Map<String, dynamic>>> ssy;
-
-  AudioYearScreen(year) {
-    this.year = year;
-    this.ssy = FirebaseFirestore.instance
-        .collection("audios")
-        .where("year", isEqualTo: year.toString())
-        .snapshots();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        // body: AudioListPage(this.audioListFuture),
-        body: Column(
-          children: [
-            Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: this.ssy,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return AudioFolderScreenSliverList(snapshot);
-                  } else if (snapshot.hasError) {
-                    return Text("${snapshot.error}");
-                  }
-                  return Center(
-                      child: Container(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator()));
-                },
-              ),
-            ),
-            Miniplayer(),
-          ],
-        ),
-      ),
     );
   }
 }
