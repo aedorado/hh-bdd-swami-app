@@ -54,7 +54,7 @@ class LibraryHome extends StatelessWidget {
   }
 
   _getFavoritesLibraryContent() {
-    return [
+    return <Widget>[
       _sectionHeader("Vani"),
       Container(
         height: 200,
@@ -99,7 +99,7 @@ class LibraryHome extends StatelessWidget {
   }
 
   _getGeneralibraryContent() {
-    return [
+    return <Widget>[
       _sectionHeader("Vani"),
       Container(
         height: 200,

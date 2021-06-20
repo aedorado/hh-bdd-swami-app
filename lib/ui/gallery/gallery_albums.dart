@@ -33,87 +33,95 @@ class _GalleryAlbumsState extends State<GalleryAlbums> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          Center(
-              child: Padding(
-            padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
-            child: Text(
-              '${this.totalAlbums} Albums  • 16108 Photos •  192 Videos',
-              style: TextStyle(color: Color(0xFF0077C2)),
-            ),
-          )),
-          SingleChildScrollView(
-            child: StreamBuilder<QuerySnapshot>(
-              stream:
-                  FirebaseFirestore.instance.collection("albums").snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return GridView.builder(
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      itemCount: snapshot.data!.size,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2),
-                      itemBuilder: (context, index) {
-                        Album album = Adapter.firebaseAlbumsSnapshotToAlbum(
-                            snapshot.data!.docs[index]);
-                        return Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => OpenAlbum(album)));
-                            },
-                            child: Hero(
-                              tag: album.id,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4.0),
-                                  image: DecorationImage(
-                                      image: NetworkImage(album.coverUrl),
-                                      fit: BoxFit.cover),
-                                ),
-                                height: 180,
-                                child: Stack(
-                                  children: [
-                                    Positioned(
-                                      bottom: 0,
-                                      child: Container(
-                                          width:
-                                              MediaQuery.of(context).size.width,
-                                          decoration: new BoxDecoration(
-                                            color: Colors.white.withOpacity(
-                                                0.7), // Specifies the background color and the opacity
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(2.0),
-                                            child: Text(
-                                              '${album.name}',
-                                              style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 16.0),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Image Gallery'),
+      ),
+      body: Container(
+        child: Column(
+          children: [
+            Center(
+                child: Padding(
+              padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
+              child: Text(
+                '${this.totalAlbums} Albums  • 16108 Photos •  192 Videos',
+                style: TextStyle(color: Color(0xFF0077C2)),
+              ),
+            )),
+            SingleChildScrollView(
+              child: StreamBuilder<QuerySnapshot>(
+                stream:
+                    FirebaseFirestore.instance.collection("albums").snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return GridView.builder(
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        itemCount: snapshot.data!.size,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2),
+                        itemBuilder: (context, index) {
+                          Album album = Adapter.firebaseAlbumsSnapshotToAlbum(
+                              snapshot.data!.docs[index]);
+                          return Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            OpenAlbum(album)));
+                              },
+                              child: Hero(
+                                tag: album.id,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4.0),
+                                    image: DecorationImage(
+                                        image: NetworkImage(album.coverUrl),
+                                        fit: BoxFit.cover),
+                                  ),
+                                  height: 180,
+                                  child: Stack(
+                                    children: [
+                                      Positioned(
+                                        bottom: 0,
+                                        child: Container(
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            decoration: new BoxDecoration(
+                                              color: Colors.white.withOpacity(
+                                                  0.7), // Specifies the background color and the opacity
                                             ),
-                                          )),
-                                    ),
-                                  ],
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(2.0),
+                                              child: Text(
+                                                '${album.name}',
+                                                style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 16.0),
+                                              ),
+                                            )),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      });
-                }
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              },
-            ),
-          )
-        ],
+                          );
+                        });
+                  }
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
