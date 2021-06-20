@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/ui/audio/audio_list_screen.dart';
+import 'package:hh_bbds_app/ui/favorites/favorite_audios.dart';
+import 'package:hh_bbds_app/ui/favorites/favorite_images.dart';
 import 'package:hh_bbds_app/ui/gallery/gallery_albums.dart';
 
 var dividerTextStyle = TextStyle(
@@ -9,63 +11,19 @@ var dividerTextStyle = TextStyle(
 );
 
 class LibraryHome extends StatelessWidget {
+  bool isFavoritesLibrary = false;
+
+  LibraryHome({required this.isFavoritesLibrary});
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ListView(
-        scrollDirection: Axis.vertical,
-        children: [
-          _sectionHeader("Vani"),
-          Container(
-            height: 200,
-            child: Row(
-              children: [
-                new Flexible(
-                    flex: 1,
-                    child: LibraryCard(
-                        displayString: "Audios",
-                        displayImage: "https://i.postimg.cc/3Jc0NCqK/A.jpg",
-                        route: AudioListScreen())),
-                // new Flexible(flex: 1, child: LibraryCard(displayString: "Videos", displayImage: "https://i.postimg.cc/1zxgcRP2/B.jpg",)),
-              ],
-            ),
-          ),
-          _sectionHeader("Darshan"),
-          Container(
-            height: 200,
-            child: Row(
-              children: [
-                new Flexible(
-                    flex: 1,
-                    child: LibraryCard(
-                      displayString: "Radha Shyam Sundar",
-                      displayImage:
-                          "https://bddswami.com/wp-content/uploads/2020/07/rs02-1.jpg",
-                      route: GalleryAlbums(),
-                    )),
-                new Flexible(
-                    flex: 1,
-                    child: LibraryCard(
-                      displayString: "Maharaja",
-                      displayImage:
-                          "https://bddswami.com/wp-content/uploads/2020/07/rs01-1.jpg",
-                      route: GalleryAlbums(),
-                    )),
-              ],
-            ),
-          ),
-          // _sectionHeader("Kirtans"),
-          // Container(
-          //   height: 200,
-          //   child: Row(
-          //     children: [
-          //       // new Flexible(flex: 1, child: LibraryCard(displayString: "Kirtans", displayImage: "https://bddswami.com/wp-content/uploads/2020/07/rs01-1.jpg")),
-          //     ],
-          //   ),
-          // ),
-        ],
-      ),
+          scrollDirection: Axis.vertical,
+          children: this.isFavoritesLibrary
+              ? _getFavoritesLibraryContent()
+              : _getGeneralibraryContent()),
     );
   }
 
@@ -93,6 +51,104 @@ class LibraryHome extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  _getFavoritesLibraryContent() {
+    return [
+      _sectionHeader("Vani"),
+      Container(
+        height: 200,
+        child: Row(
+          children: [
+            new Flexible(
+                flex: 1,
+                child: LibraryCard(
+                    displayString: "Audios",
+                    displayImage: "https://i.postimg.cc/3Jc0NCqK/A.jpg",
+                    route: FavoriteAudios())),
+            // new Flexible(flex: 1, child: LibraryCard(displayString: "Videos", displayImage: "https://i.postimg.cc/1zxgcRP2/B.jpg",)),
+          ],
+        ),
+      ),
+      _sectionHeader("Darshan"),
+      Container(
+        height: 200,
+        child: Row(
+          children: [
+            new Flexible(
+                flex: 1,
+                child: LibraryCard(
+                  displayString: "Radha Shyam Sundar",
+                  displayImage:
+                      "https://bddswami.com/wp-content/uploads/2020/07/rs02-1.jpg",
+                  route: FavoriteImages(),
+                )),
+          ],
+        ),
+      ),
+      // _sectionHeader("Kirtans"),
+      // Container(
+      //   height: 200,
+      //   child: Row(
+      //     children: [
+      //       // new Flexible(flex: 1, child: LibraryCard(displayString: "Kirtans", displayImage: "https://bddswami.com/wp-content/uploads/2020/07/rs01-1.jpg")),
+      //     ],
+      //   ),
+      // ),
+    ];
+  }
+
+  _getGeneralibraryContent() {
+    return [
+      _sectionHeader("Vani"),
+      Container(
+        height: 200,
+        child: Row(
+          children: [
+            new Flexible(
+                flex: 1,
+                child: LibraryCard(
+                    displayString: "Audios",
+                    displayImage: "https://i.postimg.cc/3Jc0NCqK/A.jpg",
+                    route: AudioListScreen())),
+            // new Flexible(flex: 1, child: LibraryCard(displayString: "Videos", displayImage: "https://i.postimg.cc/1zxgcRP2/B.jpg",)),
+          ],
+        ),
+      ),
+      _sectionHeader("Darshan"),
+      Container(
+        height: 200,
+        child: Row(
+          children: [
+            new Flexible(
+                flex: 1,
+                child: LibraryCard(
+                  displayString: "Radha Shyam Sundar",
+                  displayImage:
+                      "https://bddswami.com/wp-content/uploads/2020/07/rs02-1.jpg",
+                  route: GalleryAlbums(),
+                )),
+            new Flexible(
+                flex: 1,
+                child: LibraryCard(
+                  displayString: "Maharaja",
+                  displayImage:
+                      "https://bddswami.com/wp-content/uploads/2020/07/rs01-1.jpg",
+                  route: GalleryAlbums(),
+                )),
+          ],
+        ),
+      ),
+      // _sectionHeader("Kirtans"),
+      // Container(
+      //   height: 200,
+      //   child: Row(
+      //     children: [
+      //       // new Flexible(flex: 1, child: LibraryCard(displayString: "Kirtans", displayImage: "https://bddswami.com/wp-content/uploads/2020/07/rs01-1.jpg")),
+      //     ],
+      //   ),
+      // ),
+    ];
   }
 }
 

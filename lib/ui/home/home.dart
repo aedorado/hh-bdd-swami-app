@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/ui/alerts/alert_screen.dart';
-import 'package:hh_bbds_app/ui/favorites/favorite_audios.dart';
 import 'package:hh_bbds_app/ui/library/library_home.dart';
 
 import 'home_carousel.dart';
@@ -17,8 +16,12 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
-    FavoriteAudios(),
-    LibraryHome(),
+    LibraryHome(
+      isFavoritesLibrary: true,
+    ),
+    LibraryHome(
+      isFavoritesLibrary: false,
+    ),
     AlertScreen(),
   ];
 
