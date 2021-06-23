@@ -162,38 +162,37 @@ class _AudioPlayScreenState extends State<AudioPlayScreen>
                             padding: const EdgeInsets.only(
                                 left: 40, right: 40, top: 10, bottom: 10),
                             child: Container(
-                              width: 48,
-                              height: 48,
+                              width: 56,
+                              height: 56,
                               decoration: BoxDecoration(
+                                shape: BoxShape.circle,
                                 color: Color(0xFF004BA0),
-                                borderRadius: BorderRadius.circular(30),
+                                // borderRadius: BorderRadius.circular(30),
                               ),
-                              child: IconButton(
-                                color: Colors.white,
-                                iconSize: 32,
-                                icon:
-                                    // Icon(snapshot.hasData && snapshot.data!.shouldPause() ? Icons.pause : Icons.play_arrow),
-                                    AnimatedIcon(
-                                  icon: AnimatedIcons.pause_play,
-                                  progress: controller,
-                                ),
-                                onPressed: () {
-                                  if (snapshot.hasData) {
-                                    if (snapshot.data!.shouldPause()) {
-                                      AudioService.pause();
-                                      controller.forward();
-                                    } else {
-                                      if (snapshot.data!.shouldReplay()) {
-                                        AudioService.seekTo(
-                                            Duration(milliseconds: 0));
+                              child: Center(
+                                child: IconButton(
+                                  color: Colors.white,
+                                  iconSize: 36,
+                                  icon: AnimatedIcon(
+                                    icon: AnimatedIcons.pause_play,
+                                    progress: controller,
+                                  ),
+                                  onPressed: () {
+                                    if (snapshot.hasData) {
+                                      if (snapshot.data!.shouldPause()) {
+                                        AudioService.pause();
+                                        controller.forward();
+                                      } else {
+                                        if (snapshot.data!.shouldReplay()) {
+                                          AudioService.seekTo(
+                                              Duration(milliseconds: 0));
+                                        }
+                                        AudioService.play();
+                                        controller.reverse();
                                       }
-                                      AudioService.play();
-                                      controller.reverse();
                                     }
-                                  }
-                                  // query = "";
-                                  // close(context, "false");
-                                },
+                                  },
+                                ),
                               ),
                             ),
                           ),
