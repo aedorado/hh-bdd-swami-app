@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
+import 'package:hh_bbds_app/models/podo/gallery_image.dart';
 import 'package:hh_bbds_app/models/podo/alert.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/network/remote_config.dart';
@@ -57,12 +58,13 @@ void main() async {
   Hive
     ..init(document.path)
     ..registerAdapter(AudioAdapter())
-    ..registerAdapter(AlertAdapter());
+    ..registerAdapter(AlertAdapter())
+    ..registerAdapter(GalleryImageAdapter());
 
   await Hive.openBox<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
   await Hive.openBox<Alert>(HIVE_BOX_ALERTS);
   await Hive.openBox(HIVE_BOX_AUDIO_SEARCH);
-  await Hive.openBox(HIVE_BOX_FAVORITE_IMAGES);
+  await Hive.openBox<GalleryImage>(HIVE_BOX_FAVORITE_IMAGES);
 
   runApp(MaterialApp(
     title: 'Flutter Demo',

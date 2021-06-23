@@ -1,6 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:hh_bbds_app/models/podo/gallery_image.dart';
 import 'package:hh_bbds_app/models/podo/album.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/models/podo/audio_folder.dart';
@@ -70,6 +71,23 @@ class Adapter {
       totalImages: doc['total_images'] ?? '',
       totalVideos: doc['total_videos'] ?? '',
       description: doc['description'] ?? '',
+    );
+  }
+
+  static GalleryImage firebaseAlbumsSnapshotToGalleryImage(
+      QueryDocumentSnapshot<Object?> doc) {
+    return GalleryImage(
+      id: doc['id'] ?? '',
+      description: doc['description'] ?? '',
+      albumID: doc['album_id'] ?? '',
+      color: doc['color'] ?? '',
+      date: doc['date'] ?? '',
+      displayURL: doc['display_url'] ?? '',
+      downloadURL: doc['download_url'] ?? '',
+      thumbnailURL: doc['thumbnail_url'] ?? '',
+      location: doc['location'] ?? '',
+      tags: doc['tags'] ?? '',
+      type: doc['type'] ?? '',
     );
   }
 }
