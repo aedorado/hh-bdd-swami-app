@@ -52,7 +52,7 @@ class FavoriteImages extends StatelessWidget {
                                     color: Colors.black,
                                     image: DecorationImage(
                                       image: imageProvider,
-                                      fit: BoxFit.contain,
+                                      fit: BoxFit.cover,
                                     ),
                                   ),
                                 ),

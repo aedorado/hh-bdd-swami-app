@@ -3,6 +3,7 @@ import 'package:hh_bbds_app/ui/audio/audio_list_screen.dart';
 import 'package:hh_bbds_app/ui/favorites/favorite_audios.dart';
 import 'package:hh_bbds_app/ui/favorites/favorite_images.dart';
 import 'package:hh_bbds_app/ui/gallery/gallery_albums.dart';
+import 'package:hh_bbds_app/ui/gallery/gallery_home.dart';
 
 var dividerTextStyle = TextStyle(
   color: Colors.black,
@@ -78,7 +79,7 @@ class LibraryHome extends StatelessWidget {
             new Flexible(
                 flex: 1,
                 child: LibraryCard(
-                  displayString: "Radha Shyam Sundar",
+                  displayString: "Radha Shyama Sundar",
                   displayImage:
                       "https://bddswami.com/wp-content/uploads/2020/07/rs02-1.jpg",
                   route: FavoriteImages(),
@@ -123,10 +124,10 @@ class LibraryHome extends StatelessWidget {
             new Flexible(
                 flex: 1,
                 child: LibraryCard(
-                  displayString: "Radha Shyam Sundar",
+                  displayString: "Sri Sri Radha Shyama Sundar",
                   displayImage:
                       "https://bddswami.com/wp-content/uploads/2020/07/rs02-1.jpg",
-                  route: GalleryAlbums(),
+                  route: GalleryHome(),
                 )),
             new Flexible(
                 flex: 1,
@@ -134,7 +135,7 @@ class LibraryHome extends StatelessWidget {
                   displayString: "Maharaja",
                   displayImage:
                       "https://bddswami.com/wp-content/uploads/2020/07/rs01-1.jpg",
-                  route: GalleryAlbums(),
+                  route: GalleryHome(),
                 )),
           ],
         ),

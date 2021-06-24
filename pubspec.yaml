@@ -45,6 +45,9 @@ dependencies:
   firebase_remote_config: ^0.10.0+2
   draggable_scrollbar: ^0.1.0
   cached_network_image: ^3.0.0
+  dio: ^4.0.0
+  image_gallery_saver: ^1.6.9
+  permission_handler: ^8.1.1
 
 
 dev_dependencies:
