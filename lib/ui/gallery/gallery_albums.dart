@@ -43,7 +43,13 @@ class GalleryAlbums extends StatelessWidget {
                         child: GestureDetector(
                           behavior: HitTestBehavior.translucent,
                           onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => OpenAlbum(album)));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => OpenAlbum(
+                                          galleryOperateMode: this.galleryOperateMode,
+                                          album: album,
+                                        )));
                           },
                           child: Container(
                             height: 180,
@@ -96,8 +102,19 @@ class GalleryAlbums extends StatelessWidget {
 
 class OpenAlbum extends StatelessWidget {
   Album album;
+  GalleryOperateMode galleryOperateMode;
+  late String imagesCollectionName;
 
-  OpenAlbum(this.album);
+  OpenAlbum({required this.galleryOperateMode, required this.album}) {
+    switch (this.galleryOperateMode) {
+      case GalleryOperateMode.OPERATE_MODE_RSS:
+        this.imagesCollectionName = 'ssrss_images';
+        break;
+      case GalleryOperateMode.OPERATE_MODE_MHR:
+        this.imagesCollectionName = 'maharaja_images';
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +124,7 @@ class OpenAlbum extends StatelessWidget {
           children: [
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection("images").where("album_id", isEqualTo: this.album.id).snapshots(),
+                stream: FirebaseFirestore.instance.collection(this.imagesCollectionName).where("album_id", isEqualTo: this.album.id).snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return _openAlbumSliverList(context, album, snapshot);
