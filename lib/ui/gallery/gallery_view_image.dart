@@ -37,6 +37,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
     _toastInfo("Downloading Image");
     var response = await Dio().get(galleryImage.downloadURL, options: Options(responseType: ResponseType.bytes));
     final result = await ImageGallerySaver.saveImage(Uint8List.fromList(response.data), quality: 60, name: galleryImage.id);
+    debugPrint(result);
     _toastInfo("Image saved to Gallery");
   }
 
@@ -52,10 +53,11 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
         title: Text('Image Gallery'),
       ),
       body: Container(
-        height: MediaQuery.of(context).size.height * 0.65,
+        // height: MediaQuery.of(context).size.height * 0.65,
         child: Column(
           children: [
             Expanded(
+              flex: 7,
               child: Hero(
                 tag: this.widget.galleryImage.displayURL,
                 child: CachedNetworkImage(
@@ -74,43 +76,73 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                 ),
               ),
             ),
-            Container(
-              height: 44,
-              decoration: BoxDecoration(color: const Color(0xFF42A5F5)),
-              child: Row(
-                children: [
-                  Expanded(
-                      flex: 1,
-                      child: Container(
-                          child: IconButton(
-                              icon: Icon(Icons.download_sharp),
-                              onPressed: () {
-                                downloadFile(this.widget.galleryImage);
-                              }))),
-                  Expanded(
-                      flex: 1,
-                      child: Container(
-                          child: ValueListenableBuilder(
-                              valueListenable: favoriteImagesBox.listenable(),
-                              builder: (context, Box box, widget) {
-                                var isAleadyAddedToFavorites = box.get(this.widget.galleryImage.id) != null;
-                                return IconButton(
-                                    icon: Icon(
-                                      isAleadyAddedToFavorites ? Icons.favorite : Icons.favorite_border,
-                                      color: Colors.redAccent,
-                                    ),
-                                    onPressed: () {
-                                      if (isAleadyAddedToFavorites) {
-                                        favoriteImagesBox.delete(this.widget.galleryImage.id);
-                                      } else {
-                                        favoriteImagesBox.put(this.widget.galleryImage.id, this.widget.galleryImage);
-                                      }
-                                    });
-                              })))
-                ],
+            Flexible(
+              child: Container(
+                height: 50,
+                decoration: BoxDecoration(color: const Color(0xFF42A5F5)),
+                child: Row(
+                  children: [
+                    Expanded(
+                        flex: 1,
+                        child: Container(
+                            child: IconButton(
+                                icon: Icon(Icons.download_sharp),
+                                onPressed: () {
+                                  downloadFile(this.widget.galleryImage);
+                                }))),
+                    Expanded(
+                        flex: 1,
+                        child: Container(
+                            child: ValueListenableBuilder(
+                                valueListenable: favoriteImagesBox.listenable(),
+                                builder: (context, Box box, widget) {
+                                  var isAleadyAddedToFavorites = box.get(this.widget.galleryImage.id) != null;
+                                  return IconButton(
+                                      icon: Icon(
+                                        isAleadyAddedToFavorites ? Icons.favorite : Icons.favorite_border,
+                                        color: Colors.redAccent,
+                                      ),
+                                      onPressed: () {
+                                        if (isAleadyAddedToFavorites) {
+                                          favoriteImagesBox.delete(this.widget.galleryImage.id);
+                                        } else {
+                                          favoriteImagesBox.put(this.widget.galleryImage.id, this.widget.galleryImage);
+                                        }
+                                      });
+                                })))
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Container(
+                  child: Column(
+                    children: [
+                      _descriptionTextBox('${widget.galleryImage.description}', 20),
+                      _descriptionTextBox('${widget.galleryImage.date}', 14),
+                      _descriptionTextBox('${widget.galleryImage.location}', 14),
+                      _descriptionTextBox('${widget.galleryImage.tags}', 14),
+                    ],
+                  ),
+                ),
               ),
             )
           ],
+        ),
+      ),
+    );
+  }
+
+  _descriptionTextBox(String s, double fontSize) {
+    return Padding(
+      padding: const EdgeInsets.all(3.0),
+      child: Container(
+        child: Text(
+          '$s',
+          style: TextStyle(fontSize: fontSize),
         ),
       ),
     );
