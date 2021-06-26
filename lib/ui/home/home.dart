@@ -45,12 +45,9 @@ class _HomeState extends State<Home> {
       type: BottomNavigationBarType.fixed,
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Home"),
-        BottomNavigationBarItem(
-            icon: Icon(Icons.favorite_border), label: "Favorites"),
+        BottomNavigationBarItem(icon: Icon(Icons.favorite_border), label: "Favorites"),
         BottomNavigationBarItem(icon: Icon(Icons.grid_view), label: "Library"),
-        // BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
-        BottomNavigationBarItem(
-            icon: Icon(Icons.notifications_outlined), label: "Alerts")
+        BottomNavigationBarItem(icon: Icon(Icons.notifications_outlined), label: "Alerts")
       ],
       currentIndex: widget.selectedIndex,
       selectedItemColor: Colors.amber[800],
@@ -78,18 +75,9 @@ class HomeScreenBottomCards extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        new Flexible(
-            flex: 1,
-            child: HomeScreenBottomCard(
-                displayString: "Association", displayImage: "images/A.jpg")),
-        new Flexible(
-            flex: 1,
-            child: HomeScreenBottomCard(
-                displayString: "Books", displayImage: "images/B.jpg")),
-        new Flexible(
-            flex: 1,
-            child: HomeScreenBottomCard(
-                displayString: "Chanting", displayImage: "images/C.jpg")),
+        new Flexible(flex: 1, child: HomeScreenBottomCard(displayString: "Association", displayImage: "images/A.jpg")),
+        new Flexible(flex: 1, child: HomeScreenBottomCard(displayString: "Books", displayImage: "images/B.jpg")),
+        new Flexible(flex: 1, child: HomeScreenBottomCard(displayString: "Chanting", displayImage: "images/C.jpg")),
       ],
     );
   }
@@ -99,16 +87,12 @@ class HomeScreenBottomCard extends StatelessWidget {
   final String displayString;
   final String displayImage;
 
-  const HomeScreenBottomCard(
-      {Key? key, required this.displayString, required this.displayImage})
-      : super(key: key);
+  const HomeScreenBottomCard({Key? key, required this.displayString, required this.displayImage}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage(displayImage), fit: BoxFit.cover)),
+      decoration: BoxDecoration(image: DecorationImage(image: AssetImage(displayImage), fit: BoxFit.cover)),
       child: Column(
         children: [
           Spacer(),

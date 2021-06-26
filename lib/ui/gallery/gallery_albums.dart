@@ -4,68 +4,46 @@ import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/adapter/adapter.dart';
 import 'package:hh_bbds_app/models/podo/album.dart';
 import 'package:hh_bbds_app/models/podo/gallery_image.dart';
-import 'package:hh_bbds_app/ui/gallery/view_image.dart';
+import 'package:hh_bbds_app/ui/gallery/gallery_all_images_list_screen.dart';
+import 'package:hh_bbds_app/ui/gallery/gallery_constants.dart';
 
-class GalleryAlbums extends StatefulWidget {
-  @override
-  _GalleryAlbumsState createState() => _GalleryAlbumsState();
-}
+class GalleryAlbums extends StatelessWidget {
+  GalleryOperateMode galleryOperateMode;
+  late String albumCollectionName;
 
-class _GalleryAlbumsState extends State<GalleryAlbums> {
-  var totalAlbums;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    initAsync();
-    super.initState();
-  }
-
-  initAsync() async {
-    totalAlbums = await FirebaseFirestore.instance
-        .collection('albums')
-        .snapshots()
-        .length;
-    debugPrint(totalAlbums);
+  GalleryAlbums({required this.galleryOperateMode}) {
+    switch (this.galleryOperateMode) {
+      case GalleryOperateMode.OPERATE_MODE_RSS:
+        this.albumCollectionName = 'ssrss_albums';
+        break;
+      case GalleryOperateMode.OPERATE_MODE_MHR:
+        this.albumCollectionName = 'maharaja_albums';
+        break;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       child: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection("albums").snapshots(),
+        stream: FirebaseFirestore.instance.collection(this.albumCollectionName).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return Container(
                 child: CustomScrollView(
               physics: BouncingScrollPhysics(),
               slivers: [
-                SliverToBoxAdapter(
-                  child: Center(
-                      child: Padding(
-                    padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
-                    child: Text(
-                      '${this.totalAlbums} Albums  • 16108 Photos •  192 Videos',
-                      style: TextStyle(color: Color(0xFF0077C2)),
-                    ),
-                  )),
-                ),
                 SliverGrid(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
                   delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
-                      Album album = Adapter.firebaseAlbumsSnapshotToAlbum(
-                          snapshot.data!.docs[index]);
+                      Album album = Adapter.firebaseAlbumsSnapshotToAlbum(snapshot.data!.docs[index]);
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: GestureDetector(
                           behavior: HitTestBehavior.translucent,
                           onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => OpenAlbum(album)));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => OpenAlbum(album)));
                           },
                           child: Container(
                             height: 180,
@@ -92,9 +70,7 @@ class _GalleryAlbumsState extends State<GalleryAlbums> {
                                         padding: const EdgeInsets.all(2.0),
                                         child: Text(
                                           '${album.name}',
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 16.0),
+                                          style: TextStyle(color: Colors.black, fontSize: 16.0),
                                         ),
                                       )),
                                 ),
@@ -104,8 +80,7 @@ class _GalleryAlbumsState extends State<GalleryAlbums> {
                         ),
                       );
                     },
-                    childCount: snapshot
-                        .data!.size, // .length, // this.snapshot.data!.size,
+                    childCount: snapshot.data!.size, // .length, // this.snapshot.data!.size,
                   ),
                 ),
               ],
@@ -132,21 +107,14 @@ class OpenAlbum extends StatelessWidget {
           children: [
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection("images")
-                    .where("album_id", isEqualTo: this.album.id)
-                    .snapshots(),
+                stream: FirebaseFirestore.instance.collection("images").where("album_id", isEqualTo: this.album.id).snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return _openAlbumSliverList(context, album, snapshot);
                   } else if (snapshot.hasError) {
                     return Text("${snapshot.error}");
                   }
-                  return Center(
-                      child: Container(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator()));
+                  return Center(child: Container(height: 24, width: 24, child: CircularProgressIndicator()));
                 },
               ),
             ),
@@ -156,8 +124,7 @@ class OpenAlbum extends StatelessWidget {
     );
   }
 
-  _openAlbumSliverList(
-      context, Album album, AsyncSnapshot<QuerySnapshot<Object?>> snapshot) {
+  _openAlbumSliverList(context, Album album, AsyncSnapshot<QuerySnapshot<Object?>> snapshot) {
     return CustomScrollView(
       physics: BouncingScrollPhysics(),
       slivers: [
@@ -221,52 +188,16 @@ class OpenAlbum extends StatelessWidget {
           ),
         ),
         SliverGrid(
-          gridDelegate:
-              SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-          delegate: SliverChildBuilderDelegate(
-              (BuildContext context, int index) {
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+          delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
             if (snapshot.hasData) {
-              GalleryImage imageToDisplay =
-                  Adapter.firebaseAlbumsSnapshotToGalleryImage(
-                      snapshot.data!.docs[index]);
-              return Padding(
-                padding: const EdgeInsets.all(1.0),
-                child: Hero(
-                  tag: imageToDisplay.displayURL,
-                  child: Container(
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image: NetworkImage(imageToDisplay.thumbnailURL),
-                              fit: BoxFit.cover)),
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      ViewImageScreen(imageToDisplay)));
-                        },
-                        child: (index % 4 != 0)
-                            ? Container()
-                            : Container(
-                                child: Center(
-                                  child: Container(
-                                      child: Icon(
-                                    Icons.play_arrow,
-                                    size: 40,
-                                    color: Colors.white,
-                                  )),
-                                ),
-                              ),
-                      )),
-                ),
+              GalleryImage imageToDisplay = Adapter.firebaseAlbumsSnapshotToGalleryImage(snapshot.data!.docs[index]);
+              return ImageListScreenDisplayContainer(
+                imageToDisplay: imageToDisplay,
               );
             }
             return Center(child: CircularProgressIndicator());
-          },
-              childCount:
-                  snapshot.data!.size // .length, // this.snapshot.data!.size,
+          }, childCount: snapshot.data!.size // .length, // this.snapshot.data!.size,
               ),
         ),
       ],

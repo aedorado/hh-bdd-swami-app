@@ -80,6 +80,9 @@ flutter:
     - images/A.jpg
     - images/B.jpg
     - images/C.jpg
+    - images/D.jpg
+    - images/Q.jpg
+    - images/R.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

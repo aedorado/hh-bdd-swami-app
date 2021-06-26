@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/ui/audio/audio_list_screen.dart';
 import 'package:hh_bbds_app/ui/favorites/favorite_audios.dart';
 import 'package:hh_bbds_app/ui/favorites/favorite_images.dart';
-import 'package:hh_bbds_app/ui/gallery/gallery_albums.dart';
+import 'package:hh_bbds_app/ui/gallery/gallery_constants.dart';
 import 'package:hh_bbds_app/ui/gallery/gallery_home.dart';
+import 'package:hh_bbds_app/ui/quotes/quotes_screen.dart';
 
 var dividerTextStyle = TextStyle(
   color: Colors.black,
@@ -20,11 +21,7 @@ class LibraryHome extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: ListView(
-          scrollDirection: Axis.vertical,
-          children: this.isFavoritesLibrary
-              ? _getFavoritesLibraryContent()
-              : _getGeneralibraryContent()),
+      child: ListView(scrollDirection: Axis.vertical, children: this.isFavoritesLibrary ? _getFavoritesLibraryContent() : _getGeneralibraryContent()),
     );
   }
 
@@ -61,12 +58,7 @@ class LibraryHome extends StatelessWidget {
         height: 200,
         child: Row(
           children: [
-            new Flexible(
-                flex: 1,
-                child: LibraryCard(
-                    displayString: "Audios",
-                    displayImage: "https://i.postimg.cc/3Jc0NCqK/A.jpg",
-                    route: FavoriteAudios())),
+            new Flexible(flex: 1, child: LibraryCard(displayString: "Audios", displayImage: "images/A.jpg", route: FavoriteAudios())),
             // new Flexible(flex: 1, child: LibraryCard(displayString: "Videos", displayImage: "https://i.postimg.cc/1zxgcRP2/B.jpg",)),
           ],
         ),
@@ -79,23 +71,35 @@ class LibraryHome extends StatelessWidget {
             new Flexible(
                 flex: 1,
                 child: LibraryCard(
-                  displayString: "Radha Shyama Sundar",
-                  displayImage:
-                      "https://bddswami.com/wp-content/uploads/2020/07/rs02-1.jpg",
+                  displayString: "Radha Shyama Sundar & Maharaja",
+                  displayImage: "images/R.jpg",
                   route: FavoriteImages(),
+                )),
+            // new Flexible(
+            //     flex: 1,
+            //     child: LibraryCard(
+            //       displayString: "Maharaja",
+            //       displayImage: "images/D.jpg",
+            //       route: FavoriteImages(),
+            //     )),
+          ],
+        ),
+      ),
+      _sectionHeader("Quotes"),
+      Container(
+        height: 200,
+        child: Row(
+          children: [
+            new Flexible(
+                flex: 1,
+                child: LibraryCard(
+                  displayString: "Quotes",
+                  displayImage: "images/Q.jpg",
+                  route: Quotes(),
                 )),
           ],
         ),
       ),
-      // _sectionHeader("Kirtans"),
-      // Container(
-      //   height: 200,
-      //   child: Row(
-      //     children: [
-      //       // new Flexible(flex: 1, child: LibraryCard(displayString: "Kirtans", displayImage: "https://bddswami.com/wp-content/uploads/2020/07/rs01-1.jpg")),
-      //     ],
-      //   ),
-      // ),
     ];
   }
 
@@ -106,12 +110,7 @@ class LibraryHome extends StatelessWidget {
         height: 200,
         child: Row(
           children: [
-            new Flexible(
-                flex: 1,
-                child: LibraryCard(
-                    displayString: "Audios",
-                    displayImage: "https://i.postimg.cc/3Jc0NCqK/A.jpg",
-                    route: AudioListScreen())),
+            new Flexible(flex: 1, child: LibraryCard(displayString: "Audios", displayImage: "images/A.jpg", route: AudioListScreen())),
             // new Flexible(flex: 1, child: LibraryCard(displayString: "Videos", displayImage: "https://i.postimg.cc/1zxgcRP2/B.jpg",)),
           ],
         ),
@@ -125,30 +124,38 @@ class LibraryHome extends StatelessWidget {
                 flex: 1,
                 child: LibraryCard(
                   displayString: "Sri Sri Radha Shyama Sundar",
-                  displayImage:
-                      "https://bddswami.com/wp-content/uploads/2020/07/rs02-1.jpg",
-                  route: GalleryHome(),
+                  displayImage: "images/R.jpg",
+                  route: GalleryHome(
+                    galleryOperateMode: GalleryOperateMode.OPERATE_MODE_RSS,
+                  ),
                 )),
             new Flexible(
                 flex: 1,
                 child: LibraryCard(
                   displayString: "Maharaja",
-                  displayImage:
-                      "https://bddswami.com/wp-content/uploads/2020/07/rs01-1.jpg",
-                  route: GalleryHome(),
+                  displayImage: "images/D.jpg",
+                  route: GalleryHome(
+                    galleryOperateMode: GalleryOperateMode.OPERATE_MODE_MHR,
+                  ),
                 )),
           ],
         ),
       ),
-      // _sectionHeader("Kirtans"),
-      // Container(
-      //   height: 200,
-      //   child: Row(
-      //     children: [
-      //       // new Flexible(flex: 1, child: LibraryCard(displayString: "Kirtans", displayImage: "https://bddswami.com/wp-content/uploads/2020/07/rs01-1.jpg")),
-      //     ],
-      //   ),
-      // ),
+      _sectionHeader("Quotes"),
+      Container(
+        height: 200,
+        child: Row(
+          children: [
+            new Flexible(
+                flex: 1,
+                child: LibraryCard(
+                  displayString: "Quotes",
+                  displayImage: "images/Q.jpg",
+                  route: Quotes(),
+                )),
+          ],
+        ),
+      ),
     ];
   }
 }
@@ -157,12 +164,7 @@ class LibraryCard extends StatelessWidget {
   final String displayString;
   final String displayImage;
   final Widget route;
-  const LibraryCard(
-      {Key? key,
-      required this.displayString,
-      required this.displayImage,
-      required this.route})
-      : super(key: key);
+  const LibraryCard({Key? key, required this.displayString, required this.displayImage, required this.route}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -170,14 +172,10 @@ class LibraryCard extends StatelessWidget {
       padding: const EdgeInsets.all(4.0),
       child: InkWell(
         onTap: () => {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => route)),
+          Navigator.push(context, MaterialPageRoute(builder: (context) => route)),
         },
         child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              image: DecorationImage(
-                  image: NetworkImage(displayImage), fit: BoxFit.cover)),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), image: DecorationImage(image: AssetImage(displayImage), fit: BoxFit.cover)),
           child: Column(
             children: [
               Spacer(),

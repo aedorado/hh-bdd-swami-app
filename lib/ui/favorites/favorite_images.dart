@@ -3,13 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/models/podo/gallery_image.dart';
-import 'package:hh_bbds_app/ui/gallery/view_image.dart';
+import 'package:hh_bbds_app/ui/gallery/gallery_view_image.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class FavoriteImages extends StatelessWidget {
-  final Box favoriteImagesBox =
-      Hive.box<GalleryImage>(HIVE_BOX_FAVORITE_IMAGES);
+  final Box favoriteImagesBox = Hive.box<GalleryImage>(HIVE_BOX_FAVORITE_IMAGES);
 
   @override
   Widget build(BuildContext context) {
@@ -25,29 +24,22 @@ class FavoriteImages extends StatelessWidget {
                 physics: BouncingScrollPhysics(),
                 slivers: [
                   SliverGrid(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
                     delegate: SliverChildBuilderDelegate(
                       (BuildContext context, int index) {
-                        GalleryImage imageToDisplay =
-                            favoriteImagesBox.getAt(index);
+                        GalleryImage imageToDisplay = favoriteImagesBox.getAt(index);
                         return Padding(
                           padding: const EdgeInsets.all(1.0),
                           child: GestureDetector(
                             behavior: HitTestBehavior.translucent,
                             onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          ViewImageScreen(imageToDisplay)));
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => ViewImageScreen(imageToDisplay)));
                             },
                             child: Hero(
                               tag: imageToDisplay.displayURL,
                               child: CachedNetworkImage(
                                 imageUrl: imageToDisplay.displayURL,
-                                imageBuilder: (context, imageProvider) =>
-                                    Container(
+                                imageBuilder: (context, imageProvider) => Container(
                                   decoration: BoxDecoration(
                                     color: Colors.black,
                                     image: DecorationImage(
@@ -56,10 +48,8 @@ class FavoriteImages extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                placeholder: (context, url) =>
-                                    Center(child: CircularProgressIndicator()),
-                                errorWidget: (context, url, error) =>
-                                    Icon(Icons.error),
+                                placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                                errorWidget: (context, url, error) => Icon(Icons.error),
                               ),
                             ),
                           ),
