@@ -48,6 +48,8 @@ dependencies:
   dio: ^4.0.0
   image_gallery_saver: ^1.6.9
   permission_handler: ^8.1.1
+  fluttertoast: ^8.0.7
+  intl: ^0.17.0
 
 
 dev_dependencies:

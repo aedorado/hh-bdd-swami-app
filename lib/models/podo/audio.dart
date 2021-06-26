@@ -4,13 +4,12 @@ part 'audio.g.dart';
 
 @HiveType(typeId: 0)
 class Audio {
-
   @HiveField(0)
   late String id;
 
   @HiveField(1)
   late String name;
-  
+
   @HiveField(2)
   late String url;
 
@@ -32,8 +31,6 @@ class Audio {
 
   @override
   String toString() {
-    // TODO: implement toString
     return 'Id: ${this.id} Name: ${this.name}, URL: ${this.url}';
   }
-
 }
