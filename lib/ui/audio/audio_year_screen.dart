@@ -3,6 +3,25 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/ui/audio/audio_folder_screen.dart';
 import 'package:hh_bbds_app/ui/audio/miniplayer.dart';
+import 'package:hh_bbds_app/network/remote_config.dart';
+
+class AudioYearList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    List yearsList = RemoteConfigService.getAudioYears() ?? [];
+    return ListView.builder(
+        itemCount: yearsList.length,
+        itemBuilder: (BuildContext content, int index) {
+          return ListTile(
+            title: Text('${yearsList[index]}', style: TextStyle(fontSize: 24.0)),
+            trailing: Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => AudioYearScreen(yearsList[index])));
+            },
+          );
+        });
+  }
+}
 
 class AudioYearScreen extends StatelessWidget {
   late int year;
@@ -10,10 +29,7 @@ class AudioYearScreen extends StatelessWidget {
 
   AudioYearScreen(year) {
     this.year = year;
-    this.ssy = FirebaseFirestore.instance
-        .collection("audios")
-        .where("year", isEqualTo: year.toString())
-        .snapshots();
+    this.ssy = FirebaseFirestore.instance.collection("audios").where("year", isEqualTo: year.toString()).snapshots();
   }
 
   @override
@@ -32,11 +48,7 @@ class AudioYearScreen extends StatelessWidget {
                   } else if (snapshot.hasError) {
                     return Text("${snapshot.error}");
                   }
-                  return Center(
-                      child: Container(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator()));
+                  return Center(child: Container(height: 24, width: 24, child: CircularProgressIndicator()));
                 },
               ),
             ),
