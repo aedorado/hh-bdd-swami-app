@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 part 'gallery_image.g.dart';
 
@@ -78,5 +79,19 @@ class GalleryImage {
     data['tags'] = this.tags;
     data['type'] = this.type;
     return data;
+  }
+
+  GalleryImage.fromFireBaseSnapshotDoc(QueryDocumentSnapshot<Object?> doc) {
+    id = doc['id'] ?? '';
+    description = doc['description'] ?? '';
+    albumID = doc['album_id'] ?? '';
+    color = doc['color'] ?? '';
+    date = doc['date'] ?? '';
+    displayURL = doc['display_url'] ?? '';
+    downloadURL = doc['download_url'] ?? '';
+    thumbnailURL = doc['thumbnail_url'] ?? '';
+    location = doc['location'] ?? '';
+    tags = doc['tags'] ?? '';
+    type = doc['type'] ?? '';
   }
 }

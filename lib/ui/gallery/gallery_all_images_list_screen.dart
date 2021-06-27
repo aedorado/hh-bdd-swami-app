@@ -51,7 +51,7 @@ class AllImagesListScreen extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 itemCount: numItems,
                 itemBuilder: (context, index) {
-                  GalleryImage imageToDisplay = Adapter.firebaseAlbumsSnapshotToGalleryImage(snapshot.data!.docs[index]);
+                  GalleryImage imageToDisplay = GalleryImage.fromFireBaseSnapshotDoc(snapshot.data!.docs[index]);
                   return ImageListScreenDisplayContainer(
                     imageToDisplay: imageToDisplay,
                   );

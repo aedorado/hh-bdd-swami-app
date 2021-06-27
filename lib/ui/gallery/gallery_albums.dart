@@ -37,7 +37,7 @@ class GalleryAlbums extends StatelessWidget {
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
                   delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
-                      Album album = Adapter.firebaseAlbumsSnapshotToAlbum(snapshot.data!.docs[index]);
+                      Album album = Album.fromFirebaseAlbumSnapshot(snapshot.data!.docs[index]);
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: GestureDetector(
@@ -193,7 +193,7 @@ class OpenAlbum extends StatelessWidget {
                           style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
                         Text(
-                          '${album.totalImages} Images • ${album.totalVideos} Videos',
+                          '${album.totalImages} Images',
                           style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
                       ],
@@ -208,7 +208,7 @@ class OpenAlbum extends StatelessWidget {
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
           delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
             if (snapshot.hasData) {
-              GalleryImage imageToDisplay = Adapter.firebaseAlbumsSnapshotToGalleryImage(snapshot.data!.docs[index]);
+              GalleryImage imageToDisplay = GalleryImage.fromFireBaseSnapshotDoc(snapshot.data!.docs[index]);
               return ImageListScreenDisplayContainer(
                 imageToDisplay: imageToDisplay,
               );

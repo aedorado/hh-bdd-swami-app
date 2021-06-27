@@ -67,7 +67,7 @@ class GalleryByColors extends StatelessWidget {
                                   shrinkWrap: true,
                                   itemCount: snapshot.data!.size,
                                   itemBuilder: (context, index) {
-                                    GalleryImage imageToDisplay = Adapter.firebaseAlbumsSnapshotToGalleryImage(snapshot.data!.docs[index]);
+                                    GalleryImage imageToDisplay = GalleryImage.fromFireBaseSnapshotDoc(snapshot.data!.docs[index]);
                                     return GestureDetector(
                                       behavior: HitTestBehavior.translucent,
                                       onTap: () {
@@ -164,7 +164,7 @@ class OpenAlbumSliverList extends StatelessWidget {
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
             delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
               if (snapshot.hasData) {
-                GalleryImage imageToDisplay = Adapter.firebaseAlbumsSnapshotToGalleryImage(snapshot.data!.docs[index]);
+                GalleryImage imageToDisplay = GalleryImage.fromFireBaseSnapshotDoc(snapshot.data!.docs[index]);
                 return Padding(
                   padding: const EdgeInsets.all(1.0),
                   child: Hero(
