@@ -21,8 +21,7 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
     importance: Importance.max,
     playSound: true);
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
 // For backgournd, this fucntion initialized the background app
 Future _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -39,10 +38,7 @@ void main() async {
   // Push Notifications
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
+  await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
 
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
     alert: true,
@@ -86,13 +82,11 @@ class _BDDSAppState extends State<BDDSApp> {
 
   saveAlert(RemoteMessage message) {
     Box<Alert> alertsBox = Hive.box<Alert>(HIVE_BOX_ALERTS);
-    alertsBox.put(message.messageId,
-        Alert.fromFirebaseMessage(message.messageId, message.data));
+    alertsBox.put(message.messageId, Alert.fromFirebaseMessage(message.messageId, message.data));
   }
 
   checkForInitialMessage() async {
-    RemoteMessage? initialMessage =
-        await FirebaseMessaging.instance.getInitialMessage();
+    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
       saveAlert(initialMessage);
       setState(() {
@@ -114,13 +108,10 @@ class _BDDSAppState extends State<BDDSApp> {
     // If app was opened by a PN when app was in the background
     checkForInitialMessage();
 
-    var initializationSettingsAndroid =
-        new AndroidInitializationSettings('ic_launcher');
+    var initializationSettingsAndroid = new AndroidInitializationSettings('ic_launcher');
     var initializationSettingsIOS = new IOSInitializationSettings();
-    var initializationSettings = new InitializationSettings(
-        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
-    flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: onSelectNotification);
+    var initializationSettings = new InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: onSelectNotification);
 
     // Notification recieved when app is in foreground
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {

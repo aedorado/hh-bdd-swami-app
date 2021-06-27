@@ -5,14 +5,11 @@ class MediaState {
   final Duration position;
   final PlaybackState playbackState;
 
-  MediaState(this.mediaItem, this.position, this.playbackState) {
-    // debugPrint('MID=${this.mediaItem.duration.toString()} POS=${this.position.toString()} PBStatePlaying=${this.playbackState.playing} ProsState=${this.playbackState.processingState.toString()}');
-  }
+  MediaState(this.mediaItem, this.position, this.playbackState) {}
 
   bool showMiniPlayer() {
-    return (this.playbackState != null
-        && (this.playbackState.processingState == AudioProcessingState.ready
-            || this.playbackState.processingState == AudioProcessingState.completed));
+    return (this.playbackState != null &&
+        (this.playbackState.processingState == AudioProcessingState.ready || this.playbackState.processingState == AudioProcessingState.completed));
   }
 
   Duration? getMaxDuration() {
@@ -30,13 +27,13 @@ class MediaState {
   }
 
   String getMediaItemTitle() {
-    return (this.mediaItem != null) ? this.mediaItem!.title: '';
+    return (this.mediaItem != null) ? this.mediaItem!.title : '';
   }
 
   String getMediaItemSubtitle() {
-    return (this.mediaItem != null) ? this.mediaItem!.extras!['subtitle']: '';
+    return (this.mediaItem != null) ? this.mediaItem!.extras!['subtitle'] : '';
   }
-  
+
   bool shouldPause() {
     return (this.playbackState != null && this.playbackState.playing);
   }
@@ -48,5 +45,4 @@ class MediaState {
   bool shouldShowPauseIcon() {
     return (this.playbackState != null && this.playbackState.playing && this.playbackState.processingState != AudioProcessingState.completed);
   }
-
 }

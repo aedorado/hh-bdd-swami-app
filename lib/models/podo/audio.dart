@@ -13,12 +13,16 @@ class Audio {
   @HiveField(2)
   late String url;
 
-  Audio({required this.id, required this.name, required this.url});
+  @HiveField(3)
+  late String thumbnailUrl;
+
+  Audio({required this.id, required this.name, required this.url, required this.thumbnailUrl});
 
   Audio.fromJson(Map<String, dynamic> json) {
     id = json['id'] ?? json['id'];
     name = json['name'] ?? json['name'];
     url = json['url'] ?? json['url'];
+    url = json['thumbnailUrl'] ?? json['thumbnailUrl'];
   }
 
   Map<String, dynamic> toJson() {
@@ -26,11 +30,12 @@ class Audio {
     data['id'] = this.id;
     data['name'] = this.name;
     data['url'] = this.url;
+    data['thumbnailUrl'] = this.thumbnailUrl;
     return data;
   }
 
   @override
   String toString() {
-    return 'Id: ${this.id} Name: ${this.name}, URL: ${this.url}';
+    return 'Id: ${this.id} Name: ${this.name}, URL: ${this.url}, Thumbnai: ${this.thumbnailUrl}';
   }
 }

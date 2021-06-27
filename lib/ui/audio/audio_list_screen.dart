@@ -12,7 +12,7 @@ import 'package:hh_bbds_app/ui/audio/audio_constants.dart';
 import 'package:hh_bbds_app/ui/audio/miniplayer.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
+import 'package:palette_generator/palette_generator.dart';
 import 'audio_year_screen.dart';
 
 class AudioListScreen extends StatefulWidget {
@@ -79,11 +79,10 @@ class _AudioListScreenState extends State<AudioListScreen> {
                 } else if (selectionType == SEMINARS || selectionType == SERIES) {
                   Box hiveBox = Hive.box(HIVE_BOX_AUDIO_SEARCH);
                   String id = hiveBox.get(HIVE_BOX_AUDIO_SEARCH_KEY_SELECTED_ITEM);
-                  debugPrint(selectionType?.toLowerCase());
                   FirebaseFirestore.instance.collection(selectionType!.toLowerCase()).where("id", isEqualTo: id).limit(1).get().then(
                     (value) async {
                       if (value.size > 0) {
-                        AudioFolder audioFolder = Adapter.firebaseAudioFolderSnapshotToAudioFolder(value.docs[0]);
+                        AudioFolder audioFolder = AudioFolder.fromFirebaseAudioFolderSnapshot(value.docs[0]);
                         Navigator.push(context, MaterialPageRoute(builder: (context) => AudioFolderScreen(audioFolder)));
                       }
                     },
@@ -258,7 +257,7 @@ class AudioListScreenRow extends StatelessWidget {
                               decoration: BoxDecoration(color: isItemPlaying ? Color(0xFFBBDEFB) : null),
                               child: Padding(
                                 padding: const EdgeInsets.only(top: 2, left: 4, right: 2, bottom: 2),
-                                child: CircleAvatar(backgroundImage: NetworkImage('https://i.postimg.cc/RZJ6HJrw/c.jpg')),
+                                child: CircleAvatar(backgroundImage: NetworkImage(audio.thumbnailUrl)),
                               ),
                             ),
                           ),
@@ -345,7 +344,7 @@ class AudioFolderPage extends StatelessWidget {
                   shrinkWrap: true,
                   itemCount: snapshot.data!.size,
                   itemBuilder: (BuildContext context, int index) {
-                    AudioFolder audioFolder = Adapter.firebaseAudioFolderSnapshotToAudioFolder(snapshot.data!.docs[index]);
+                    AudioFolder audioFolder = AudioFolder.fromFirebaseAudioFolderSnapshot(snapshot.data!.docs[index]);
                     return Container(
                       // TODO: Make sure the rows on all the screens are of equal height
                       height: 76,
@@ -366,7 +365,7 @@ class AudioFolderPage extends StatelessWidget {
                                     flex: 1,
                                     child: Padding(
                                       padding: const EdgeInsets.only(top: 2, left: 4, right: 2, bottom: 2),
-                                      child: CircleAvatar(backgroundImage: NetworkImage('https://i.postimg.cc/RZJ6HJrw/c.jpg')),
+                                      child: CircleAvatar(backgroundImage: NetworkImage(audioFolder.thumbnailUrl)),
                                     ),
                                   ),
                                   Expanded(

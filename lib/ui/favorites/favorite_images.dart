@@ -20,6 +20,14 @@ class FavoriteImages extends StatelessWidget {
         child: ValueListenableBuilder(
             valueListenable: favoriteImagesBox.listenable(),
             builder: (context, Box box, widget) {
+              if (favoriteImagesBox.length == 0) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Text('No images added to favorites. Visit library to add audios to favorites list.'),
+                  ),
+                );
+              }
               return CustomScrollView(
                 physics: BouncingScrollPhysics(),
                 slivers: [

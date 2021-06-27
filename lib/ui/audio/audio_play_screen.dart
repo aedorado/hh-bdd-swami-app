@@ -38,8 +38,7 @@ class AudioPlayScreen extends StatefulWidget {
   _AudioPlayScreenState createState() => _AudioPlayScreenState();
 }
 
-class _AudioPlayScreenState extends State<AudioPlayScreen>
-    with SingleTickerProviderStateMixin {
+class _AudioPlayScreenState extends State<AudioPlayScreen> with SingleTickerProviderStateMixin {
   bool playing = false;
   late AnimationController controller;
   Box<Audio> favoriteAudiosBox = Hive.box<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
@@ -49,9 +48,7 @@ class _AudioPlayScreenState extends State<AudioPlayScreen>
       await AudioService.connect();
       if (!AudioService.running) {
         await AudioService.start(
-            androidNotificationIcon: 'mipmap/ic_launcher',
-            backgroundTaskEntrypoint:
-                _backgroundTaskEntrypoint); //, params: {"url": audio.url});
+            androidNotificationIcon: 'mipmap/ic_launcher', backgroundTaskEntrypoint: _backgroundTaskEntrypoint); //, params: {"url": audio.url});
       }
       if (widget.mediaItem != null) {
         if (AudioService.currentMediaItem?.id != widget.mediaItem?.id) {
@@ -69,8 +66,7 @@ class _AudioPlayScreenState extends State<AudioPlayScreen>
   void initState() {
     super.initState();
     initAudioPlayer();
-    controller =
-        AnimationController(duration: Duration(milliseconds: 300), vsync: this);
+    controller = AnimationController(duration: Duration(milliseconds: 300), vsync: this);
   }
 
   @override
@@ -86,16 +82,12 @@ class _AudioPlayScreenState extends State<AudioPlayScreen>
                   Expanded(
                     flex: 5,
                     child: Padding(
-                      padding: const EdgeInsets.only(
-                          left: 48, right: 48, top: 24, bottom: 12),
+                      padding: const EdgeInsets.only(left: 48, right: 48, top: 24, bottom: 12),
                       child: Container(
                         height: MediaQuery.of(context).size.height * 0.35,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            image: DecorationImage(
-                                image: NetworkImage(
-                                    "https://i1.sndcdn.com/artworks-000674039176-uw34hj-t500x500.jpg"),
-                                fit: BoxFit.cover)),
+                            image: DecorationImage(image: NetworkImage(snapshot.data?.mediaItem?.extras!['thumbnailUrl'] ?? ''), fit: BoxFit.cover)),
                       ),
                     ),
                   ),
@@ -108,8 +100,7 @@ class _AudioPlayScreenState extends State<AudioPlayScreen>
                           flex: 1,
                           child: Center(
                             child: Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 50, right: 50, top: 16),
+                              padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
                               child: snapshot.hasData
                                   ? Column(
                                       children: [
@@ -119,9 +110,7 @@ class _AudioPlayScreenState extends State<AudioPlayScreen>
                                           textAlign: TextAlign.center,
                                         ),
                                         Text(
-                                          snapshot.data?.mediaItem
-                                                  ?.extras!['subtitle'] ??
-                                              '',
+                                          snapshot.data?.mediaItem?.extras!['subtitle'] ?? '',
                                           style: audioSubtitleStyle,
                                           textAlign: TextAlign.center,
                                         ),
@@ -134,22 +123,14 @@ class _AudioPlayScreenState extends State<AudioPlayScreen>
                         Expanded(
                           flex: 1,
                           child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 40, right: 40, top: 20, bottom: 10),
+                            padding: const EdgeInsets.only(left: 40, right: 40, top: 20, bottom: 10),
                             child: snapshot.hasData
                                 ? ProgressBar(
-                                    total: snapshot.data?.mediaItem?.duration ??
-                                        Duration.zero,
-                                    progress: snapshot.data?.position ??
-                                        Duration.zero,
-                                    buffered:
-                                        snapshot.data?.playbackState == null
-                                            ? Duration.zero
-                                            : snapshot.data?.playbackState
-                                                .bufferedPosition,
+                                    total: snapshot.data?.mediaItem?.duration ?? Duration.zero,
+                                    progress: snapshot.data?.position ?? Duration.zero,
+                                    buffered: snapshot.data?.playbackState == null ? Duration.zero : snapshot.data?.playbackState.bufferedPosition,
                                     onSeek: (duration) {
-                                      print(
-                                          'User selected a new time: $duration');
+                                      print('User selected a new time: $duration');
                                       AudioService.seekTo(duration);
                                     },
                                   )
@@ -159,8 +140,7 @@ class _AudioPlayScreenState extends State<AudioPlayScreen>
                         Expanded(
                           flex: 1,
                           child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 40, right: 40, top: 10, bottom: 10),
+                            padding: const EdgeInsets.only(left: 40, right: 40, top: 10, bottom: 10),
                             child: Container(
                               width: 56,
                               height: 56,
@@ -184,8 +164,7 @@ class _AudioPlayScreenState extends State<AudioPlayScreen>
                                         controller.forward();
                                       } else {
                                         if (snapshot.data!.shouldReplay()) {
-                                          AudioService.seekTo(
-                                              Duration(milliseconds: 0));
+                                          AudioService.seekTo(Duration(milliseconds: 0));
                                         }
                                         AudioService.play();
                                         controller.reverse();
@@ -200,50 +179,32 @@ class _AudioPlayScreenState extends State<AudioPlayScreen>
                         Expanded(
                           flex: 1,
                           child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 50, right: 50, top: 16),
+                            padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Container(
                                   child: InkWell(
                                     onTap: () {
-                                      String? currentMediaItemId =
-                                          snapshot.data?.mediaItem?.id;
+                                      String? currentMediaItemId = snapshot.data?.mediaItem?.id;
                                       String favoritesActionPerformed;
-                                      if (favoriteAudiosBox
-                                              .get(currentMediaItemId) ==
-                                          null) {
-                                        favoritesActionPerformed =
-                                            FAVORITES_ACTION_ADD;
-                                        favoriteAudiosBox.put(
-                                            currentMediaItemId,
-                                            Adapter.mediaItemToAudio(
-                                                snapshot.data?.mediaItem));
+                                      if (favoriteAudiosBox.get(currentMediaItemId) == null) {
+                                        favoritesActionPerformed = FAVORITES_ACTION_ADD;
+                                        favoriteAudiosBox.put(currentMediaItemId, Adapter.mediaItemToAudio(snapshot.data?.mediaItem));
                                       } else {
-                                        favoritesActionPerformed =
-                                            FAVORITES_ACTION_REMOVE;
-                                        favoriteAudiosBox
-                                            .delete(currentMediaItemId);
+                                        favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
+                                        favoriteAudiosBox.delete(currentMediaItemId);
                                       }
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(FavoritesSnackBar(
-                                                  Adapter.mediaItemToAudio(
-                                                      snapshot.data?.mediaItem),
-                                                  favoritesActionPerformed,
-                                                  favoriteAudiosBox)
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                          FavoritesSnackBar(Adapter.mediaItemToAudio(snapshot.data?.mediaItem), favoritesActionPerformed, favoriteAudiosBox)
                                               .build(context));
                                     },
                                     child: ValueListenableBuilder(
-                                        valueListenable:
-                                            favoriteAudiosBox.listenable(),
-                                        builder:
-                                            (context, Box<Audio> box, widget) {
-                                          MediaItem? mi =
-                                              snapshot.data?.mediaItem;
+                                        valueListenable: favoriteAudiosBox.listenable(),
+                                        builder: (context, Box<Audio> box, widget) {
+                                          MediaItem? mi = snapshot.data?.mediaItem;
                                           return IconTheme(
-                                              data: new IconThemeData(
-                                                  color: Colors.redAccent),
+                                              data: new IconThemeData(color: Colors.redAccent),
                                               child: Icon(
                                                 (mi == null)
                                                     ? Icons.favorite_border

@@ -17,13 +17,15 @@ class _HomeState extends State<Home> {
   List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
     LibraryHome(
-      isFavoritesLibrary: true,
+      isFavoritesLibrary: false,
     ),
     LibraryHome(
-      isFavoritesLibrary: false,
+      isFavoritesLibrary: true,
     ),
     AlertScreen(),
   ];
+
+  var _homeSreenAppBarTitles = ['BDD Swami App', 'Library', 'Favorites', 'Alerts'];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -34,7 +36,9 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("BDD Swami App")),
+      appBar: AppBar(
+        title: Text(_homeSreenAppBarTitles[widget.selectedIndex]),
+      ),
       body: _widgetOptions.elementAt(widget.selectedIndex),
       bottomNavigationBar: _bottomNavigationBar(),
     );
@@ -45,8 +49,8 @@ class _HomeState extends State<Home> {
       type: BottomNavigationBarType.fixed,
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Home"),
-        BottomNavigationBarItem(icon: Icon(Icons.favorite_border), label: "Favorites"),
         BottomNavigationBarItem(icon: Icon(Icons.grid_view), label: "Library"),
+        BottomNavigationBarItem(icon: Icon(Icons.favorite_border), label: "Favorites"),
         BottomNavigationBarItem(icon: Icon(Icons.notifications_outlined), label: "Alerts")
       ],
       currentIndex: widget.selectedIndex,

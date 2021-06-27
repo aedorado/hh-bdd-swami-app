@@ -97,7 +97,6 @@ class AudioPlayerBackgroundTasks extends BackgroundAudioTask {
 
   @override
   Future<void> onPlay() async{
-    // debugPrint('onPlay: ${AudioServiceBackground.state.processingState.toString()}');
     if (AudioServiceBackground.state.processingState == AudioProcessingState.completed) {
       this.onSeekTo(Duration(milliseconds: 0));
     }

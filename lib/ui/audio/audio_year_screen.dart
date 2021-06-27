@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hh_bbds_app/models/podo/audio_folder.dart';
 import 'package:hh_bbds_app/ui/audio/audio_folder_screen.dart';
 import 'package:hh_bbds_app/ui/audio/miniplayer.dart';
 import 'package:hh_bbds_app/network/remote_config.dart';
@@ -44,7 +45,14 @@ class AudioYearScreen extends StatelessWidget {
                 stream: this.ssy,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    return AudioFolderScreenSliverList(snapshot);
+                    return AudioFolderScreenSliverList(
+                        AudioFolder(
+                            id: "${this.year}",
+                            name: "${this.year}",
+                            totalContents: "${snapshot.data?.size}",
+                            description: "All audios from the year ${this.year}.",
+                            thumbnailUrl: "https://vrindavandarshan.in/upload_images/dailydarshan/2021-06-01-Mycnz.jpg"),
+                        snapshot);
                   } else if (snapshot.hasError) {
                     return Text("${snapshot.error}");
                   }

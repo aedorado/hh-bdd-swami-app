@@ -15,125 +15,107 @@ class FavoriteAudios extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Favorite Audios'),
-      ),
-      body: SafeArea(
-          child: Column(
-        children: [
-          ValueListenableBuilder(
+        appBar: AppBar(
+          title: Text('Favorite Audios'),
+        ),
+        body: SafeArea(
+          child: ValueListenableBuilder(
               valueListenable: favoriteAudiosBox.listenable(),
               builder: (context, Box<Audio> box, widget) {
-                return Expanded(
-                  flex: 1,
-                  child: ListView.builder(
-                      physics: BouncingScrollPhysics(
-                          parent: AlwaysScrollableScrollPhysics()),
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      itemCount: favoriteAudiosBox.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Container(
-                          height: 80,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                flex: 7,
-                                child: InkWell(
-                                  onTap: () async {
-                                    MediaItem mediaItem =
-                                        Adapter.audioToMediaItem(
-                                            favoriteAudiosBox.getAt(index));
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                AudioPlayScreen(
-                                                  mediaItem: mediaItem,
-                                                )));
-                                  },
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        flex: 1,
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
-                                              top: 2,
-                                              left: 4,
-                                              right: 2,
-                                              bottom: 2),
-                                          child: CircleAvatar(
-                                              backgroundImage: NetworkImage(
-                                                  'https://i.postimg.cc/RZJ6HJrw/c.jpg')),
-                                        ),
-                                      ),
-                                      Expanded(
-                                          flex: 6,
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(12.0),
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  '${favoriteAudiosBox.getAt(index)?.name}',
-                                                  style:
-                                                      TextStyle(fontSize: 16),
-                                                ),
-                                                Text(
-                                                  '${favoriteAudiosBox.getAt(index)?.name}',
-                                                  style:
-                                                      TextStyle(fontSize: 12),
-                                                ),
-                                              ],
+                if (favoriteAudiosBox.length == 0) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Text('No audios added to favorites. Visit library to add audios to favorites list.'),
+                    ),
+                  );
+                }
+                return Column(
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: ListView.builder(
+                          physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          itemCount: favoriteAudiosBox.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Container(
+                              height: 80,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    flex: 7,
+                                    child: InkWell(
+                                      onTap: () async {
+                                        MediaItem mediaItem = Adapter.audioToMediaItem(favoriteAudiosBox.getAt(index));
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => AudioPlayScreen(
+                                                      mediaItem: mediaItem,
+                                                    )));
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            flex: 1,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(top: 2, left: 4, right: 2, bottom: 2),
+                                              child: CircleAvatar(backgroundImage: NetworkImage('https://i.postimg.cc/RZJ6HJrw/c.jpg')),
                                             ),
-                                          )),
-                                    ],
+                                          ),
+                                          Expanded(
+                                              flex: 6,
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(12.0),
+                                                child: Column(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      '${favoriteAudiosBox.getAt(index)?.name}',
+                                                      style: TextStyle(fontSize: 16),
+                                                    ),
+                                                    Text(
+                                                      '${favoriteAudiosBox.getAt(index)?.name}',
+                                                      style: TextStyle(fontSize: 12),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )),
+                                        ],
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: InkWell(
+                                      onTap: () {
+                                        String favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                            FavoritesSnackBar(favoriteAudiosBox.getAt(index)!, favoritesActionPerformed, favoriteAudiosBox).build(context));
+                                        favoriteAudiosBox.delete(favoriteAudiosBox.getAt(index)?.id);
+                                      },
+                                      child: IconTheme(
+                                          data: new IconThemeData(color: Colors.redAccent),
+                                          child: Icon(
+                                            (box.get(favoriteAudiosBox.getAt(index)?.id) == null) ? Icons.favorite_border : Icons.favorite,
+                                            size: 24,
+                                          )),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Expanded(
-                                flex: 1,
-                                child: InkWell(
-                                  onTap: () {
-                                    String favoritesActionPerformed =
-                                        FAVORITES_ACTION_REMOVE;
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        FavoritesSnackBar(
-                                                favoriteAudiosBox.getAt(index)!,
-                                                favoritesActionPerformed,
-                                                favoriteAudiosBox)
-                                            .build(context));
-                                    favoriteAudiosBox.delete(
-                                        favoriteAudiosBox.getAt(index)?.id);
-                                  },
-                                  child: IconTheme(
-                                      data: new IconThemeData(
-                                          color: Colors.redAccent),
-                                      child: Icon(
-                                        (box.get(favoriteAudiosBox
-                                                    .getAt(index)
-                                                    ?.id) ==
-                                                null)
-                                            ? Icons.favorite_border
-                                            : Icons.favorite,
-                                        size: 24,
-                                      )),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }),
+                            );
+                          }),
+                    ),
+                    Miniplayer(),
+                  ],
                 );
               }),
-          Miniplayer(),
-        ],
-      )),
-    );
+        ));
   }
 }

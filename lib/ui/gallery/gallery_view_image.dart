@@ -37,7 +37,6 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
     _toastInfo("Downloading Image");
     var response = await Dio().get(galleryImage.downloadURL, options: Options(responseType: ResponseType.bytes));
     final result = await ImageGallerySaver.saveImage(Uint8List.fromList(response.data), quality: 60, name: galleryImage.id);
-    debugPrint(result);
     _toastInfo("Image saved to Gallery");
   }
 

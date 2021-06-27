@@ -134,7 +134,6 @@ class ImagesByColorScreen extends StatelessWidget {
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance.collection(this.collectionName).where(this.columnToCompare, isEqualTo: this.valueToCompare).snapshots(),
                 builder: (context, snapshot) {
-                  debugPrint("${this.collectionName}, ${this.columnToCompare}, ${this.valueToCompare}");
                   if (snapshot.hasData) {
                     return OpenAlbumSliverList(snapshot);
                   } else if (snapshot.hasError) {
