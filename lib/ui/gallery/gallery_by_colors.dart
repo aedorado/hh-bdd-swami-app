@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hh_bbds_app/adapter/adapter.dart';
 import 'package:hh_bbds_app/models/podo/gallery_image.dart';
 import 'package:hh_bbds_app/network/remote_config.dart';
 import 'package:hh_bbds_app/ui/gallery/gallery_constants.dart';
@@ -49,12 +48,15 @@ class GalleryByColors extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                             builder: (context) => ImagesByColorScreen(
-                                  color: sectionName,
+                                  collectionName: this.collectionName,
+                                  galleryOperateMode: this.galleryOperateMode,
+                                  columnToCompare: this.columToCompare,
+                                  valueToCompare: sectionName,
                                 )));
                   },
                 ),
                 StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance.collection('ssrss_images').where(this.columToCompare, isEqualTo: sectionName).limit(3).snapshots(),
+                    stream: FirebaseFirestore.instance.collection(this.collectionName).where(this.columToCompare, isEqualTo: sectionName).limit(3).snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         return Container(
@@ -114,9 +116,13 @@ class GalleryByColors extends StatelessWidget {
 }
 
 class ImagesByColorScreen extends StatelessWidget {
-  final String color;
+  late String collectionName;
+  late String columnToCompare;
+  late String valueToCompare;
+  late GalleryOperateMode galleryOperateMode;
 
-  const ImagesByColorScreen({Key? key, required this.color}) : super(key: key);
+  ImagesByColorScreen({Key? key, required this.galleryOperateMode, required this.collectionName, required this.columnToCompare, required this.valueToCompare})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -126,8 +132,9 @@ class ImagesByColorScreen extends StatelessWidget {
           children: [
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection("images").where("color", isEqualTo: this.color).snapshots(),
+                stream: FirebaseFirestore.instance.collection(this.collectionName).where(this.columnToCompare, isEqualTo: this.valueToCompare).snapshots(),
                 builder: (context, snapshot) {
+                  debugPrint("${this.collectionName}, ${this.columnToCompare}, ${this.valueToCompare}");
                   if (snapshot.hasData) {
                     return OpenAlbumSliverList(snapshot);
                   } else if (snapshot.hasError) {
@@ -176,18 +183,6 @@ class OpenAlbumSliverList extends StatelessWidget {
                           onTap: () {
                             Navigator.push(context, MaterialPageRoute(builder: (context) => ViewImageScreen(imageToDisplay)));
                           },
-                          child: (index % 4 != 0)
-                              ? Container()
-                              : Container(
-                                  child: Center(
-                                    child: Container(
-                                        child: Icon(
-                                      Icons.play_arrow,
-                                      size: 40,
-                                      color: Colors.white,
-                                    )),
-                                  ),
-                                ),
                         )),
                   ),
                 );

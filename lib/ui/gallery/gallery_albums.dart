@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hh_bbds_app/adapter/adapter.dart';
 import 'package:hh_bbds_app/models/podo/album.dart';
 import 'package:hh_bbds_app/models/podo/gallery_image.dart';
 import 'package:hh_bbds_app/ui/gallery/gallery_all_images_list_screen.dart';
@@ -123,16 +122,81 @@ class OpenAlbum extends StatelessWidget {
         child: Column(
           children: [
             Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection(this.imagesCollectionName).where("album_id", isEqualTo: this.album.id).snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return _openAlbumSliverList(context, album, snapshot);
-                  } else if (snapshot.hasError) {
-                    return Text("${snapshot.error}");
-                  }
-                  return Center(child: Container(height: 24, width: 24, child: CircularProgressIndicator()));
-                },
+              child: CustomScrollView(
+                physics: BouncingScrollPhysics(),
+                slivers: [
+                  SliverAppBar(
+                    expandedHeight: 250.0,
+                    floating: true,
+                    pinned: true,
+                    snap: false,
+                    actionsIconTheme: IconThemeData(opacity: 0.0),
+                    flexibleSpace: Stack(
+                      children: <Widget>[
+                        Positioned.fill(
+                            child: Container(
+                          child: Hero(
+                            tag: album.id,
+                            child: Image(
+                              image: NetworkImage(album.coverUrl),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        )),
+                        Positioned.fill(
+                            child: Container(
+                          decoration: BoxDecoration(color: Colors.black.withOpacity(0.2)),
+                        )),
+                        Positioned(
+                          top: MediaQuery.of(context).size.height * 0.2,
+                          left: MediaQuery.of(context).size.width * 0.2,
+                          right: MediaQuery.of(context).size.width * 0.2,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5.0),
+                              color: Colors.black.withOpacity(0.6),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    '${album.name}',
+                                    style: TextStyle(color: Colors.white, fontSize: 18),
+                                  ),
+                                  Text(
+                                    '${album.description}',
+                                    style: TextStyle(color: Colors.white, fontSize: 16),
+                                  ),
+                                  Text(
+                                    '',
+                                    style: TextStyle(color: Colors.white, fontSize: 16),
+                                  ),
+                                  Text(
+                                    '${album.totalImages} Images',
+                                    style: TextStyle(color: Colors.white, fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  _openAlbumSliverList(context, album),
+                ],
+                // child: StreamBuilder<QuerySnapshot>(
+                //   stream: FirebaseFirestore.instance.collection(this.imagesCollectionName).where("album_id", isEqualTo: this.album.id).snapshots(),
+                //   builder: (context, snapshot) {
+                //     if (snapshot.hasData) {
+                //       return _openAlbumSliverList(context, album, snapshot);
+                //     } else if (snapshot.hasError) {
+                //       return Text("${snapshot.error}");
+                //     }
+                //     return Center(child: Container(height: 24, width: 24, child: CircularProgressIndicator()));
+                //   },
+                // ),
               ),
             ),
           ],
@@ -141,83 +205,24 @@ class OpenAlbum extends StatelessWidget {
     );
   }
 
-  _openAlbumSliverList(context, Album album, AsyncSnapshot<QuerySnapshot<Object?>> snapshot) {
-    return CustomScrollView(
-      physics: BouncingScrollPhysics(),
-      slivers: [
-        SliverAppBar(
-          expandedHeight: 250.0,
-          floating: true,
-          pinned: true,
-          snap: false,
-          actionsIconTheme: IconThemeData(opacity: 0.0),
-          flexibleSpace: Stack(
-            children: <Widget>[
-              Positioned.fill(
-                  child: Container(
-                child: Hero(
-                  tag: album.id,
-                  child: Image(
-                    image: NetworkImage(album.coverUrl),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              )),
-              Positioned.fill(
-                  child: Container(
-                decoration: BoxDecoration(color: Colors.black.withOpacity(0.2)),
-              )),
-              Positioned(
-                top: MediaQuery.of(context).size.height * 0.2,
-                left: MediaQuery.of(context).size.width * 0.2,
-                right: MediaQuery.of(context).size.width * 0.2,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5.0),
-                    color: Colors.black.withOpacity(0.6),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Text(
-                          '${album.name}',
-                          style: TextStyle(color: Colors.white, fontSize: 18),
-                        ),
-                        Text(
-                          '${album.description}',
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                        Text(
-                          '',
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                        Text(
-                          '${album.totalImages} Images',
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              )
-            ],
-          ),
-        ),
-        SliverGrid(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-          delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
-            if (snapshot.hasData) {
-              GalleryImage imageToDisplay = GalleryImage.fromFireBaseSnapshotDoc(snapshot.data!.docs[index]);
-              return ImageListScreenDisplayContainer(
-                imageToDisplay: imageToDisplay,
-              );
-            }
-            return Center(child: CircularProgressIndicator());
-          }, childCount: snapshot.data!.size // .length, // this.snapshot.data!.size,
-              ),
-        ),
-      ],
-    );
+  _openAlbumSliverList(context, Album album) {
+    return StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection(this.imagesCollectionName).where("album_id", isEqualTo: this.album.id).snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return SliverGrid(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+              delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
+                GalleryImage imageToDisplay = GalleryImage.fromFireBaseSnapshotDoc(snapshot.data!.docs[index]);
+                return ImageListScreenDisplayContainer(
+                  imageToDisplay: imageToDisplay,
+                );
+              }, childCount: snapshot.data!.size),
+            );
+          } else if (snapshot.hasError) {
+            return SliverToBoxAdapter(child: Text("${snapshot.error}"));
+          }
+          return SliverToBoxAdapter(child: Center(child: CircularProgressIndicator()));
+        });
   }
 }
