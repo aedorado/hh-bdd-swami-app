@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/adapter/adapter.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
-import 'package:hh_bbds_app/ui/audio/audio_list_screen.dart';
 import 'package:hh_bbds_app/ui/audio/audio_play_screen.dart';
 import 'package:hh_bbds_app/ui/audio/miniplayer.dart';
 import 'package:hive/hive.dart';
@@ -64,7 +63,8 @@ class FavoriteAudios extends StatelessWidget {
                                             flex: 1,
                                             child: Padding(
                                               padding: const EdgeInsets.only(top: 2, left: 4, right: 2, bottom: 2),
-                                              child: CircleAvatar(backgroundImage: NetworkImage('https://i.postimg.cc/RZJ6HJrw/c.jpg')),
+                                              child: CircleAvatar(
+                                                  backgroundImage: NetworkImage('https://i.postimg.cc/RZJ6HJrw/c.jpg')),
                                             ),
                                           ),
                                           Expanded(
@@ -94,15 +94,20 @@ class FavoriteAudios extends StatelessWidget {
                                     flex: 1,
                                     child: InkWell(
                                       onTap: () {
-                                        String favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                            FavoritesSnackBar(favoriteAudiosBox.getAt(index)!, favoritesActionPerformed, favoriteAudiosBox).build(context));
+                                        Audio audio = favoriteAudiosBox.getAt(index)!;
                                         favoriteAudiosBox.delete(favoriteAudiosBox.getAt(index)?.id);
+                                        ScaffoldMessenger.of(context).showSnackBar(FavoriteAudioSnackBar(
+                                          audio: audio,
+                                          favoritesActionPerformed: FAVORITES_ACTION_REMOVE,
+                                          displayUndoAction: true,
+                                        ).build(context));
                                       },
                                       child: IconTheme(
                                           data: new IconThemeData(color: Colors.redAccent),
                                           child: Icon(
-                                            (box.get(favoriteAudiosBox.getAt(index)?.id) == null) ? Icons.favorite_border : Icons.favorite,
+                                            (box.get(favoriteAudiosBox.getAt(index)?.id) == null)
+                                                ? Icons.favorite_border
+                                                : Icons.favorite,
                                             size: 24,
                                           )),
                                     ),
@@ -117,5 +122,44 @@ class FavoriteAudios extends StatelessWidget {
                 );
               }),
         ));
+  }
+}
+
+class FavoriteAudioSnackBar extends StatelessWidget {
+  final Audio audio;
+  final String favoritesActionPerformed;
+  final Box<Audio> favoriteAudiosBox = Hive.box<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
+  late String _snackBarText;
+  final bool displayUndoAction;
+
+  FavoriteAudioSnackBar(
+      {required this.audio, required this.favoritesActionPerformed, required this.displayUndoAction}) {
+    if (this.favoritesActionPerformed == FAVORITES_ACTION_REMOVE) {
+      _snackBarText = 'Removed from Favorites';
+    } else {
+      _snackBarText = 'Added to Favorites';
+    }
+  }
+
+  @override
+  SnackBar build(BuildContext context) {
+    return SnackBar(
+      action: this.displayUndoAction
+          ? SnackBarAction(
+              label: 'Undo',
+              onPressed: () {
+                if (favoritesActionPerformed == FAVORITES_ACTION_REMOVE) {
+                  _snackBarText = 'Added to Favorites';
+                  favoriteAudiosBox.put(audio.id, audio);
+                } else {
+                  _snackBarText = 'Removed from Favorites';
+                  favoriteAudiosBox.delete(audio.id);
+                }
+              },
+            )
+          : null,
+      content: Text(_snackBarText),
+      duration: Duration(milliseconds: 1000),
+    );
   }
 }

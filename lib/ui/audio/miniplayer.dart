@@ -22,13 +22,12 @@ class CustomTrackShape extends RoundedRectSliderTrackShape {
 }
 
 class Miniplayer extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<MediaState>(
-      stream: CustomStream.mediaStateStream,
-      builder: (context, snapshot) {
-        return AnimatedContainer(
+        stream: CustomStream.mediaStateStream,
+        builder: (context, snapshot) {
+          return AnimatedContainer(
             height: snapshot.hasData && snapshot.data!.showMiniPlayer() ? 80 : 0,
             duration: Duration(milliseconds: 200),
             // Provide an optional curve to make the animation feel smoother.
@@ -66,51 +65,66 @@ class Miniplayer extends StatelessWidget {
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(12.0),
-                      child: Row(children: [
-                        Expanded(
-                          flex: 1,
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 2, left: 2, right: 2, bottom: 2),
-                            child: CircleAvatar(backgroundImage: NetworkImage('https://i.postimg.cc/RZJ6HJrw/c.jpg')),
-                          ),
-                        ),
-                        Expanded(flex: 4, child: Center(child: snapshot.hasData ? Column(
-                          children: [
-                            Text(snapshot.data!.getMediaItemTitle(), style: TextStyle(fontSize: 15), overflow: TextOverflow.ellipsis,),
-                            Text(snapshot.data!.getMediaItemSubtitle(), style: TextStyle(fontSize: 9), overflow: TextOverflow.ellipsis,),
-                          ],
-                        ): Container())),
-                        Expanded(
+                      child: Row(
+                        children: [
+                          Expanded(
                             flex: 1,
-                            child: InkWell(
-                                onTap: () {
-                                  if (snapshot.hasData) {
-                                    if (snapshot.data!.shouldPause()) {
-                                      AudioService.pause();
-                                    } else {
-                                      if (snapshot.data!.shouldReplay()) {
-                                        AudioService.seekTo(Duration(milliseconds: 0));
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 2, left: 2, right: 2, bottom: 2),
+                              child: CircleAvatar(backgroundImage: NetworkImage('https://i.postimg.cc/RZJ6HJrw/c.jpg')),
+                            ),
+                          ),
+                          Expanded(
+                              flex: 4,
+                              child: Center(
+                                  child: snapshot.hasData
+                                      ? Column(
+                                          children: [
+                                            Text(
+                                              snapshot.data!.getMediaItemTitle(),
+                                              style: TextStyle(fontSize: 15),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            Text(
+                                              snapshot.data!.getMediaItemSubtitle(),
+                                              style: TextStyle(fontSize: 9),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ],
+                                        )
+                                      : Container())),
+                          Expanded(
+                              flex: 1,
+                              child: InkWell(
+                                  onTap: () {
+                                    if (snapshot.hasData) {
+                                      if (snapshot.data!.shouldPause()) {
+                                        AudioService.pause();
+                                      } else {
+                                        if (snapshot.data!.shouldReplay()) {
+                                          AudioService.seekTo(Duration(milliseconds: 0));
+                                        }
+                                        AudioService.play();
                                       }
-                                      AudioService.play();
                                     }
-                                  }
-                                  // if audio is playing and user clicks on the button for the audio that is playing then pause audio
-                                  // if (currentAudio.isPlaying) {
-                                  //   currentAudio.pauseAudio();
-                                  // } else if (!currentAudio.isPlaying) { // if not audio is playing, simply start playing current audio
-                                  //   currentAudio.playAudio();
-                                  // }
-                                },
-                                child: Icon(snapshot.hasData && snapshot.data!.shouldPause() ? Icons.pause : Icons.play_arrow))),
-                      ],),
+                                    // if audio is playing and user clicks on the button for the audio that is playing then pause audio
+                                    // if (currentAudio.isPlaying) {
+                                    //   currentAudio.pauseAudio();
+                                    // } else if (!currentAudio.isPlaying) { // if not audio is playing, simply start playing current audio
+                                    //   currentAudio.playAudio();
+                                    // }
+                                  },
+                                  child: Icon(snapshot.hasData && snapshot.data!.shouldPause()
+                                      ? Icons.pause
+                                      : Icons.play_arrow))),
+                        ],
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
           );
-      }
-    );
-
+        });
   }
 }

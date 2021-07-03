@@ -7,6 +7,7 @@ import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/models/podo/media_state.dart';
 import 'package:hh_bbds_app/streams/streams.dart';
 import 'package:hh_bbds_app/ui/audio/audio_list_screen.dart';
+import 'package:hh_bbds_app/ui/favorites/favorite_audios.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
@@ -48,7 +49,8 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> with SingleTickerProv
       await AudioService.connect();
       if (!AudioService.running) {
         await AudioService.start(
-            androidNotificationIcon: 'mipmap/ic_launcher', backgroundTaskEntrypoint: _backgroundTaskEntrypoint); //, params: {"url": audio.url});
+            androidNotificationIcon: 'mipmap/ic_launcher',
+            backgroundTaskEntrypoint: _backgroundTaskEntrypoint); //, params: {"url": audio.url});
       }
       if (widget.mediaItem != null) {
         if (AudioService.currentMediaItem?.id != widget.mediaItem?.id) {
@@ -87,7 +89,9 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> with SingleTickerProv
                         height: MediaQuery.of(context).size.height * 0.35,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            image: DecorationImage(image: NetworkImage(snapshot.data?.mediaItem?.extras!['thumbnailUrl'] ?? ''), fit: BoxFit.cover)),
+                            image: DecorationImage(
+                                image: NetworkImage(snapshot.data?.mediaItem?.extras!['thumbnailUrl'] ?? ''),
+                                fit: BoxFit.cover)),
                       ),
                     ),
                   ),
@@ -128,7 +132,9 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> with SingleTickerProv
                                 ? ProgressBar(
                                     total: snapshot.data?.mediaItem?.duration ?? Duration.zero,
                                     progress: snapshot.data?.position ?? Duration.zero,
-                                    buffered: snapshot.data?.playbackState == null ? Duration.zero : snapshot.data?.playbackState.bufferedPosition,
+                                    buffered: snapshot.data?.playbackState == null
+                                        ? Duration.zero
+                                        : snapshot.data?.playbackState.bufferedPosition,
                                     onSeek: (duration) {
                                       print('User selected a new time: $duration');
                                       AudioService.seekTo(duration);
@@ -147,7 +153,6 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> with SingleTickerProv
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: Color(0xFF004BA0),
-                                // borderRadius: BorderRadius.circular(30),
                               ),
                               child: Center(
                                 child: IconButton(
@@ -190,14 +195,17 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> with SingleTickerProv
                                       String favoritesActionPerformed;
                                       if (favoriteAudiosBox.get(currentMediaItemId) == null) {
                                         favoritesActionPerformed = FAVORITES_ACTION_ADD;
-                                        favoriteAudiosBox.put(currentMediaItemId, Adapter.mediaItemToAudio(snapshot.data?.mediaItem));
+                                        favoriteAudiosBox.put(
+                                            currentMediaItemId, Adapter.mediaItemToAudio(snapshot.data?.mediaItem));
                                       } else {
                                         favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
                                         favoriteAudiosBox.delete(currentMediaItemId);
                                       }
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                          FavoritesSnackBar(Adapter.mediaItemToAudio(snapshot.data?.mediaItem), favoritesActionPerformed, favoriteAudiosBox)
-                                              .build(context));
+                                      ScaffoldMessenger.of(context).showSnackBar(FavoriteAudioSnackBar(
+                                        audio: Adapter.mediaItemToAudio(snapshot.data?.mediaItem),
+                                        favoritesActionPerformed: favoritesActionPerformed,
+                                        displayUndoAction: false,
+                                      ).build(context));
                                     },
                                     child: ValueListenableBuilder(
                                         valueListenable: favoriteAudiosBox.listenable(),

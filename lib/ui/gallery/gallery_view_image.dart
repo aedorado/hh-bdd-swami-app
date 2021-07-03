@@ -22,6 +22,7 @@ class ViewImageScreen extends StatefulWidget {
 
 class _ViewImageScreenState extends State<ViewImageScreen> {
   Box favoriteImagesBox = Hive.box<GalleryImage>(HIVE_BOX_FAVORITE_IMAGES);
+  bool shouldShowSnackbar = true;
 
   _toastInfo(String info) {
     Fluttertoast.showToast(msg: info, toastLength: Toast.LENGTH_LONG);
@@ -36,7 +37,8 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
   _saveImage(GalleryImage galleryImage) async {
     _toastInfo("Downloading Image");
     var response = await Dio().get(galleryImage.downloadURL, options: Options(responseType: ResponseType.bytes));
-    final result = await ImageGallerySaver.saveImage(Uint8List.fromList(response.data), quality: 60, name: galleryImage.id);
+    final result =
+        await ImageGallerySaver.saveImage(Uint8List.fromList(response.data), quality: 60, name: galleryImage.id);
     _toastInfo("Image saved to Gallery");
   }
 
@@ -52,7 +54,6 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
         title: Text('Image Gallery'),
       ),
       body: Container(
-        // height: MediaQuery.of(context).size.height * 0.65,
         child: Column(
           children: [
             Expanded(
@@ -104,8 +105,34 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                                       onPressed: () {
                                         if (isAleadyAddedToFavorites) {
                                           favoriteImagesBox.delete(this.widget.galleryImage.id);
+                                          if (shouldShowSnackbar) {
+                                            ScaffoldMessenger.of(context).showSnackBar(FavoritesImagesSnackBar(
+                                              favoritesActionPerformed: FAVORITES_ACTION_REMOVE,
+                                            ).build(context));
+                                            setState(() {
+                                              this.shouldShowSnackbar = false;
+                                            });
+                                            Future.delayed(Duration(seconds: 1), () {
+                                              setState(() {
+                                                this.shouldShowSnackbar = true;
+                                              });
+                                            });
+                                          }
                                         } else {
                                           favoriteImagesBox.put(this.widget.galleryImage.id, this.widget.galleryImage);
+                                          if (shouldShowSnackbar) {
+                                            ScaffoldMessenger.of(context).showSnackBar(FavoritesImagesSnackBar(
+                                              favoritesActionPerformed: FAVORITES_ACTION_ADD,
+                                            ).build(context));
+                                            setState(() {
+                                              this.shouldShowSnackbar = false;
+                                            });
+                                            Future.delayed(Duration(seconds: 1), () {
+                                              setState(() {
+                                                this.shouldShowSnackbar = true;
+                                              });
+                                            });
+                                          }
                                         }
                                       });
                                 })))
@@ -144,6 +171,27 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
           style: TextStyle(fontSize: fontSize),
         ),
       ),
+    );
+  }
+}
+
+class FavoritesImagesSnackBar extends StatelessWidget {
+  final String favoritesActionPerformed;
+  late final String _snackBarText;
+
+  FavoritesImagesSnackBar({required this.favoritesActionPerformed}) {
+    if (this.favoritesActionPerformed == FAVORITES_ACTION_REMOVE) {
+      _snackBarText = 'Removed from Favorites';
+    } else {
+      _snackBarText = 'Added to Favorites';
+    }
+  }
+
+  @override
+  SnackBar build(BuildContext context) {
+    return SnackBar(
+      content: Text(_snackBarText),
+      duration: Duration(milliseconds: 1000),
     );
   }
 }

@@ -21,11 +21,13 @@ class AudioFolderScreen extends StatelessWidget {
   AudioFolderScreen(AudioFolder audioFolder) {
     // TODO remove series hardcoding from here
     this.audioFolder = audioFolder;
-    this.ssy = FirebaseFirestore.instance.collection("audios").where("series", isEqualTo: this.audioFolder.id).snapshots();
+    this.ssy =
+        FirebaseFirestore.instance.collection("audios").where("series", isEqualTo: this.audioFolder.id).snapshots();
   }
 
   ic() async {
-    var c = await getImagePalette(NetworkImage("https://vrindavandarshan.in/upload_images/dailydarshan/2021-06-01-Mycnz.jpg"));
+    var c = await getImagePalette(
+        NetworkImage("https://vrindavandarshan.in/upload_images/dailydarshan/2021-06-01-Mycnz.jpg"));
     debugPrint("Color : ${c.toString()}");
   }
 
@@ -127,7 +129,6 @@ class AudioFolderScreenSliverList extends StatelessWidget {
               Audio audio = Adapter.firebaseAudioSnapshotToAudio(this.snapshot.data!.docs[index]);
               return AudioListScreenRow(
                 audio: audio,
-                favoriteAudiosBox: favoriteAudiosBox,
               );
             },
             childCount: this.snapshot.data!.size,

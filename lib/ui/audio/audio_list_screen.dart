@@ -10,6 +10,7 @@ import 'package:hh_bbds_app/ui/audio/audio_play_screen.dart';
 import 'package:hh_bbds_app/ui/audio/audio_search.dart';
 import 'package:hh_bbds_app/ui/audio/audio_constants.dart';
 import 'package:hh_bbds_app/ui/audio/miniplayer.dart';
+import 'package:hh_bbds_app/ui/favorites/favorite_audios.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:palette_generator/palette_generator.dart';
@@ -79,11 +80,17 @@ class _AudioListScreenState extends State<AudioListScreen> {
                 } else if (selectionType == SEMINARS || selectionType == SERIES) {
                   Box hiveBox = Hive.box(HIVE_BOX_AUDIO_SEARCH);
                   String id = hiveBox.get(HIVE_BOX_AUDIO_SEARCH_KEY_SELECTED_ITEM);
-                  FirebaseFirestore.instance.collection(selectionType!.toLowerCase()).where("id", isEqualTo: id).limit(1).get().then(
+                  FirebaseFirestore.instance
+                      .collection(selectionType!.toLowerCase())
+                      .where("id", isEqualTo: id)
+                      .limit(1)
+                      .get()
+                      .then(
                     (value) async {
                       if (value.size > 0) {
                         AudioFolder audioFolder = AudioFolder.fromFirebaseAudioFolderSnapshot(value.docs[0]);
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => AudioFolderScreen(audioFolder)));
+                        Navigator.push(
+                            context, MaterialPageRoute(builder: (context) => AudioFolderScreen(audioFolder)));
                       }
                     },
                   );
@@ -152,7 +159,9 @@ class _AudioListScreenState extends State<AudioListScreen> {
       onTap: () {
         setState(() {
           this.selectedSuggestion = index;
-          this._pageController.animateToPage(index, duration: Duration(milliseconds: this._animationDuration), curve: Curves.easeIn);
+          this
+              ._pageController
+              .animateToPage(index, duration: Duration(milliseconds: this._animationDuration), curve: Curves.easeIn);
         });
       },
       child: Padding(
@@ -182,7 +191,6 @@ class _AudioListScreenState extends State<AudioListScreen> {
 
 class AudioListPage extends StatelessWidget {
   late Stream<QuerySnapshot<Map<String, dynamic>>> audiosSnapshot;
-  Box<Audio> favoriteAudiosBox = Hive.box<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
 
   AudioListPage(Stream<QuerySnapshot<Map<String, dynamic>>> audiosSnapshot) {
     this.audiosSnapshot = audiosSnapshot;
@@ -205,7 +213,6 @@ class AudioListPage extends StatelessWidget {
                     Audio audio = Adapter.firebaseAudioSnapshotToAudio(snapshot.data!.docs[index]);
                     return AudioListScreenRow(
                       audio: audio,
-                      favoriteAudiosBox: favoriteAudiosBox,
                     );
                   }));
         } else if (snapshot.hasError) {
@@ -220,10 +227,9 @@ class AudioListPage extends StatelessWidget {
 class AudioListScreenRow extends StatelessWidget {
   final Audio audio;
 
-  // TODO remove as argument and initialize internally
-  final Box<Audio> favoriteAudiosBox;
+  Box<Audio> favoriteAudiosBox = Hive.box<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
 
-  const AudioListScreenRow({Key? key, required this.audio, required this.favoriteAudiosBox}) : super(key: key);
+  AudioListScreenRow({Key? key, required this.audio}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -246,7 +252,8 @@ class AudioListScreenRow extends StatelessWidget {
                     child: InkWell(
                       onTap: () async {
                         MediaItem mediaItem = Adapter.audioToMediaItem(audio);
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen(mediaItem: mediaItem)));
+                        Navigator.push(
+                            context, MaterialPageRoute(builder: (context) => AudioPlayScreen(mediaItem: mediaItem)));
                       },
                       child: Row(
                         children: [
@@ -300,7 +307,11 @@ class AudioListScreenRow extends StatelessWidget {
                           favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
                           favoriteAudiosBox.delete(audio.id);
                         }
-                        ScaffoldMessenger.of(context).showSnackBar(FavoritesSnackBar(audio, favoritesActionPerformed, favoriteAudiosBox).build(context));
+                        ScaffoldMessenger.of(context).showSnackBar(FavoriteAudioSnackBar(
+                          audio: audio,
+                          favoritesActionPerformed: favoritesActionPerformed,
+                          displayUndoAction: false,
+                        ).build(context));
                       },
                       child: ValueListenableBuilder(
                           valueListenable: favoriteAudiosBox.listenable(),
@@ -357,7 +368,8 @@ class AudioFolderPage extends StatelessWidget {
                             flex: 7,
                             child: InkWell(
                               onTap: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => AudioFolderScreen(audioFolder)));
+                                Navigator.push(
+                                    context, MaterialPageRoute(builder: (context) => AudioFolderScreen(audioFolder)));
                               },
                               child: Row(
                                 children: [
@@ -401,42 +413,6 @@ class AudioFolderPage extends StatelessWidget {
         }
         return Center(child: Container(height: 24, width: 24, child: CircularProgressIndicator()));
       },
-    );
-  }
-}
-
-class FavoritesSnackBar extends StatelessWidget {
-  Audio a;
-  String favoritesActionPerformed;
-  Box<Audio> favoriteAudiosBox = Hive.box<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
-  late String snackBarText;
-
-  FavoritesSnackBar(this.a, this.favoritesActionPerformed, this.favoriteAudiosBox) {
-    if (this.favoritesActionPerformed == FAVORITES_ACTION_REMOVE) {
-      snackBarText = 'Removed from Favorites';
-    } else {
-      snackBarText = 'Added to Favorites';
-    }
-  }
-
-  @override
-  SnackBar build(BuildContext context) {
-    return SnackBar(
-      action: SnackBarAction(
-        label: 'Undo',
-        onPressed: () {
-          // Some code to undo the change.
-          if (favoritesActionPerformed == FAVORITES_ACTION_REMOVE) {
-            snackBarText = 'Added to Favorites';
-            favoriteAudiosBox.put(a.id, a);
-          } else {
-            snackBarText = 'Removed from Favorites';
-            favoriteAudiosBox.delete(a.id);
-          }
-        },
-      ),
-      content: Text(snackBarText),
-      duration: Duration(milliseconds: 1000),
     );
   }
 }

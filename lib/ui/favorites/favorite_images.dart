@@ -24,7 +24,7 @@ class FavoriteImages extends StatelessWidget {
                 return Center(
                   child: Padding(
                     padding: const EdgeInsets.all(24.0),
-                    child: Text('No images added to favorites. Visit library to add audios to favorites list.'),
+                    child: Text('No images added to favorites. Visit library to add images to favorites list.'),
                   ),
                 );
               }
@@ -41,7 +41,8 @@ class FavoriteImages extends StatelessWidget {
                           child: GestureDetector(
                             behavior: HitTestBehavior.translucent,
                             onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => ViewImageScreen(imageToDisplay)));
+                              Navigator.push(
+                                  context, MaterialPageRoute(builder: (context) => ViewImageScreen(imageToDisplay)));
                             },
                             child: Hero(
                               tag: imageToDisplay.displayURL,
