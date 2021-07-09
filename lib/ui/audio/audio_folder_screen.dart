@@ -9,12 +9,7 @@ import 'package:hive/hive.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:palette_generator/palette_generator.dart';
 
-class AudioFolderScreen extends StatelessWidget {
-  Future<Color?> getImagePalette(ImageProvider imageProvider) async {
-    final PaletteGenerator paletteGenerator = await PaletteGenerator.fromImageProvider(imageProvider);
-    return paletteGenerator.dominantColor?.color;
-  }
-
+class AudioFolderScreen extends StatefulWidget {
   late AudioFolder audioFolder;
   late Stream<QuerySnapshot<Map<String, dynamic>>> ssy;
 
@@ -25,17 +20,36 @@ class AudioFolderScreen extends StatelessWidget {
         FirebaseFirestore.instance.collection("audios").where("series", isEqualTo: this.audioFolder.id).snapshots();
   }
 
-  ic() async {
-    var c = await getImagePalette(
-        NetworkImage("https://vrindavandarshan.in/upload_images/dailydarshan/2021-06-01-Mycnz.jpg"));
-    debugPrint("Color : ${c.toString()}");
+  @override
+  _AudioFolderScreenState createState() => _AudioFolderScreenState();
+}
+
+class _AudioFolderScreenState extends State<AudioFolderScreen> {
+  Color? notificationBarColor;
+
+  Future<Color?> getImagePalette(ImageProvider imageProvider) async {
+    final PaletteGenerator paletteGenerator = await PaletteGenerator.fromImageProvider(imageProvider);
+    return paletteGenerator.dominantColor?.color;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    determineNotificationBarColor();
+  }
+
+  determineNotificationBarColor() async {
+    var imagePrimaryColor = await getImagePalette(NetworkImage(widget.audioFolder.thumbnailUrl));
+    setState(() {
+      this.notificationBarColor = imagePrimaryColor;
+    });
+    debugPrint("Color : ${imagePrimaryColor.toString()}");
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      // TODO user image to determine color of notifications bar
-      color: Theme.of(context).colorScheme.primaryVariant,
+      color: this.notificationBarColor ?? Theme.of(context).colorScheme.primaryVariant,
       child: SafeArea(
         child: Scaffold(
           // body: AudioListPage(this.audioListFuture),
@@ -43,11 +57,10 @@ class AudioFolderScreen extends StatelessWidget {
             children: [
               Expanded(
                 child: StreamBuilder<QuerySnapshot>(
-                  stream: this.ssy,
+                  stream: this.widget.ssy,
                   builder: (context, snapshot) {
-                    ic(); // TODO remove
                     if (snapshot.hasData) {
-                      return AudioFolderScreenSliverList(audioFolder, snapshot);
+                      return AudioFolderScreenSliverList(widget.audioFolder, snapshot);
                     } else if (snapshot.hasError) {
                       return Text("${snapshot.error}");
                     }
@@ -90,7 +103,8 @@ class AudioFolderScreenSliverList extends StatelessWidget {
             children: <Widget>[
               Positioned.fill(
                   child: Image.network(
-                "https://vrindavandarshan.in/upload_images/dailydarshan/2021-06-01-Mycnz.jpg",
+                this.audioFolder.thumbnailUrl,
+                // "https://vrindavandarshan.in/upload_images/dailydarshan/2021-06-01-Mycnz.jpg",
                 fit: BoxFit.cover,
               )),
             ],

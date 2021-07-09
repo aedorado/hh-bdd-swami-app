@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 const kPrimaryColor = Color(0xFF5638f7);
@@ -38,30 +39,11 @@ var kTitle2Style = TextStyle(
 );
 
 class HomeScreenCarouselCard {
-  HomeScreenCarouselCard(
-      {required this.title, required this.image, required this.description});
+  HomeScreenCarouselCard({required this.title, required this.image, required this.description});
   String title;
   String image;
   String description;
 }
-
-var homeCarouselCards = [
-  HomeScreenCarouselCard(
-      title: 'Hare Krishna',
-      image: 'https://pbs.twimg.com/media/Ed8kkw6XYAIJxBe.jpg',
-      description:
-          'In this age of quarrel and hypocrisy, the only means of deliverance is the chanting of the holy names of the Lord. There is no other way. There is no other way. There is no other way.'),
-  HomeScreenCarouselCard(
-      title: 'Srimad Bhagvatam',
-      image: 'https://bddswami.com/wp-content/uploads/2020/07/rs02-1.jpg',
-      description:
-          'Śrī Caitanya Mahāprabhu very elaborately explained the harer nāma verse of the Bṛhan-nāradīya Purāṇa, and Sārvabhauma Bhaṭṭācārya was struck with wonder to hear His explanation.'),
-  HomeScreenCarouselCard(
-      title: 'Chaitanya Charitamrita',
-      image: 'https://bddswami.com/wp-content/uploads/2020/07/rs01-1.jpg',
-      description:
-          'Śrī Caitanya Mahāprabhu very elaborately explained the harer nāma verse of the Bṛhan-nāradīya Purāṇa, and Sārvabhauma Bhaṭṭācārya was struck with wonder to hear His explanation.'),
-];
 
 // ignore: must_be_immutable
 class CarouselCard extends StatelessWidget {
@@ -77,11 +59,9 @@ class CarouselCard extends StatelessWidget {
         decoration: BoxDecoration(
           // color: Colors.redAccent,
           boxShadow: [
-            BoxShadow(
-                color: kShadowColor, offset: Offset(0, 20), blurRadius: 10.0),
+            BoxShadow(color: kShadowColor, offset: Offset(0, 20), blurRadius: 10.0),
           ],
-          image: DecorationImage(
-              image: NetworkImage(card.image), fit: BoxFit.cover),
+          image: DecorationImage(image: NetworkImage(card.image), fit: BoxFit.cover),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,15 +117,35 @@ class CarouselList extends StatefulWidget {
 }
 
 class _CarouselListState extends State<CarouselList> {
-  // List<Container> indicators = [];
+  var homeCarouselCards = [
+    HomeScreenCarouselCard(
+        title: 'Hare Krishna',
+        image: 'https://pbs.twimg.com/media/Ed8kkw6XYAIJxBe.jpg',
+        description:
+            'In this age of quarrel and hypocrisy, the only means of deliverance is the chanting of the holy names of the Lord. There is no other way. There is no other way. There is no other way.'),
+    HomeScreenCarouselCard(
+        title: 'Srimad Bhagvatam',
+        image: 'https://bddswami.com/wp-content/uploads/2020/07/rs02-1.jpg',
+        description:
+            'Śrī Caitanya Mahāprabhu very elaborately explained the harer nāma verse of the Bṛhan-nāradīya Purāṇa, and Sārvabhauma Bhaṭṭācārya was struck with wonder to hear His explanation.'),
+    HomeScreenCarouselCard(
+        title: 'Chaitanya Charitamrita',
+        image: 'https://bddswami.com/wp-content/uploads/2020/07/rs01-1.jpg',
+        description:
+            'Śrī Caitanya Mahāprabhu very elaborately explained the harer nāma verse of the Bṛhan-nāradīya Purāṇa, and Sārvabhauma Bhaṭṭācārya was struck with wonder to hear His explanation.'),
+  ];
+
   int currentPage = 0;
 
   PageController _pageController = PageController(
     initialPage: 0,
   );
 
+  late Stream<QuerySnapshot<Map<String, dynamic>>> carouselStream;
+
   @override
   void initState() {
+    this.carouselStream = FirebaseFirestore.instance.collection("carousel").orderBy("order").snapshots();
     super.initState();
     Timer.periodic(Duration(seconds: 5), (Timer timer) {
       currentPage++;
@@ -176,9 +176,7 @@ class _CarouselListState extends State<CarouselList> {
                 margin: EdgeInsets.symmetric(horizontal: 6.0),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: (currentPage % homeCarouselCards.length) == index
-                      ? Colors.red
-                      : Color(0xFFA6AEBD),
+                  color: (currentPage % homeCarouselCards.length) == index ? Colors.red : Color(0xFFA6AEBD),
                 ),
               );
             },
@@ -195,20 +193,47 @@ class _CarouselListState extends State<CarouselList> {
         Container(
           height: MediaQuery.of(context).size.height * 0.5,
           width: double.infinity,
-          child: PageView.builder(
-            itemBuilder: (context, index) {
-              return CarouselCard(
-                card: homeCarouselCards[index % homeCarouselCards.length],
-              );
-            },
-            // itemCount: homeCarouselCards.length, // comment for infinite carousel
-            controller: _pageController,
-            onPageChanged: (index) {
-              setState(() {
-                currentPage = index;
-              });
-            },
-          ),
+          child: StreamBuilder<QuerySnapshot>(
+              stream: this.carouselStream,
+              builder: (context, snapshot) {
+                debugPrint('${snapshot.data!.size}');
+                if (snapshot.hasData) {
+                  return PageView.builder(
+                    itemBuilder: (context, index) {
+                      return CarouselCard(
+                        card: homeCarouselCards[index % snapshot.data!.size],
+                      );
+                    },
+                    // itemCount: homeCarouselCards.length, // comment for infinite carousel
+                    controller: _pageController,
+                    onPageChanged: (index) {
+                      setState(() {
+                        currentPage = index;
+                      });
+                    },
+                  );
+                } else if (snapshot.hasError) {
+                  // TODO create a static carousel in case of error in above
+                  var homeCarouselCards = [
+                    HomeScreenCarouselCard(
+                        title: 'Hare Krishna',
+                        image: 'https://pbs.twimg.com/media/Ed8kkw6XYAIJxBe.jpg',
+                        description:
+                            'In this age of quarrel and hypocrisy, the only means of deliverance is the chanting of the holy names of the Lord. There is no other way. There is no other way. There is no other way.'),
+                    HomeScreenCarouselCard(
+                        title: 'Srimad Bhagvatam',
+                        image: 'https://bddswami.com/wp-content/uploads/2020/07/rs02-1.jpg',
+                        description:
+                            'Śrī Caitanya Mahāprabhu very elaborately explained the harer nāma verse of the Bṛhan-nāradīya Purāṇa, and Sārvabhauma Bhaṭṭācārya was struck with wonder to hear His explanation.'),
+                    HomeScreenCarouselCard(
+                        title: 'Chaitanya Charitamrita',
+                        image: 'https://bddswami.com/wp-content/uploads/2020/07/rs01-1.jpg',
+                        description:
+                            'Śrī Caitanya Mahāprabhu very elaborately explained the harer nāma verse of the Bṛhan-nāradīya Purāṇa, and Sārvabhauma Bhaṭṭācārya was struck with wonder to hear His explanation.'),
+                  ];
+                }
+                return Center(child: CircularProgressIndicator());
+              }),
         ),
         updateIndicators(),
       ],
