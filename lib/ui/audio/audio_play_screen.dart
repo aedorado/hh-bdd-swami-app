@@ -6,7 +6,6 @@ import 'package:hh_bbds_app/background/background_audio_controls.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/models/podo/media_state.dart';
 import 'package:hh_bbds_app/streams/streams.dart';
-import 'package:hh_bbds_app/ui/audio/audio_list_screen.dart';
 import 'package:hh_bbds_app/ui/favorites/favorite_audios.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -84,11 +83,14 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> with SingleTickerProv
                   Expanded(
                     flex: 5,
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 48, right: 48, top: 24, bottom: 12),
+                      padding: const EdgeInsets.only(left: 48, right: 48, top: 48, bottom: 48),
                       child: Container(
                         height: MediaQuery.of(context).size.height * 0.35,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(color: Colors.black, blurRadius: 20.0),
+                            ],
                             image: DecorationImage(
                                 image: NetworkImage(snapshot.data?.mediaItem?.extras!['thumbnailUrl'] ?? ''),
                                 fit: BoxFit.cover)),
