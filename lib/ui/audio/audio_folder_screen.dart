@@ -14,10 +14,11 @@ class AudioFolderScreen extends StatefulWidget {
   late Stream<QuerySnapshot<Map<String, dynamic>>> ssy;
 
   AudioFolderScreen(AudioFolder audioFolder) {
-    // TODO remove series hardcoding from here
     this.audioFolder = audioFolder;
-    this.ssy =
-        FirebaseFirestore.instance.collection("audios").where("series", isEqualTo: this.audioFolder.id).snapshots();
+    this.ssy = FirebaseFirestore.instance
+        .collection("audios")
+        .where(this.audioFolder.isSeries ? "series" : "seminar", isEqualTo: this.audioFolder.id)
+        .snapshots();
   }
 
   @override

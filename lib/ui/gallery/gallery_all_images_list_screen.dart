@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hh_bbds_app/adapter/adapter.dart';
 import 'package:hh_bbds_app/models/podo/gallery_image.dart';
 import 'package:hh_bbds_app/ui/gallery/gallery_constants.dart';
 import 'package:hh_bbds_app/ui/gallery/gallery_view_image.dart';
@@ -34,8 +33,9 @@ class AllImagesListScreen extends StatelessWidget {
             var numItems = snapshot.data!.size;
             return DraggableScrollbar.semicircle(
               labelTextBuilder: (offset) {
-                final int currentItem =
-                    _semicircleController.hasClients ? (_semicircleController.offset / _semicircleController.position.maxScrollExtent * numItems).floor() : 0;
+                final int currentItem = _semicircleController.hasClients
+                    ? (_semicircleController.offset / _semicircleController.position.maxScrollExtent * numItems).floor()
+                    : 0;
                 if (currentItem < numItems)
                   return Text('${snapshot.data!.docs[currentItem]['date']}');
                 else
@@ -77,7 +77,8 @@ class ImageListScreenDisplayContainer extends StatelessWidget {
       child: Hero(
         tag: imageToDisplay.displayURL,
         child: Container(
-            decoration: BoxDecoration(image: DecorationImage(image: NetworkImage(imageToDisplay.thumbnailURL), fit: BoxFit.cover)),
+            decoration: BoxDecoration(
+                image: DecorationImage(image: NetworkImage(imageToDisplay.thumbnailURL), fit: BoxFit.cover)),
             child: GestureDetector(
               behavior: HitTestBehavior.translucent,
               onTap: () {

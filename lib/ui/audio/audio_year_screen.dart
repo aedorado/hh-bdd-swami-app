@@ -49,9 +49,11 @@ class AudioYearScreen extends StatelessWidget {
                         AudioFolder(
                             id: "${this.year}",
                             name: "${this.year}",
-                            totalContents: "${snapshot.data?.size}",
+                            isSeries: false,
+                            totalContents: snapshot.data?.size ?? 0,
                             description: "All audios from the year ${this.year}.",
-                            thumbnailUrl: "https://vrindavandarshan.in/upload_images/dailydarshan/2021-06-01-Mycnz.jpg"),
+                            thumbnailUrl:
+                                "https://vrindavandarshan.in/upload_images/dailydarshan/2021-06-01-Mycnz.jpg"),
                         snapshot);
                   } else if (snapshot.hasError) {
                     return Text("${snapshot.error}");

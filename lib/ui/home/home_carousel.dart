@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -30,32 +31,26 @@ class CarouselCard extends StatelessWidget {
         }
       },
       child: Center(
-        child: Container(
-          height: MediaQuery.of(context).size.height * 0.5,
-          decoration: BoxDecoration(
-            // color: Colors.redAccent,
-            boxShadow: [
-              BoxShadow(color: Color.fromRGBO(72, 76, 82, 0.16), offset: Offset(0, 20), blurRadius: 10.0),
-            ],
-            image: DecorationImage(image: NetworkImage(card.image), fit: BoxFit.cover),
+        child: CachedNetworkImage(
+          imageUrl: card.image,
+          imageBuilder: (context, imageProvider) => Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: imageProvider,
+                fit: BoxFit.fill,
+              ),
+            ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Spacer(),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.white.withOpacity(0.7),
-                  ),
-                  child: Container(),
-                ),
-              )
-            ],
-          ),
+          placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+          errorWidget: (context, url, error) => Icon(Icons.error),
         ),
+
+        // Container(
+        //
+        //   decoration: BoxDecoration(
+        //     image: DecorationImage(image: NetworkImage(card.image), fit: BoxFit.cover),
+        //   ),
+        // ),
       ),
     );
   }
@@ -158,33 +153,34 @@ class _CarouselListState extends State<CarouselList> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        Container(
-          height: MediaQuery.of(context).size.height * 0.5,
-          width: double.infinity,
-          child: this.doneFetchingCards
-              ? PageView.builder(
-                  itemBuilder: (context, index) {
-                    return CarouselCard(
-                        card: this.homeCarouselCards[
-                            index % this.totalCarouselCards] // homeCarouselCards[index % snapshot.data!.size],
-                        );
-                  },
-                  // itemCount: homeCarouselCards.length, // comment for infinite carousel
-                  controller: _pageController,
-                  onPageChanged: (index) {
-                    setState(() {
-                      currentPage = index;
-                    });
-                  },
-                )
-              : Center(
-                  child: CircularProgressIndicator(),
-                ),
-        ),
-        updateIndicators(),
-      ],
+    return Container(
+      height: 240,
+      child: Stack(
+        children: <Widget>[
+          Container(
+            child: this.doneFetchingCards
+                ? PageView.builder(
+                    itemBuilder: (context, index) {
+                      return CarouselCard(
+                          card: this.homeCarouselCards[
+                              index % this.totalCarouselCards] // homeCarouselCards[index % snapshot.data!.size],
+                          );
+                    },
+                    // itemCount: homeCarouselCards.length, // comment for infinite carousel
+                    controller: _pageController,
+                    onPageChanged: (index) {
+                      setState(() {
+                        currentPage = index;
+                      });
+                    },
+                  )
+                : Center(
+                    child: CircularProgressIndicator(),
+                  ),
+          ),
+          updateIndicators(),
+        ],
+      ),
     );
   }
 }

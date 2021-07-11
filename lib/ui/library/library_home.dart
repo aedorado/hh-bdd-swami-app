@@ -19,10 +19,9 @@ class LibraryHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ListView(scrollDirection: Axis.vertical, children: this.isFavoritesLibrary ? _getFavoritesLibraryContent() : _getGeneralibraryContent()),
-    );
+    return Container(
+        margin: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 4.0),
+        child: this.isFavoritesLibrary ? _getFavoritesLibraryContent() : _getGeneralibraryContent());
   }
 
   _sectionHeader(String text) {
@@ -52,65 +51,66 @@ class LibraryHome extends StatelessWidget {
   }
 
   _getFavoritesLibraryContent() {
-    return <Widget>[
-      _sectionHeader("Vani"),
-      Container(
-        height: 200,
-        child: Row(
-          children: [
-            new Flexible(flex: 1, child: LibraryCard(displayString: "Audios", displayImage: "images/A.jpg", route: FavoriteAudios())),
-            // new Flexible(flex: 1, child: LibraryCard(displayString: "Videos", displayImage: "https://i.postimg.cc/1zxgcRP2/B.jpg",)),
-          ],
-        ),
-      ),
-      _sectionHeader("Darshan"),
-      Container(
-        height: 200,
-        child: Row(
-          children: [
-            new Flexible(
-                flex: 1,
-                child: LibraryCard(
-                  displayString: "Radha Shyama Sundar & Maharaja",
-                  displayImage: "images/R.jpg",
-                  route: FavoriteImages(),
-                )),
-            // new Flexible(
-            //     flex: 1,
-            //     child: LibraryCard(
-            //       displayString: "Maharaja",
-            //       displayImage: "images/D.jpg",
-            //       route: FavoriteImages(),
-            //     )),
-          ],
-        ),
-      ),
-      _sectionHeader("Quotes"),
-      Container(
-        height: 200,
-        child: Row(
-          children: [
-            new Flexible(
-                flex: 1,
-                child: LibraryCard(
-                  displayString: "Quotes",
-                  displayImage: "images/Q.jpg",
-                  route: Quotes(),
-                )),
-          ],
-        ),
-      ),
-    ];
+    return ListView(
+        scrollDirection: Axis.vertical,
+        physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        children: <Widget>[
+          _sectionHeader("Vani"),
+          Container(
+            height: 200,
+            child: Row(
+              children: [
+                new Flexible(flex: 1, child: LibraryCard(displayImage: "images/A.png", route: FavoriteAudios())),
+                // new Flexible(flex: 1, child: LibraryCard(displayString: "Videos", displayImage: "https://i.postimg.cc/1zxgcRP2/B.jpg",)),
+              ],
+            ),
+          ),
+          _sectionHeader("Darshan"),
+          Container(
+            height: 200,
+            child: Row(
+              children: [
+                new Flexible(
+                    flex: 1,
+                    child: LibraryCard(
+                      displayImage: "images/B.png",
+                      route: FavoriteImages(),
+                    )),
+                // new Flexible(
+                //     flex: 1,
+                //     child: LibraryCard(
+                //       displayString: "Maharaja",
+                //       displayImage: "images/D.jpg",
+                //       route: FavoriteImages(),
+                //     )),
+              ],
+            ),
+          ),
+          _sectionHeader("Quotes"),
+          Container(
+            height: 200,
+            child: Row(
+              children: [
+                new Flexible(
+                    flex: 1,
+                    child: LibraryCard(
+                      displayImage: "images/Q.png",
+                      route: Quotes(),
+                    )),
+              ],
+            ),
+          ),
+        ]);
   }
 
   _getGeneralibraryContent() {
-    return <Widget>[
+    return Column(children: [
       _sectionHeader("Vani"),
       Container(
         height: 200,
         child: Row(
           children: [
-            new Flexible(flex: 1, child: LibraryCard(displayString: "Audios", displayImage: "images/A.jpg", route: AudioListScreen())),
+            new Flexible(flex: 1, child: LibraryCard(displayImage: "images/A.png", route: AudioListScreen())),
             // new Flexible(flex: 1, child: LibraryCard(displayString: "Videos", displayImage: "https://i.postimg.cc/1zxgcRP2/B.jpg",)),
           ],
         ),
@@ -123,8 +123,7 @@ class LibraryHome extends StatelessWidget {
             new Flexible(
                 flex: 1,
                 child: LibraryCard(
-                  displayString: "Sri Sri Radha Shyama Sundar",
-                  displayImage: "images/R.jpg",
+                  displayImage: "images/R.png",
                   route: GalleryHome(
                     galleryOperateMode: GalleryOperateMode.OPERATE_MODE_RSS,
                   ),
@@ -132,8 +131,7 @@ class LibraryHome extends StatelessWidget {
             new Flexible(
                 flex: 1,
                 child: LibraryCard(
-                  displayString: "Maharaja",
-                  displayImage: "images/D.jpg",
+                  displayImage: "images/M.png",
                   route: GalleryHome(
                     galleryOperateMode: GalleryOperateMode.OPERATE_MODE_MHR,
                   ),
@@ -149,22 +147,20 @@ class LibraryHome extends StatelessWidget {
             new Flexible(
                 flex: 1,
                 child: LibraryCard(
-                  displayString: "Quotes",
-                  displayImage: "images/Q.jpg",
+                  displayImage: "images/Q.png",
                   route: Quotes(),
                 )),
           ],
         ),
       ),
-    ];
+    ]);
   }
 }
 
 class LibraryCard extends StatelessWidget {
-  final String displayString;
   final String displayImage;
   final Widget route;
-  const LibraryCard({Key? key, required this.displayString, required this.displayImage, required this.route}) : super(key: key);
+  const LibraryCard({Key? key, required this.displayImage, required this.route}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -175,24 +171,12 @@ class LibraryCard extends StatelessWidget {
           Navigator.push(context, MaterialPageRoute(builder: (context) => route)),
         },
         child: Container(
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), image: DecorationImage(image: AssetImage(displayImage), fit: BoxFit.cover)),
-          child: Column(
-            children: [
-              Spacer(),
-              Spacer(),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(color: Colors.white.withOpacity(0.7)),
-                child: Center(
-                  child: Text(
-                    displayString,
-                    style: new TextStyle(fontSize: 18.0),
-                  ),
-                ),
-              ),
-              Spacer(),
-            ],
-          ),
+          decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(color: Colors.grey.shade600, blurRadius: 7.0),
+              ],
+              borderRadius: BorderRadius.circular(10),
+              image: DecorationImage(image: AssetImage(displayImage), fit: BoxFit.cover)),
         ),
       ),
     );

@@ -62,6 +62,7 @@ void main() async {
   await Hive.openBox<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
   await Hive.openBox<Alert>(HIVE_BOX_ALERTS);
   await Hive.openBox(HIVE_BOX_AUDIO_SEARCH);
+  await Hive.openBox(HIVE_BOX_FAVORITE_BLOGS);
   await Hive.openBox<GalleryImage>(HIVE_BOX_FAVORITE_IMAGES);
 
   runApp(MaterialApp(

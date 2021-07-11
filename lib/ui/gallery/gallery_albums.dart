@@ -149,9 +149,11 @@ class OpenAlbum extends StatelessWidget {
                         )),
                         Positioned(
                           top: MediaQuery.of(context).size.height * 0.2,
-                          left: MediaQuery.of(context).size.width * 0.2,
-                          right: MediaQuery.of(context).size.width * 0.2,
+                          // left: MediaQuery.of(context).size.width * 0.2,
+                          // right: MediaQuery.of(context).size.width * 0.2,
                           child: Container(
+                            height: MediaQuery.of(context).size.height * 0.5,
+                            width: MediaQuery.of(context).size.width,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(5.0),
                               color: Colors.black.withOpacity(0.6),
@@ -160,21 +162,26 @@ class OpenAlbum extends StatelessWidget {
                               padding: const EdgeInsets.all(8.0),
                               child: Column(
                                 children: [
-                                  Text(
-                                    '${album.name}',
-                                    style: TextStyle(color: Colors.white, fontSize: 18),
+                                  Padding(
+                                    padding: const EdgeInsets.all(3.0),
+                                    child: Text(
+                                      '${album.name}',
+                                      style: TextStyle(color: Colors.white, fontSize: 18),
+                                    ),
                                   ),
-                                  Text(
-                                    '${album.description}',
-                                    style: TextStyle(color: Colors.white, fontSize: 16),
+                                  Padding(
+                                    padding: const EdgeInsets.all(3.0),
+                                    child: Text(
+                                      '${album.description}',
+                                      style: TextStyle(color: Colors.white, fontSize: 16),
+                                    ),
                                   ),
-                                  Text(
-                                    '',
-                                    style: TextStyle(color: Colors.white, fontSize: 16),
-                                  ),
-                                  Text(
-                                    '${album.totalImages} Images',
-                                    style: TextStyle(color: Colors.white, fontSize: 16),
+                                  Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: Text(
+                                      '${album.totalImages} Images',
+                                      style: TextStyle(color: Colors.white, fontSize: 16),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -207,7 +214,10 @@ class OpenAlbum extends StatelessWidget {
 
   _openAlbumSliverList(context, Album album) {
     return StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection(this.imagesCollectionName).where("album_id", isEqualTo: this.album.id).snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection(this.imagesCollectionName)
+            .where("album_id", isEqualTo: this.album.id)
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return SliverGrid(

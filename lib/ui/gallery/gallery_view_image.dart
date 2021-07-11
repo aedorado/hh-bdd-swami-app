@@ -143,16 +143,14 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
             Expanded(
               flex: 2,
               child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Container(
-                  child: Column(
-                    children: [
-                      _descriptionTextBox('${widget.galleryImage.description}', 20),
-                      _descriptionTextBox('${widget.galleryImage.date}', 14),
-                      _descriptionTextBox('${widget.galleryImage.location}', 14),
-                      _descriptionTextBox('${widget.galleryImage.tags}', 14),
-                    ],
-                  ),
+                padding: const EdgeInsets.all(6.0),
+                child: ListView(
+                  children: [
+                    _descriptionTextBox('${widget.galleryImage.description}', 20),
+                    _descriptionTextBox('${widget.galleryImage.date}', 14),
+                    _descriptionTextBox('${widget.galleryImage.location}', 14),
+                    _descriptionTextBox('${widget.galleryImage.tags}', 14),
+                  ],
                 ),
               ),
             )

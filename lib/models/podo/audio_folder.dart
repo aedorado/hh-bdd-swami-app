@@ -3,11 +3,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class AudioFolder {
   late String id;
   late String name;
-  late String totalContents;
+  late int totalContents;
   late String thumbnailUrl;
   late String description;
+  late bool isSeries;
 
-  AudioFolder({required this.id, required this.name, required this.totalContents, required this.thumbnailUrl, required this.description});
+  AudioFolder(
+      {required this.id,
+      required this.name,
+      required this.totalContents,
+      required this.thumbnailUrl,
+      required this.description,
+      required this.isSeries});
 
   AudioFolder.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -15,6 +22,7 @@ class AudioFolder {
     totalContents = json['total_contents'];
     thumbnailUrl = json['thumbnailUrl'];
     description = json['description'];
+    isSeries = json['isSeries'];
   }
 
   AudioFolder.fromFirebaseAudioFolderSnapshot(QueryDocumentSnapshot<Object?> doc) {
@@ -23,6 +31,7 @@ class AudioFolder {
     thumbnailUrl = doc['thumbnailUrl'] ?? '';
     description = doc['description'] ?? '';
     totalContents = doc['totalContents'] ?? '';
+    isSeries = doc['isSeries'] ?? '';
   }
 
   Map<String, dynamic> toJson() {
@@ -32,6 +41,7 @@ class AudioFolder {
     data['total_contents'] = this.totalContents;
     data['thumbnailUrl'] = this.thumbnailUrl;
     data['description'] = this.description;
+    data['isSeries'] = this.isSeries;
     return data;
   }
 }

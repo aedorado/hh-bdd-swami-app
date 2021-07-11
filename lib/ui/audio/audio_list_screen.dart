@@ -159,9 +159,8 @@ class _AudioListScreenState extends State<AudioListScreen> {
       onTap: () {
         setState(() {
           this.selectedSuggestion = index;
-          this
-              ._pageController
-              .animateToPage(index, duration: Duration(milliseconds: this._animationDuration), curve: Curves.easeIn);
+          this._pageController.jumpToPage(index);
+          // .animateToPage(index, duration: Duration(milliseconds: this._animationDuration), curve: Curves.easeIn);
         });
       },
       child: Padding(
