@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/ui/alerts/alert_screen.dart';
 import 'package:hh_bbds_app/ui/library/library_home.dart';
-import 'package:hh_bbds_app/ui/mindfulness/mindfulness.dart';
 
 import 'home_carousel.dart';
 
@@ -20,11 +19,12 @@ class _HomeState extends State<Home> {
     LibraryHome(
       isFavoritesLibrary: true,
     ),
-    MindfulnessScreen(),
+    // MindfulnessScreen(),
     AlertScreen(),
   ];
 
-  var _homeSreenAppBarTitles = ['BDD Swami App', 'Favorites', 'Mindfulness', 'Alerts'];
+  var _homeSreenAppBarTitles = ['BDD Swami App', 'Favorites', 'Alerts'];
+  // var _homeSreenAppBarTitles = ['BDD Swami App', 'Favorites', 'Mindfulness', 'Alerts'];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -49,7 +49,7 @@ class _HomeState extends State<Home> {
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Home"),
         BottomNavigationBarItem(icon: Icon(Icons.favorite_border), label: "Favorites"),
-        BottomNavigationBarItem(icon: Icon(Icons.face_outlined), label: "Mindfulness"),
+        // BottomNavigationBarItem(icon: Icon(Icons.face_outlined), label: "Mindfulness"),
         BottomNavigationBarItem(icon: Icon(Icons.notifications_outlined), label: "Alerts")
       ],
       currentIndex: widget.selectedIndex,

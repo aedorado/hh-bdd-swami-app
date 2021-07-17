@@ -4,18 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/models/podo/blog.dart';
 import 'package:hh_bbds_app/ui/gallery/gallery_view_image.dart';
-import 'package:uuid/uuid.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-class MindfulnessScreen extends StatefulWidget {
-  @override
-  _MindfulnessScreenState createState() => _MindfulnessScreenState();
-}
-
-class _MindfulnessScreenState extends State<MindfulnessScreen> {
-  bool shouldShowSnackbar = true;
-
+class MindfulnessScreen extends StatelessWidget {
   Box favoriteBlogsBox = Hive.box(HIVE_BOX_FAVORITE_BLOGS);
 
   @override
@@ -96,61 +88,7 @@ class _MindfulnessScreenState extends State<MindfulnessScreen> {
                                   ),
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('${blog.date.toString().substring(0, 10)}'),
-                                    Container(
-                                        child: ValueListenableBuilder(
-                                            valueListenable: favoriteBlogsBox.listenable(),
-                                            builder: (context, Box box, widget) {
-                                              var isAlreadyAddedToFavorites = box.get(blog.id) != null;
-                                              return InkWell(
-                                                  child: Icon(
-                                                    isAlreadyAddedToFavorites ? Icons.favorite : Icons.favorite_border,
-                                                    color: Colors.redAccent,
-                                                  ),
-                                                  onTap: () {
-                                                    if (isAlreadyAddedToFavorites) {
-                                                      favoriteBlogsBox.delete(blog.id);
-                                                      if (shouldShowSnackbar) {
-                                                        ScaffoldMessenger.of(context)
-                                                            .showSnackBar(FavoritesImagesSnackBar(
-                                                          favoritesActionPerformed: FAVORITES_ACTION_REMOVE,
-                                                        ).build(context));
-                                                        setState(() {
-                                                          this.shouldShowSnackbar = false;
-                                                        });
-                                                        Future.delayed(Duration(seconds: 1), () {
-                                                          setState(() {
-                                                            this.shouldShowSnackbar = true;
-                                                          });
-                                                        });
-                                                      }
-                                                    } else {
-                                                      favoriteBlogsBox.put(blog.id, blog.id);
-                                                      if (shouldShowSnackbar) {
-                                                        ScaffoldMessenger.of(context)
-                                                            .showSnackBar(FavoritesImagesSnackBar(
-                                                          favoritesActionPerformed: FAVORITES_ACTION_ADD,
-                                                        ).build(context));
-                                                        setState(() {
-                                                          this.shouldShowSnackbar = false;
-                                                        });
-                                                        Future.delayed(Duration(seconds: 1), () {
-                                                          setState(() {
-                                                            this.shouldShowSnackbar = true;
-                                                          });
-                                                        });
-                                                      }
-                                                    }
-                                                  });
-                                            })),
-                                  ],
-                                ),
-                              ),
+                              MindfulnessBottomBar(blog: blog),
                             ],
                           ),
                         )),
@@ -241,8 +179,85 @@ class MindfulnessArticle extends StatelessWidget {
                 childCount: 1, // this.snapshot.data!.size,
               ),
             ),
+            SliverToBoxAdapter(
+              child: MindfulnessBottomBar(
+                blog: blog,
+              ),
+            )
           ],
         ),
+      ),
+    );
+  }
+}
+
+class MindfulnessBottomBar extends StatefulWidget {
+  Blog blog;
+
+  MindfulnessBottomBar({required this.blog});
+
+  @override
+  _MindfulnessBottomBarState createState() => _MindfulnessBottomBarState();
+}
+
+class _MindfulnessBottomBarState extends State<MindfulnessBottomBar> {
+  bool shouldShowSnackbar = true;
+
+  Box favoriteBlogsBox = Hive.box(HIVE_BOX_FAVORITE_BLOGS);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text('${widget.blog.date.toString().substring(0, 10)}'),
+          Container(
+              child: ValueListenableBuilder(
+                  valueListenable: favoriteBlogsBox.listenable(),
+                  builder: (context, Box box, w) {
+                    var isAlreadyAddedToFavorites = box.get(widget.blog.id) != null;
+                    return InkWell(
+                        child: Icon(
+                          isAlreadyAddedToFavorites ? Icons.favorite : Icons.favorite_border,
+                          color: Colors.redAccent,
+                        ),
+                        onTap: () {
+                          if (isAlreadyAddedToFavorites) {
+                            favoriteBlogsBox.delete(widget.blog.id);
+                            if (shouldShowSnackbar) {
+                              ScaffoldMessenger.of(context).showSnackBar(FavoritesImagesSnackBar(
+                                favoritesActionPerformed: FAVORITES_ACTION_REMOVE,
+                              ).build(context));
+                              setState(() {
+                                this.shouldShowSnackbar = false;
+                              });
+                              Future.delayed(Duration(seconds: 1), () {
+                                setState(() {
+                                  this.shouldShowSnackbar = true;
+                                });
+                              });
+                            }
+                          } else {
+                            favoriteBlogsBox.put(widget.blog.id, widget.blog.id);
+                            if (shouldShowSnackbar) {
+                              ScaffoldMessenger.of(context).showSnackBar(FavoritesImagesSnackBar(
+                                favoritesActionPerformed: FAVORITES_ACTION_ADD,
+                              ).build(context));
+                              setState(() {
+                                this.shouldShowSnackbar = false;
+                              });
+                              Future.delayed(Duration(seconds: 1), () {
+                                setState(() {
+                                  this.shouldShowSnackbar = true;
+                                });
+                              });
+                            }
+                          }
+                        });
+                  })),
+        ],
       ),
     );
   }

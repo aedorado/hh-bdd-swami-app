@@ -23,6 +23,51 @@ class AllImagesListScreen extends StatelessWidget {
     }
   }
 
+  _getLabelText(String d) {
+    var parts = d.split('/');
+    String ds = "" + parts[0];
+    switch (parts[1]) {
+      case "01":
+        ds += " Jan";
+        break;
+      case "02":
+        ds += " Feb";
+        break;
+      case "03":
+        ds += " Mar";
+        break;
+      case "04":
+        ds += " Apr";
+        break;
+      case "05":
+        ds += " May";
+        break;
+      case "06":
+        ds += " Jun";
+        break;
+      case "07":
+        ds += " Jul";
+        break;
+      case "08":
+        ds += " Aug";
+        break;
+      case "09":
+        ds += " Sep";
+        break;
+      case "10":
+        ds += " Oct";
+        break;
+      case "11":
+        ds += " Nov";
+        break;
+      case "12":
+        ds += " Dec";
+        break;
+    }
+    ds += " " + parts[2] + "";
+    return ds;
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
@@ -36,10 +81,17 @@ class AllImagesListScreen extends StatelessWidget {
                 final int currentItem = _semicircleController.hasClients
                     ? (_semicircleController.offset / _semicircleController.position.maxScrollExtent * numItems).floor()
                     : 0;
-                if (currentItem < numItems)
-                  return Text('${snapshot.data!.docs[currentItem]['date']}');
-                else
-                  return Text('${snapshot.data!.docs[numItems - 1]['date']}');
+                if (currentItem < numItems) {
+                  return Text(
+                    _getLabelText('${snapshot.data!.docs[currentItem]['date']}'),
+                    style: TextStyle(fontSize: 12),
+                  );
+                } else {
+                  return Text(
+                    _getLabelText('${snapshot.data!.docs[numItems - 1]['date']}'),
+                    style: TextStyle(fontSize: 12),
+                  );
+                }
               },
               labelConstraints: BoxConstraints.tightFor(width: 80.0, height: 30.0),
               controller: _semicircleController,
