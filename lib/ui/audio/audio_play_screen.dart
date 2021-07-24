@@ -83,7 +83,7 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> with SingleTickerProv
                   Expanded(
                     flex: 5,
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 48, right: 48, top: 48, bottom: 48),
+                      padding: const EdgeInsets.only(left: 24, right: 24, top: 24, bottom: 24),
                       child: Container(
                         height: MediaQuery.of(context).size.height * 0.35,
                         decoration: BoxDecoration(
@@ -103,7 +103,7 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> with SingleTickerProv
                       children: [
                         // TODO add a loader to hide controls while audio is loading in background?
                         Expanded(
-                          flex: 1,
+                          flex: 3,
                           child: Center(
                             child: Padding(
                               padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
@@ -127,7 +127,7 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> with SingleTickerProv
                           ),
                         ),
                         Expanded(
-                          flex: 1,
+                          flex: 2,
                           child: Padding(
                             padding: const EdgeInsets.only(left: 40, right: 40, top: 20, bottom: 10),
                             child: snapshot.hasData
@@ -146,9 +146,9 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> with SingleTickerProv
                           ),
                         ),
                         Expanded(
-                          flex: 1,
+                          flex: 2,
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 40, right: 40, top: 10, bottom: 10),
+                            padding: const EdgeInsets.only(top: 5, bottom: 5),
                             child: Container(
                               width: 56,
                               height: 56,
@@ -184,7 +184,7 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> with SingleTickerProv
                           ),
                         ),
                         Expanded(
-                          flex: 1,
+                          flex: 2,
                           child: Padding(
                             padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
                             child: Row(

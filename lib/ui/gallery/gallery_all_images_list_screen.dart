@@ -24,8 +24,8 @@ class AllImagesListScreen extends StatelessWidget {
   }
 
   _getLabelText(String d) {
-    var parts = d.split('/');
-    String ds = "" + parts[0];
+    var parts = d.split(' ')[0].split('-');
+    String ds = "";
     switch (parts[1]) {
       case "01":
         ds += " Jan";
@@ -64,7 +64,7 @@ class AllImagesListScreen extends StatelessWidget {
         ds += " Dec";
         break;
     }
-    ds += " " + parts[2] + "";
+    ds += " " + parts[0];
     return ds;
   }
 

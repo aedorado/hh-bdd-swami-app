@@ -233,7 +233,7 @@ class AudioListScreenRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 80,
+      height: 90,
       child: StreamBuilder<MediaItem?>(
           stream: AudioService.currentMediaItemStream,
           builder: (context, currentMediaItemSnapshot) {
@@ -279,11 +279,12 @@ class AudioListScreenRow extends StatelessWidget {
                                     children: [
                                       Text(
                                         '${audio.name}',
-                                        style: TextStyle(fontSize: 16),
+                                        style: TextStyle(fontSize: 15),
                                       ),
                                       Text(
                                         '${audio.name}',
-                                        style: TextStyle(fontSize: 12),
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(fontSize: 11),
                                       ),
                                     ],
                                   ),
