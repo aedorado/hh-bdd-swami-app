@@ -9,6 +9,7 @@ import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/models/podo/gallery_image.dart';
 import 'package:hh_bbds_app/models/podo/alert.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
+import 'package:hh_bbds_app/models/podo/quote.dart';
 import 'package:hh_bbds_app/network/remote_config.dart';
 import 'package:hh_bbds_app/ui/home/home.dart';
 import 'package:hive/hive.dart';
@@ -57,9 +58,11 @@ void main() async {
     ..init(document.path)
     ..registerAdapter(AudioAdapter())
     ..registerAdapter(AlertAdapter())
+    ..registerAdapter(QuoteAdapter())
     ..registerAdapter(GalleryImageAdapter());
 
   await Hive.openBox<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
+  await Hive.openBox<Quote>(HIVE_BOX_FAVORITE_QUOTES);
   await Hive.openBox<Alert>(HIVE_BOX_ALERTS);
   await Hive.openBox(HIVE_BOX_AUDIO_SEARCH);
   await Hive.openBox(HIVE_BOX_FAVORITE_BLOGS);

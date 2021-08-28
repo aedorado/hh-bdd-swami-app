@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/ui/audio/audio_list_screen.dart';
 import 'package:hh_bbds_app/ui/favorites/favorite_audios.dart';
 import 'package:hh_bbds_app/ui/favorites/favorite_images.dart';
+import 'package:hh_bbds_app/ui/favorites/favorite_quotes.dart';
 import 'package:hh_bbds_app/ui/gallery/gallery_constants.dart';
 import 'package:hh_bbds_app/ui/gallery/gallery_home.dart';
 import 'package:hh_bbds_app/ui/quotes/quotes_screen.dart';
@@ -95,7 +96,7 @@ class LibraryHome extends StatelessWidget {
                     flex: 1,
                     child: LibraryCard(
                       displayImage: "images/Q.png",
-                      route: Quotes(),
+                      route: FavoriteQuotes(),
                     )),
               ],
             ),

@@ -284,7 +284,7 @@ class AudioListScreenRow extends StatelessWidget {
                                       Text(
                                         '${audio.name}',
                                         overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(fontSize: 11),
+                                        style: TextStyle(fontSize: 12),
                                       ),
                                     ],
                                   ),
