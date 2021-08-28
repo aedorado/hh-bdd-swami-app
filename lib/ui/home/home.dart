@@ -20,10 +20,10 @@ class _HomeState extends State<Home> {
       isFavoritesLibrary: true,
     ),
     // MindfulnessScreen(),
-    AlertScreen(),
+    // AlertScreen(),
   ];
 
-  var _homeSreenAppBarTitles = ['BDD Swami App', 'Favorites', 'Alerts'];
+  var _homeSreenAppBarTitles = ['BDD Swami App', 'Favorites'];
   // var _homeSreenAppBarTitles = ['BDD Swami App', 'Favorites', 'Mindfulness', 'Alerts'];
 
   void _onItemTapped(int index) {
