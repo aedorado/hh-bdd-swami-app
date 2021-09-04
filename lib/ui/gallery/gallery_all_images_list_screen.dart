@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/cupertino.dart';
@@ -110,30 +111,28 @@ class AllImagesListScreen extends StatelessWidget {
                     child: Hero(
                       tag: imageToDisplay.displayURL,
                       child: Container(
-                          decoration: BoxDecoration(
-                              image:
-                                  DecorationImage(image: NetworkImage(imageToDisplay.thumbnailURL), fit: BoxFit.cover)),
                           child: GestureDetector(
-                            behavior: HitTestBehavior.translucent,
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ViewImageScreen(imagesList: imagesList, index: index)));
-                            },
-                            child: (imageToDisplay.type == "Video")
-                                ? Container(
-                                    child: Center(
-                                      child: Container(
-                                          child: Icon(
-                                        Icons.play_arrow,
-                                        size: 40,
-                                        color: Colors.white,
-                                      )),
+                        behavior: HitTestBehavior.translucent,
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ViewImageScreen(imagesList: imagesList, index: index)));
+                        },
+                        child: CachedNetworkImage(
+                            imageUrl: imageToDisplay.thumbnailURL,
+                            imageBuilder: (context, imageProvider) => Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.black,
+                                    image: DecorationImage(
+                                      image: imageProvider,
+                                      fit: BoxFit.cover,
                                     ),
-                                  )
-                                : Container(),
-                          )),
+                                  ),
+                                ),
+                            placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                            errorWidget: (context, url, error) => Icon(Icons.error)),
+                      )),
                     ),
                   );
                 },

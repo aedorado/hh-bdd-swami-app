@@ -58,16 +58,26 @@ class QuoteDisplay extends StatelessWidget {
       child: Hero(
         tag: quoteList[index].url,
         child: Container(
-            decoration:
-                BoxDecoration(image: DecorationImage(image: NetworkImage(quoteList[index].url), fit: BoxFit.cover)),
             child: GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: () {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => ViewQuote(quoteList: quoteList, index: index)));
-              },
-              child: Container(),
-            )),
+          behavior: HitTestBehavior.translucent,
+          onTap: () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => ViewQuote(quoteList: quoteList, index: index)));
+          },
+          child: CachedNetworkImage(
+              imageUrl: quoteList[index].url,
+              imageBuilder: (context, imageProvider) => Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      image: DecorationImage(
+                        image: imageProvider,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+              placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+              errorWidget: (context, url, error) => Icon(Icons.error)),
+        )),
       ),
     );
   }
@@ -82,8 +92,66 @@ class ViewQuote extends StatefulWidget {
   _ViewQuoteState createState() => _ViewQuoteState();
 }
 
-class _ViewQuoteState extends State<ViewQuote> {
+class _ViewQuoteState extends State<ViewQuote> with SingleTickerProviderStateMixin {
   Box favoriteQuotesBox = Hive.box<Quote>(HIVE_BOX_FAVORITE_QUOTES);
+
+  final TransformationController _transformationController = TransformationController();
+  Animation<Matrix4>? _animationReset;
+  late final AnimationController _controllerReset;
+
+  void _onAnimateReset() {
+    _transformationController.value = _animationReset!.value;
+    if (!_controllerReset.isAnimating) {
+      _animationReset!.removeListener(_onAnimateReset);
+      _animationReset = null;
+      _controllerReset.reset();
+    }
+  }
+
+  void _animateResetInitialize() {
+    _controllerReset.reset();
+    _animationReset = Matrix4Tween(
+      begin: _transformationController.value,
+      end: Matrix4.identity(),
+    ).animate(_controllerReset);
+    _animationReset!.addListener(_onAnimateReset);
+    _controllerReset.forward();
+  }
+
+  // Stop a running reset to home transform animation.
+  void _animateResetStop() {
+    _controllerReset.stop();
+    _animationReset?.removeListener(_onAnimateReset);
+    _animationReset = null;
+    _controllerReset.reset();
+  }
+
+  void _onInteractionStart(ScaleStartDetails details) {
+    // If the user tries to cause a transformation while the reset animation is
+    // running, cancel the reset animation.
+    if (_controllerReset.status == AnimationStatus.forward) {
+      _animateResetStop();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _controllerReset = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+  }
+
+  void _onInteractionEnd(ScaleEndDetails details) {
+    _animateResetInitialize();
+  }
+
+  @override
+  void dispose() {
+    _controllerReset.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +166,13 @@ class _ViewQuoteState extends State<ViewQuote> {
               flex: 14,
               child: Hero(
                 tag: this.widget.quoteList[widget.index].url,
-                child: GestureDetector(
+                child: InteractiveViewer(
+                  minScale: 0.1,
+                  maxScale: 2,
+                  panEnabled: false,
+                  onInteractionStart: _onInteractionStart,
+                  onInteractionEnd: _onInteractionEnd,
+                  transformationController: _transformationController,
                   child: CachedNetworkImage(
                     imageUrl: this.widget.quoteList[widget.index].url,
                     imageBuilder: (context, imageProvider) => Container(

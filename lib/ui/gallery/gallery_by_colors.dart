@@ -11,19 +11,19 @@ class GalleryByColors extends StatelessWidget {
   late GalleryOperateMode galleryOperateMode;
   late List sectionList;
   late String collectionName;
-  late String columToCompare;
+  late String columnToCompare;
 
   GalleryByColors({required this.galleryOperateMode}) {
     switch (galleryOperateMode) {
       case GalleryOperateMode.OPERATE_MODE_RSS:
         this.sectionList = RemoteConfigService.getSsrssImagesColorsList() ?? [];
         this.collectionName = "ssrss_images";
-        this.columToCompare = "color";
+        this.columnToCompare = "color";
         break;
       case GalleryOperateMode.OPERATE_MODE_MHR:
         this.sectionList = RemoteConfigService.getMaharajaImagesPlacesList() ?? [];
         this.collectionName = "maharaja_images";
-        this.columToCompare = "location";
+        this.columnToCompare = "location";
         break;
     }
   }
@@ -50,7 +50,7 @@ class GalleryByColors extends StatelessWidget {
                             builder: (context) => ImagesByColorScreen(
                                   collectionName: this.collectionName,
                                   galleryOperateMode: this.galleryOperateMode,
-                                  columnToCompare: this.columToCompare,
+                                  columnToCompare: this.columnToCompare,
                                   valueToCompare: sectionName,
                                 )));
                   },
@@ -58,7 +58,7 @@ class GalleryByColors extends StatelessWidget {
                 StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
                         .collection(this.collectionName)
-                        .where(this.columToCompare, isEqualTo: sectionName)
+                        .where(this.columnToCompare, isEqualTo: sectionName)
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
@@ -199,18 +199,27 @@ class OpenAlbumSliverList extends StatelessWidget {
                   child: Hero(
                     tag: imageToDisplay.displayURL,
                     child: Container(
-                        decoration: BoxDecoration(
-                            image:
-                                DecorationImage(image: NetworkImage(imageToDisplay.thumbnailURL), fit: BoxFit.cover)),
                         child: GestureDetector(
-                          behavior: HitTestBehavior.translucent,
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ViewImageScreen(imagesList: imagesList, index: index)));
-                          },
-                        )),
+                            behavior: HitTestBehavior.translucent,
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ViewImageScreen(imagesList: imagesList, index: index)));
+                            },
+                            child: CachedNetworkImage(
+                                imageUrl: imageToDisplay.thumbnailURL,
+                                imageBuilder: (context, imageProvider) => Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        image: DecorationImage(
+                                          image: imageProvider,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                                errorWidget: (context, url, error) => Icon(Icons.error)))),
                   ),
                 );
               }
