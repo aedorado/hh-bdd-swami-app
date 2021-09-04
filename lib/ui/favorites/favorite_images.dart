@@ -28,6 +28,7 @@ class FavoriteImages extends StatelessWidget {
                   ),
                 );
               }
+              List<GalleryImage> imagesList = _getImagesList(favoriteImagesBox);
               return CustomScrollView(
                 physics: BouncingScrollPhysics(),
                 slivers: [
@@ -42,7 +43,9 @@ class FavoriteImages extends StatelessWidget {
                             behavior: HitTestBehavior.translucent,
                             onTap: () {
                               Navigator.push(
-                                  context, MaterialPageRoute(builder: (context) => ViewImageScreen(imageToDisplay)));
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ViewImageScreen(imagesList: imagesList, index: index)));
                             },
                             child: Hero(
                               tag: imageToDisplay.displayURL,
@@ -72,5 +75,13 @@ class FavoriteImages extends StatelessWidget {
             }),
       ),
     );
+  }
+
+  List<GalleryImage> _getImagesList(Box favoriteImagesBox) {
+    List<GalleryImage> qlist = [];
+    for (int i = 0; i < favoriteImagesBox.length; ++i) {
+      qlist.add(favoriteImagesBox.getAt(i));
+    }
+    return qlist;
   }
 }

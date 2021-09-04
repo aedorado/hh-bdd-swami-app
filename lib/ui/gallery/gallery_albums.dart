@@ -5,6 +5,7 @@ import 'package:hh_bbds_app/models/podo/album.dart';
 import 'package:hh_bbds_app/models/podo/gallery_image.dart';
 import 'package:hh_bbds_app/ui/gallery/gallery_all_images_list_screen.dart';
 import 'package:hh_bbds_app/ui/gallery/gallery_constants.dart';
+import 'package:hh_bbds_app/ui/gallery/gallery_view_image.dart';
 
 class GalleryAlbums extends StatelessWidget {
   GalleryOperateMode galleryOperateMode;
@@ -220,13 +221,45 @@ class OpenAlbum extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
+            List<GalleryImage> imagesList = _getImagesListFromSnapshot(snapshot.data!.docs);
             return SliverGrid(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
               delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
                 GalleryImage imageToDisplay = GalleryImage.fromFireBaseSnapshotDoc(snapshot.data!.docs[index]);
-                return ImageListScreenDisplayContainer(
-                  imageToDisplay: imageToDisplay,
+                return Padding(
+                  padding: const EdgeInsets.all(1.0),
+                  child: Hero(
+                    tag: imageToDisplay.displayURL,
+                    child: Container(
+                        decoration: BoxDecoration(
+                            image:
+                                DecorationImage(image: NetworkImage(imageToDisplay.thumbnailURL), fit: BoxFit.cover)),
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.translucent,
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ViewImageScreen(imagesList: imagesList, index: index)));
+                          },
+                          child: (imageToDisplay.type == "Video")
+                              ? Container(
+                                  child: Center(
+                                    child: Container(
+                                        child: Icon(
+                                      Icons.play_arrow,
+                                      size: 40,
+                                      color: Colors.white,
+                                    )),
+                                  ),
+                                )
+                              : Container(),
+                        )),
+                  ),
                 );
+                // return ImageListScreenDisplayContainer(
+                //   imageToDisplay: imageToDisplay,
+                // );
               }, childCount: snapshot.data!.size),
             );
           } else if (snapshot.hasError) {
@@ -234,5 +267,9 @@ class OpenAlbum extends StatelessWidget {
           }
           return SliverToBoxAdapter(child: Center(child: CircularProgressIndicator()));
         });
+  }
+
+  List<GalleryImage> _getImagesListFromSnapshot(List<QueryDocumentSnapshot<Object?>> docs) {
+    return docs.map((doc) => GalleryImage.fromFireBaseSnapshotDoc(doc)).toList();
   }
 }

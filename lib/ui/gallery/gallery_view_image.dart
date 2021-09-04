@@ -12,40 +12,100 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ViewImageScreen extends StatefulWidget {
-  GalleryImage galleryImage;
+  late int index = 0;
+  late List<GalleryImage> imagesList;
 
-  ViewImageScreen(this.galleryImage);
+  ViewImageScreen({required this.imagesList, required this.index});
 
   @override
   _ViewImageScreenState createState() => _ViewImageScreenState();
 }
 
-class _ViewImageScreenState extends State<ViewImageScreen> {
+class _ViewImageScreenState extends State<ViewImageScreen> with SingleTickerProviderStateMixin {
   Box favoriteImagesBox = Hive.box<GalleryImage>(HIVE_BOX_FAVORITE_IMAGES);
   bool shouldShowSnackbar = true;
 
-  _toastInfo(String info) {
-    Fluttertoast.showToast(msg: info, toastLength: Toast.LENGTH_LONG);
+  final TransformationController _transformationController = TransformationController();
+  Animation<Matrix4>? _animationReset;
+  late final AnimationController _controllerReset;
+
+  void _onAnimateReset() {
+    _transformationController.value = _animationReset!.value;
+    if (!_controllerReset.isAnimating) {
+      _animationReset!.removeListener(_onAnimateReset);
+      _animationReset = null;
+      _controllerReset.reset();
+    }
   }
 
-  _requestPermission() async {
-    Map<Permission, PermissionStatus> statuses = await [
-      Permission.storage,
-    ].request();
+  void _animateResetInitialize() {
+    _controllerReset.reset();
+    _animationReset = Matrix4Tween(
+      begin: _transformationController.value,
+      end: Matrix4.identity(),
+    ).animate(_controllerReset);
+    _animationReset!.addListener(_onAnimateReset);
+    _controllerReset.forward();
   }
 
-  _saveImage(GalleryImage galleryImage) async {
-    _toastInfo("Downloading Image");
-    var response = await Dio().get(galleryImage.downloadURL, options: Options(responseType: ResponseType.bytes));
-    final result =
-        await ImageGallerySaver.saveImage(Uint8List.fromList(response.data), quality: 60, name: galleryImage.id);
-    _toastInfo("Image saved to Gallery");
+  // Stop a running reset to home transform animation.
+  void _animateResetStop() {
+    _controllerReset.stop();
+    _animationReset?.removeListener(_onAnimateReset);
+    _animationReset = null;
+    _controllerReset.reset();
   }
 
-  downloadFile(GalleryImage galleryImage) async {
-    await _requestPermission();
-    await _saveImage(galleryImage);
+  void _onInteractionStart(ScaleStartDetails details) {
+    // If the user tries to cause a transformation while the reset animation is
+    // running, cancel the reset animation.
+    if (_controllerReset.status == AnimationStatus.forward) {
+      _animateResetStop();
+    }
   }
+
+  @override
+  void initState() {
+    super.initState();
+    _controllerReset = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+  }
+
+  void _onInteractionEnd(ScaleEndDetails details) {
+    _animateResetInitialize();
+  }
+
+  @override
+  void dispose() {
+    _controllerReset.dispose();
+    super.dispose();
+  }
+
+  // TODO Working code for download feature
+  // _toastInfo(String info) {
+  //   Fluttertoast.showToast(msg: info, toastLength: Toast.LENGTH_LONG);
+  // }
+  //
+  // _requestPermission() async {
+  //   Map<Permission, PermissionStatus> statuses = await [
+  //     Permission.storage,
+  //   ].request();
+  // }
+  //
+  // _saveImage(GalleryImage galleryImage) async {
+  //   _toastInfo("Downloading Image");
+  //   var response = await Dio().get(galleryImage.downloadURL, options: Options(responseType: ResponseType.bytes));
+  //   final result =
+  //       await ImageGallerySaver.saveImage(Uint8List.fromList(response.data), quality: 60, name: galleryImage.id);
+  //   _toastInfo("Image saved to Gallery");
+  // }
+  //
+  // downloadFile(GalleryImage galleryImage) async {
+  //   await _requestPermission();
+  //   await _saveImage(galleryImage);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -59,20 +119,28 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
             Expanded(
               flex: 7,
               child: Hero(
-                tag: this.widget.galleryImage.displayURL,
-                child: CachedNetworkImage(
-                  imageUrl: this.widget.galleryImage.displayURL,
-                  imageBuilder: (context, imageProvider) => Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      image: DecorationImage(
-                        image: imageProvider,
-                        fit: BoxFit.contain,
+                tag: this.widget.imagesList[widget.index].displayURL,
+                child: InteractiveViewer(
+                  minScale: 0.1,
+                  maxScale: 1.6,
+                  panEnabled: false,
+                  onInteractionStart: _onInteractionStart,
+                  onInteractionEnd: _onInteractionEnd,
+                  transformationController: _transformationController,
+                  child: CachedNetworkImage(
+                    imageUrl: this.widget.imagesList[widget.index].displayURL,
+                    imageBuilder: (context, imageProvider) => Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        image: DecorationImage(
+                          image: imageProvider,
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ),
+                    placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
                   ),
-                  placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                  errorWidget: (context, url, error) => Icon(Icons.error),
                 ),
               ),
             ),
@@ -82,21 +150,34 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                 decoration: BoxDecoration(color: const Color(0xFF42A5F5)),
                 child: Row(
                   children: [
+                    // TODO Restore download button when needed
+                    // Expanded(
+                    //     flex: 1,
+                    //     child: Container(
+                    //         child: IconButton(
+                    //             icon: Icon(Icons.download_sharp),
+                    //             onPressed: () {
+                    //               downloadFile(this.widget.galleryImage);
+                    //             }))),
                     Expanded(
                         flex: 1,
                         child: Container(
                             child: IconButton(
-                                icon: Icon(Icons.download_sharp),
+                                icon: Icon(Icons.chevron_left),
                                 onPressed: () {
-                                  downloadFile(this.widget.galleryImage);
+                                  setState(() {
+                                    widget.index =
+                                        widget.index == 0 ? (widget.imagesList.length - 1) : widget.index - 1;
+                                  });
                                 }))),
                     Expanded(
                         flex: 1,
                         child: Container(
                             child: ValueListenableBuilder(
                                 valueListenable: favoriteImagesBox.listenable(),
-                                builder: (context, Box box, widget) {
-                                  var isAleadyAddedToFavorites = box.get(this.widget.galleryImage.id) != null;
+                                builder: (context, Box box, w) {
+                                  var isAleadyAddedToFavorites =
+                                      box.get(this.widget.imagesList[this.widget.index].id) != null;
                                   return IconButton(
                                       icon: Icon(
                                         isAleadyAddedToFavorites ? Icons.favorite : Icons.favorite_border,
@@ -104,7 +185,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                                       ),
                                       onPressed: () {
                                         if (isAleadyAddedToFavorites) {
-                                          favoriteImagesBox.delete(this.widget.galleryImage.id);
+                                          favoriteImagesBox.delete(this.widget.imagesList[this.widget.index].id);
                                           if (shouldShowSnackbar) {
                                             ScaffoldMessenger.of(context).showSnackBar(FavoritesImagesSnackBar(
                                               favoritesActionPerformed: FAVORITES_ACTION_REMOVE,
@@ -119,7 +200,8 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                                             });
                                           }
                                         } else {
-                                          favoriteImagesBox.put(this.widget.galleryImage.id, this.widget.galleryImage);
+                                          favoriteImagesBox.put(
+                                              widget.imagesList[widget.index].id, widget.imagesList[widget.index]);
                                           if (shouldShowSnackbar) {
                                             ScaffoldMessenger.of(context).showSnackBar(FavoritesImagesSnackBar(
                                               favoritesActionPerformed: FAVORITES_ACTION_ADD,
@@ -135,7 +217,17 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                                           }
                                         }
                                       });
-                                })))
+                                }))),
+                    Expanded(
+                        flex: 1,
+                        child: Container(
+                            child: IconButton(
+                                icon: Icon(Icons.chevron_right),
+                                onPressed: () {
+                                  setState(() {
+                                    widget.index = (widget.index + 1) % widget.imagesList.length;
+                                  });
+                                }))),
                   ],
                 ),
               ),
@@ -146,10 +238,10 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                 padding: const EdgeInsets.all(6.0),
                 child: ListView(
                   children: [
-                    _descriptionTextBox('${widget.galleryImage.description}', 20),
-                    _descriptionTextBox('${widget.galleryImage.date}', 14),
-                    _descriptionTextBox('${widget.galleryImage.location}', 14),
-                    _descriptionTextBox('${widget.galleryImage.tags}', 14),
+                    _descriptionTextBox('${widget.imagesList[widget.index].description}', 20),
+                    _descriptionTextBox('${widget.imagesList[widget.index].date}', 14),
+                    _descriptionTextBox('${widget.imagesList[widget.index].location}', 14),
+                    _descriptionTextBox('${widget.imagesList[widget.index].tags}', 14),
                   ],
                 ),
               ),

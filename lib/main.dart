@@ -69,7 +69,7 @@ void main() async {
   await Hive.openBox<GalleryImage>(HIVE_BOX_FAVORITE_IMAGES);
 
   runApp(MaterialApp(
-    title: 'Flutter Demo',
+    title: 'HH BDD Swami',
     theme: ThemeData(
       primarySwatch: Colors.blue,
     ),

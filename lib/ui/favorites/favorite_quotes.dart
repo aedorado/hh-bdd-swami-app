@@ -28,6 +28,7 @@ class FavoriteQuotes extends StatelessWidget {
                   ),
                 );
               }
+              List<Quote> quotes = _getQuotesList(favoriteQuotesBox);
               return CustomScrollView(
                 physics: BouncingScrollPhysics(),
                 slivers: [
@@ -36,7 +37,6 @@ class FavoriteQuotes extends StatelessWidget {
                     delegate: SliverChildBuilderDelegate(
                       (BuildContext context, int index) {
                         Quote quote = favoriteQuotesBox.getAt(index);
-                        List<Quote> quotes = _getQuotesList(favoriteQuotesBox);
                         return Padding(
                           padding: const EdgeInsets.all(1.0),
                           child: GestureDetector(

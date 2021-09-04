@@ -56,9 +56,13 @@ class GalleryByColors extends StatelessWidget {
                   },
                 ),
                 StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance.collection(this.collectionName).where(this.columToCompare, isEqualTo: sectionName).limit(3).snapshots(),
+                    stream: FirebaseFirestore.instance
+                        .collection(this.collectionName)
+                        .where(this.columToCompare, isEqualTo: sectionName)
+                        .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
+                        var imagesList = _getImagesListFromSnapshot(snapshot.data!.docs);
                         return Container(
                           height: 160,
                           child: Row(
@@ -69,11 +73,16 @@ class GalleryByColors extends StatelessWidget {
                                   shrinkWrap: true,
                                   itemCount: snapshot.data!.size,
                                   itemBuilder: (context, index) {
-                                    GalleryImage imageToDisplay = GalleryImage.fromFireBaseSnapshotDoc(snapshot.data!.docs[index]);
+                                    GalleryImage imageToDisplay =
+                                        GalleryImage.fromFireBaseSnapshotDoc(snapshot.data!.docs[index]);
                                     return GestureDetector(
                                       behavior: HitTestBehavior.translucent,
                                       onTap: () {
-                                        Navigator.push(context, MaterialPageRoute(builder: (context) => ViewImageScreen(imageToDisplay)));
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ViewImageScreen(imagesList: imagesList, index: index)));
                                       },
                                       child: Padding(
                                         padding: const EdgeInsets.all(1.0),
@@ -88,11 +97,12 @@ class GalleryByColors extends StatelessWidget {
                                                     decoration: BoxDecoration(
                                                       image: DecorationImage(
                                                         image: imageProvider,
-                                                        fit: BoxFit.contain,
+                                                        fit: BoxFit.cover,
                                                       ),
                                                     ),
                                                   ),
-                                                  placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                                                  placeholder: (context, url) =>
+                                                      Center(child: CircularProgressIndicator()),
                                                   errorWidget: (context, url, error) => Icon(Icons.error),
                                                 ),
                                               ),
@@ -113,6 +123,10 @@ class GalleryByColors extends StatelessWidget {
           }),
     );
   }
+
+  List<GalleryImage> _getImagesListFromSnapshot(List<QueryDocumentSnapshot<Object?>> docs) {
+    return docs.map((doc) => GalleryImage.fromFireBaseSnapshotDoc(doc)).toList();
+  }
 }
 
 class ImagesByColorScreen extends StatelessWidget {
@@ -121,7 +135,12 @@ class ImagesByColorScreen extends StatelessWidget {
   late String valueToCompare;
   late GalleryOperateMode galleryOperateMode;
 
-  ImagesByColorScreen({Key? key, required this.galleryOperateMode, required this.collectionName, required this.columnToCompare, required this.valueToCompare})
+  ImagesByColorScreen(
+      {Key? key,
+      required this.galleryOperateMode,
+      required this.collectionName,
+      required this.columnToCompare,
+      required this.valueToCompare})
       : super(key: key);
 
   @override
@@ -132,7 +151,10 @@ class ImagesByColorScreen extends StatelessWidget {
           children: [
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection(this.collectionName).where(this.columnToCompare, isEqualTo: this.valueToCompare).snapshots(),
+                stream: FirebaseFirestore.instance
+                    .collection(this.collectionName)
+                    .where(this.columnToCompare, isEqualTo: this.valueToCompare)
+                    .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return OpenAlbumSliverList(snapshot);
@@ -170,17 +192,23 @@ class OpenAlbumSliverList extends StatelessWidget {
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
             delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
               if (snapshot.hasData) {
+                var imagesList = _getImagesListFromSnapshot(snapshot.data!.docs);
                 GalleryImage imageToDisplay = GalleryImage.fromFireBaseSnapshotDoc(snapshot.data!.docs[index]);
                 return Padding(
                   padding: const EdgeInsets.all(1.0),
                   child: Hero(
                     tag: imageToDisplay.displayURL,
                     child: Container(
-                        decoration: BoxDecoration(image: DecorationImage(image: NetworkImage(imageToDisplay.thumbnailURL), fit: BoxFit.cover)),
+                        decoration: BoxDecoration(
+                            image:
+                                DecorationImage(image: NetworkImage(imageToDisplay.thumbnailURL), fit: BoxFit.cover)),
                         child: GestureDetector(
                           behavior: HitTestBehavior.translucent,
                           onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => ViewImageScreen(imageToDisplay)));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ViewImageScreen(imagesList: imagesList, index: index)));
                           },
                         )),
                   ),
@@ -192,5 +220,9 @@ class OpenAlbumSliverList extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  List<GalleryImage> _getImagesListFromSnapshot(List<QueryDocumentSnapshot<Object?>> docs) {
+    return docs.map((doc) => GalleryImage.fromFireBaseSnapshotDoc(doc)).toList();
   }
 }

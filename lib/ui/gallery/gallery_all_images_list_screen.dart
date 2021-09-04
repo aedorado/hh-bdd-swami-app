@@ -76,6 +76,7 @@ class AllImagesListScreen extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             var numItems = snapshot.data!.size;
+            var imagesList = _getImagesListFromSnapshot(snapshot.data!.docs);
             return DraggableScrollbar.semicircle(
               labelTextBuilder: (offset) {
                 final int currentItem = _semicircleController.hasClients
@@ -104,8 +105,36 @@ class AllImagesListScreen extends StatelessWidget {
                 itemCount: numItems,
                 itemBuilder: (context, index) {
                   GalleryImage imageToDisplay = GalleryImage.fromFireBaseSnapshotDoc(snapshot.data!.docs[index]);
-                  return ImageListScreenDisplayContainer(
-                    imageToDisplay: imageToDisplay,
+                  return Padding(
+                    padding: const EdgeInsets.all(1.0),
+                    child: Hero(
+                      tag: imageToDisplay.displayURL,
+                      child: Container(
+                          decoration: BoxDecoration(
+                              image:
+                                  DecorationImage(image: NetworkImage(imageToDisplay.thumbnailURL), fit: BoxFit.cover)),
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.translucent,
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ViewImageScreen(imagesList: imagesList, index: index)));
+                            },
+                            child: (imageToDisplay.type == "Video")
+                                ? Container(
+                                    child: Center(
+                                      child: Container(
+                                          child: Icon(
+                                        Icons.play_arrow,
+                                        size: 40,
+                                        color: Colors.white,
+                                      )),
+                                    ),
+                                  )
+                                : Container(),
+                          )),
+                    ),
                   );
                 },
               ),
@@ -116,40 +145,8 @@ class AllImagesListScreen extends StatelessWidget {
             );
         });
   }
-}
 
-class ImageListScreenDisplayContainer extends StatelessWidget {
-  late GalleryImage imageToDisplay;
-  ImageListScreenDisplayContainer({required this.imageToDisplay});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(1.0),
-      child: Hero(
-        tag: imageToDisplay.displayURL,
-        child: Container(
-            decoration: BoxDecoration(
-                image: DecorationImage(image: NetworkImage(imageToDisplay.thumbnailURL), fit: BoxFit.cover)),
-            child: GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => ViewImageScreen(imageToDisplay)));
-              },
-              child: (imageToDisplay.type == "Video")
-                  ? Container(
-                      child: Center(
-                        child: Container(
-                            child: Icon(
-                          Icons.play_arrow,
-                          size: 40,
-                          color: Colors.white,
-                        )),
-                      ),
-                    )
-                  : Container(),
-            )),
-      ),
-    );
+  List<GalleryImage> _getImagesListFromSnapshot(List<QueryDocumentSnapshot<Object?>> docs) {
+    return docs.map((doc) => GalleryImage.fromFireBaseSnapshotDoc(doc)).toList();
   }
 }
