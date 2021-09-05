@@ -30,7 +30,11 @@ class AudioYearScreen extends StatelessWidget {
 
   AudioYearScreen(year) {
     this.year = year;
-    this.ssy = FirebaseFirestore.instance.collection("audios").where("year", isEqualTo: year.toString()).snapshots();
+    this.ssy = FirebaseFirestore.instance
+        .collection("audios")
+        .where("year", isEqualTo: year.toString())
+        .orderBy('name')
+        .snapshots();
   }
 
   @override

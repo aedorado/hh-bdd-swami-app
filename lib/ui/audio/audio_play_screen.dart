@@ -73,7 +73,7 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> with SingleTickerProv
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Audio Library")),
+      // appBar: AppBar(title: Text("Audio Library")),
       body: SafeArea(
         child: StreamBuilder<MediaState>(
             stream: CustomStream.mediaStateStream,
@@ -81,15 +81,19 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> with SingleTickerProv
               return Column(
                 children: [
                   Expanded(
-                    flex: 5,
+                    flex: 6,
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 24, right: 24, top: 24, bottom: 24),
+                      padding: const EdgeInsets.only(left: 0, right: 0, top: 0, bottom: 0),
+                      // padding: const EdgeInsets.only(left: 24, right: 24, top: 24, bottom: 24),
                       child: Container(
-                        height: MediaQuery.of(context).size.height * 0.35,
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(0),
                             boxShadow: [
-                              BoxShadow(color: Colors.black, blurRadius: 20.0),
+                              BoxShadow(
+                                offset: Offset(0, 8.0),
+                                color: Color(0x88BDBDBD),
+                                blurRadius: 8,
+                              )
                             ],
                             image: DecorationImage(
                                 image: NetworkImage(snapshot.data?.mediaItem?.extras!['thumbnailUrl'] ?? ''),
@@ -98,7 +102,7 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> with SingleTickerProv
                     ),
                   ),
                   Expanded(
-                    flex: 4,
+                    flex: 5,
                     child: Column(
                       children: [
                         // TODO add a loader to hide controls while audio is loading in background?
@@ -106,7 +110,7 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> with SingleTickerProv
                           flex: 3,
                           child: Center(
                             child: Padding(
-                              padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
+                              padding: const EdgeInsets.only(left: 18, right: 18, top: 12),
                               child: snapshot.hasData
                                   ? Column(
                                       children: [

@@ -7,12 +7,6 @@ import 'package:hh_bbds_app/ui/gallery/gallery_constants.dart';
 import 'package:hh_bbds_app/ui/gallery/gallery_home.dart';
 import 'package:hh_bbds_app/ui/quotes/quotes_screen.dart';
 
-var dividerTextStyle = TextStyle(
-  color: Colors.black,
-  fontSize: 20.0,
-  decoration: TextDecoration.none,
-);
-
 class LibraryHome extends StatelessWidget {
   bool isFavoritesLibrary = false;
 
@@ -21,32 +15,24 @@ class LibraryHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 4.0),
+        margin: const EdgeInsets.only(top: 10.0, bottom: 8.0),
         child: this.isFavoritesLibrary ? _getFavoritesLibraryContent() : _getGeneralibraryContent());
   }
 
   _sectionHeader(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 12.0, bottom: 4.0),
-      child: Row(
-        children: [
-          Expanded(
-              child: Divider(
-            thickness: 1,
-            endIndent: 8,
-            color: Colors.black,
-          )),
-          Text(
-            text,
-            style: dividerTextStyle,
+    return Container(
+      alignment: Alignment.centerLeft,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 8.0),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF444444),
+            fontSize: 28.0,
+            decoration: TextDecoration.none,
           ),
-          Expanded(
-              child: Divider(
-            thickness: 1,
-            indent: 8,
-            color: Colors.black,
-          )),
-        ],
+        ),
       ),
     );
   }
@@ -77,13 +63,6 @@ class LibraryHome extends StatelessWidget {
                       displayImage: "images/B.png",
                       route: FavoriteImages(),
                     )),
-                // new Flexible(
-                //     flex: 1,
-                //     child: LibraryCard(
-                //       displayString: "Maharaja",
-                //       displayImage: "images/D.jpg",
-                //       route: FavoriteImages(),
-                //     )),
               ],
             ),
           ),
@@ -129,6 +108,13 @@ class LibraryHome extends StatelessWidget {
                     galleryOperateMode: GalleryOperateMode.OPERATE_MODE_RSS,
                   ),
                 )),
+          ],
+        ),
+      ),
+      Container(
+        height: 200,
+        child: Row(
+          children: [
             new Flexible(
                 flex: 1,
                 child: LibraryCard(
@@ -165,8 +151,8 @@ class LibraryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(4.0),
+    return Container(
+      margin: EdgeInsets.only(top: 10, bottom: 10, right: 8.0, left: 8.0),
       child: InkWell(
         onTap: () => {
           Navigator.push(context, MaterialPageRoute(builder: (context) => route)),

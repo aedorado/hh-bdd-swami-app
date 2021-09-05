@@ -30,10 +30,10 @@ class _AudioListScreenState extends State<AudioListScreen> {
 
   final List audioListScreenSuggestions = ['TRACKS', 'SERIES', 'SEMINARS', 'YEAR'];
   final List audioListScreenFutures = [
-    FirebaseFirestore.instance.collection("audios").snapshots(),
-    FirebaseFirestore.instance.collection("series").snapshots(),
-    FirebaseFirestore.instance.collection("seminars").snapshots(),
-    FirebaseFirestore.instance.collection("audios").snapshots(),
+    FirebaseFirestore.instance.collection("audios").orderBy('name').snapshots(),
+    FirebaseFirestore.instance.collection("series").orderBy('name').snapshots(),
+    FirebaseFirestore.instance.collection("seminars").orderBy('name').snapshots(),
+    // FirebaseFirestore.instance.collection("audios").orderBy('name').snapshots(),
   ];
 
   bool _isSearching = false;
@@ -232,16 +232,19 @@ class AudioListScreenRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 90,
-      child: StreamBuilder<MediaItem?>(
-          stream: AudioService.currentMediaItemStream,
-          builder: (context, currentMediaItemSnapshot) {
-            bool isItemPlaying = false;
-            if (currentMediaItemSnapshot.data?.id == audio.id) {
-              isItemPlaying = true;
-            }
-            return Row(
+    return StreamBuilder<MediaItem?>(
+        stream: AudioService.currentMediaItemStream,
+        builder: (context, currentMediaItemSnapshot) {
+          bool isItemPlaying = false;
+          if (currentMediaItemSnapshot.data?.id == audio.id) {
+            isItemPlaying = true;
+          }
+          return ConstrainedBox(
+            constraints: new BoxConstraints(
+              minHeight: 60.0,
+              maxHeight: 80.0,
+            ),
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -263,7 +266,12 @@ class AudioListScreenRow extends StatelessWidget {
                               decoration: BoxDecoration(color: isItemPlaying ? Color(0xFFBBDEFB) : null),
                               child: Padding(
                                 padding: const EdgeInsets.only(top: 2, left: 4, right: 2, bottom: 2),
-                                child: CircleAvatar(backgroundImage: NetworkImage(audio.thumbnailUrl)),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.blue, // inner circle color
+                                      image: DecorationImage(image: NetworkImage(audio.thumbnailUrl))),
+                                ),
                               ),
                             ),
                           ),
@@ -279,7 +287,9 @@ class AudioListScreenRow extends StatelessWidget {
                                     children: [
                                       Text(
                                         '${audio.name}',
+                                        maxLines: 2,
                                         style: TextStyle(fontSize: 15),
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                       Text(
                                         '${audio.name}',
@@ -328,9 +338,9 @@ class AudioListScreenRow extends StatelessWidget {
                 ),
               ],
               //: Center(child: Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 18),)),
-            );
-          }),
-    );
+            ),
+          );
+        });
   }
 }
 
@@ -376,8 +386,12 @@ class AudioFolderPage extends StatelessWidget {
                                   Expanded(
                                     flex: 1,
                                     child: Padding(
-                                      padding: const EdgeInsets.only(top: 2, left: 4, right: 2, bottom: 2),
-                                      child: CircleAvatar(backgroundImage: NetworkImage(audioFolder.thumbnailUrl)),
+                                      padding: const EdgeInsets.only(top: 6, left: 6, right: 6, bottom: 6),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            image: DecorationImage(image: NetworkImage(audioFolder.thumbnailUrl))),
+                                      ),
                                     ),
                                   ),
                                   Expanded(

@@ -42,18 +42,29 @@ class _HomeState extends State<Home> {
     );
   }
 
-  BottomNavigationBar _bottomNavigationBar() {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      items: const <BottomNavigationBarItem>[
-        BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Home"),
-        BottomNavigationBarItem(icon: Icon(Icons.favorite_border), label: "Favorites"),
-        // BottomNavigationBarItem(icon: Icon(Icons.face_outlined), label: "Mindfulness"),
-        // BottomNavigationBarItem(icon: Icon(Icons.notifications_outlined), label: "Alerts")
-      ],
-      currentIndex: widget.selectedIndex,
-      selectedItemColor: Colors.amber[800],
-      onTap: _onItemTapped,
+  _bottomNavigationBar() {
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            offset: Offset(0, -2.0),
+            color: Color(0x44BDBDBD),
+            blurRadius: 8,
+          ),
+        ],
+      ),
+      child: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.favorite_border), label: "Favorites"),
+          // BottomNavigationBarItem(icon: Icon(Icons.face_outlined), label: "Mindfulness"),
+          // BottomNavigationBarItem(icon: Icon(Icons.notifications_outlined), label: "Alerts")
+        ],
+        currentIndex: widget.selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
+      ),
     );
   }
 }

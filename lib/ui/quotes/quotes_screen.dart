@@ -139,7 +139,7 @@ class _ViewQuoteState extends State<ViewQuote> with SingleTickerProviderStateMix
     super.initState();
     _controllerReset = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 100),
     );
   }
 

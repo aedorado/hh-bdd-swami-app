@@ -1,15 +1,10 @@
-import 'dart:typed_data';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/models/podo/gallery_image.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class ViewImageScreen extends StatefulWidget {
   late int index = 0;
@@ -69,7 +64,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> with SingleTickerProv
     super.initState();
     _controllerReset = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 100),
     );
   }
 
@@ -122,7 +117,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> with SingleTickerProv
                 tag: this.widget.imagesList[widget.index].displayURL,
                 child: InteractiveViewer(
                   minScale: 0.1,
-                  maxScale: 1.6,
+                  maxScale: 2,
                   panEnabled: false,
                   onInteractionStart: _onInteractionStart,
                   onInteractionEnd: _onInteractionEnd,

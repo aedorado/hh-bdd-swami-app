@@ -18,6 +18,7 @@ class AudioFolderScreen extends StatefulWidget {
     this.ssy = FirebaseFirestore.instance
         .collection("audios")
         .where(this.audioFolder.isSeries ? "series" : "seminar", isEqualTo: this.audioFolder.id)
+        .orderBy('name')
         .snapshots();
   }
 

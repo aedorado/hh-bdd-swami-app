@@ -206,13 +206,13 @@ class AudioSearch extends SearchDelegate<String> {
     TRACKS,
     SERIES,
     SEMINARS,
-    SHORT_AUDIOS,
+    // SHORT_AUDIOS,
   ];
   int _selectedSearchFilter = 0;
   var _firestoreSnapshots = [
     FirebaseFirestore.instance.collection("audios").snapshots(),
     FirebaseFirestore.instance.collection("series").snapshots(),
     FirebaseFirestore.instance.collection("seminars").snapshots(),
-    FirebaseFirestore.instance.collection("audios").where('isShortAudio', isEqualTo: true).snapshots(),
+    // FirebaseFirestore.instance.collection("audios").where('isShortAudio', isEqualTo: true).snapshots(),
   ];
 }

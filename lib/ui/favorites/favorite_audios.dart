@@ -29,6 +29,7 @@ class FavoriteAudios extends StatelessWidget {
                     ),
                   );
                 }
+                List<Audio?> favoriteAudiosList = _getAudioListFromAudioBox(favoriteAudiosBox);
                 return Column(
                   children: [
                     Expanded(
@@ -37,10 +38,13 @@ class FavoriteAudios extends StatelessWidget {
                           physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                           scrollDirection: Axis.vertical,
                           shrinkWrap: true,
-                          itemCount: favoriteAudiosBox.length,
+                          itemCount: favoriteAudiosList.length,
                           itemBuilder: (BuildContext context, int index) {
-                            return Container(
-                              height: 80,
+                            return ConstrainedBox(
+                              constraints: new BoxConstraints(
+                                minHeight: 70.0,
+                                maxHeight: 85.0,
+                              ),
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -49,7 +53,7 @@ class FavoriteAudios extends StatelessWidget {
                                     flex: 7,
                                     child: InkWell(
                                       onTap: () async {
-                                        MediaItem mediaItem = Adapter.audioToMediaItem(favoriteAudiosBox.getAt(index));
+                                        MediaItem mediaItem = Adapter.audioToMediaItem(favoriteAudiosList[index]);
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
@@ -63,8 +67,13 @@ class FavoriteAudios extends StatelessWidget {
                                             flex: 1,
                                             child: Padding(
                                               padding: const EdgeInsets.only(top: 2, left: 4, right: 2, bottom: 2),
-                                              child: CircleAvatar(
-                                                  backgroundImage: NetworkImage('https://i.postimg.cc/RZJ6HJrw/c.jpg')),
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    image: DecorationImage(
+                                                        image: NetworkImage(
+                                                            favoriteAudiosList[index]?.thumbnailUrl ?? ''))),
+                                              ),
                                             ),
                                           ),
                                           Expanded(
@@ -76,12 +85,15 @@ class FavoriteAudios extends StatelessWidget {
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                      '${favoriteAudiosBox.getAt(index)?.name}',
+                                                      '${favoriteAudiosList[index]?.name}',
                                                       style: TextStyle(fontSize: 16),
+                                                      maxLines: 2,
+                                                      overflow: TextOverflow.ellipsis,
                                                     ),
                                                     Text(
-                                                      '${favoriteAudiosBox.getAt(index)?.name}',
+                                                      '${favoriteAudiosList[index]?.name}',
                                                       style: TextStyle(fontSize: 12),
+                                                      overflow: TextOverflow.ellipsis,
                                                     ),
                                                   ],
                                                 ),
@@ -94,8 +106,8 @@ class FavoriteAudios extends StatelessWidget {
                                     flex: 1,
                                     child: InkWell(
                                       onTap: () {
-                                        Audio audio = favoriteAudiosBox.getAt(index)!;
-                                        favoriteAudiosBox.delete(favoriteAudiosBox.getAt(index)?.id);
+                                        Audio audio = favoriteAudiosList[index]!;
+                                        favoriteAudiosBox.delete(favoriteAudiosList[index]?.id);
                                         ScaffoldMessenger.of(context).showSnackBar(FavoriteAudioSnackBar(
                                           audio: audio,
                                           favoritesActionPerformed: FAVORITES_ACTION_REMOVE,
@@ -105,7 +117,7 @@ class FavoriteAudios extends StatelessWidget {
                                       child: IconTheme(
                                           data: new IconThemeData(color: Colors.redAccent),
                                           child: Icon(
-                                            (box.get(favoriteAudiosBox.getAt(index)?.id) == null)
+                                            (box.get(favoriteAudiosList[index]?.id) == null)
                                                 ? Icons.favorite_border
                                                 : Icons.favorite,
                                             size: 24,
@@ -122,6 +134,15 @@ class FavoriteAudios extends StatelessWidget {
                 );
               }),
         ));
+  }
+
+  List<Audio?> _getAudioListFromAudioBox(Box<Audio> favoriteAudiosBox) {
+    List<Audio?> al = [];
+    for (int i = 0; i < favoriteAudiosBox.length; ++i) {
+      al.add(favoriteAudiosBox.getAt(i));
+    }
+    al.sort((a, b) => a!.name.compareTo(b!.name));
+    return al;
   }
 }
 

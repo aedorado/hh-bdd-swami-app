@@ -70,9 +70,7 @@ void main() async {
 
   runApp(MaterialApp(
     title: 'HH BDD Swami',
-    theme: ThemeData(
-      primarySwatch: Colors.blue,
-    ),
+    theme: ThemeData(primarySwatch: Colors.blue, fontFamily: 'Nunito'),
     home: BDDSApp(),
   ));
 }

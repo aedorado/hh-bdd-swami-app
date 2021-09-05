@@ -28,7 +28,7 @@ class Miniplayer extends StatelessWidget {
         stream: CustomStream.mediaStateStream,
         builder: (context, snapshot) {
           return AnimatedContainer(
-            height: snapshot.hasData && snapshot.data!.showMiniPlayer() ? 80 : 0,
+            height: snapshot.hasData && snapshot.data!.showMiniPlayer() ? 75 : 0,
             duration: Duration(milliseconds: 200),
             // Provide an optional curve to make the animation feel smoother.
             curve: Curves.easeIn,
@@ -71,7 +71,14 @@ class Miniplayer extends StatelessWidget {
                             flex: 1,
                             child: Padding(
                               padding: const EdgeInsets.only(top: 2, left: 2, right: 2, bottom: 2),
-                              child: CircleAvatar(backgroundImage: NetworkImage('https://i.postimg.cc/RZJ6HJrw/c.jpg')),
+                              child: Container(
+                                width: 42,
+                                height: 42,
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                        image: NetworkImage(snapshot.data?.mediaItem?.extras!['thumbnailUrl'] ?? ''))),
+                              ),
                             ),
                           ),
                           Expanded(
