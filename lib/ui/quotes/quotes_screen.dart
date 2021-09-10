@@ -168,7 +168,7 @@ class _ViewQuoteState extends State<ViewQuote> with SingleTickerProviderStateMix
                 tag: this.widget.quoteList[widget.index].url,
                 child: InteractiveViewer(
                   minScale: 0.1,
-                  maxScale: 2,
+                  maxScale: 3,
                   panEnabled: false,
                   onInteractionStart: _onInteractionStart,
                   onInteractionEnd: _onInteractionEnd,

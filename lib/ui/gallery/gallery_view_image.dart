@@ -5,6 +5,8 @@ import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/models/podo/gallery_image.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hh_bbds_app/utils/utils.dart';
+import 'dart:ui' as ui;
 
 class ViewImageScreen extends StatefulWidget {
   late int index = 0;
@@ -19,6 +21,8 @@ class ViewImageScreen extends StatefulWidget {
 class _ViewImageScreenState extends State<ViewImageScreen> with SingleTickerProviderStateMixin {
   Box favoriteImagesBox = Hive.box<GalleryImage>(HIVE_BOX_FAVORITE_IMAGES);
   bool shouldShowSnackbar = true;
+  bool showDescription = true;
+  bool descriptionIsVisible = true;
 
   final TransformationController _transformationController = TransformationController();
   Animation<Matrix4>? _animationReset;
@@ -112,37 +116,87 @@ class _ViewImageScreenState extends State<ViewImageScreen> with SingleTickerProv
         child: Column(
           children: [
             Expanded(
-              flex: 7,
-              child: Hero(
-                tag: this.widget.imagesList[widget.index].displayURL,
-                child: InteractiveViewer(
-                  minScale: 0.1,
-                  maxScale: 2,
-                  panEnabled: false,
-                  onInteractionStart: _onInteractionStart,
-                  onInteractionEnd: _onInteractionEnd,
-                  transformationController: _transformationController,
-                  child: CachedNetworkImage(
-                    imageUrl: this.widget.imagesList[widget.index].displayURL,
-                    imageBuilder: (context, imageProvider) => Container(
-                      decoration: BoxDecoration(
-                        color: Colors.black,
-                        image: DecorationImage(
-                          image: imageProvider,
-                          fit: BoxFit.contain,
+              flex: 14,
+              child: Stack(
+                children: [
+                  InkWell(
+                    onTap: () {
+                      setState(() {
+                        this.showDescription = !this.showDescription;
+                      });
+                    },
+                    child: Hero(
+                      tag: this.widget.imagesList[widget.index].displayURL,
+                      child: InteractiveViewer(
+                        minScale: 0.1,
+                        maxScale: 3,
+                        panEnabled: false,
+                        onInteractionStart: _onInteractionStart,
+                        onInteractionEnd: _onInteractionEnd,
+                        transformationController: _transformationController,
+                        child: CachedNetworkImage(
+                          imageUrl: this.widget.imagesList[widget.index].displayURL,
+                          imageBuilder: (context, imageProvider) => Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black,
+                              image: DecorationImage(
+                                image: imageProvider,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+                          placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                          errorWidget: (context, url, error) => Icon(Icons.error),
                         ),
                       ),
                     ),
-                    placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                    errorWidget: (context, url, error) => Icon(Icons.error),
                   ),
-                ),
+                  Positioned(
+                    bottom: 0,
+                    child: AnimatedOpacity(
+                      onEnd: () {
+                        setState(() {
+                          descriptionIsVisible = this.showDescription;
+                        });
+                      },
+                      opacity: this.showDescription ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 100),
+                      child: Visibility(
+                        visible: this.descriptionIsVisible,
+                        child: Container(
+                            width: MediaQuery.of(context).size.width * 1,
+                            decoration: BoxDecoration(
+                                color: Color(0x78525252),
+                                borderRadius:
+                                    BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
+                            child: Padding(
+                              padding: const EdgeInsets.all(6.0),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      _descriptionTextBox(
+                                          '${widget.imagesList[widget.index].location != '-' ? widget.imagesList[widget.index].location : ""}',
+                                          11),
+                                      _descriptionTextBox('${DateToLabel(widget.imagesList[widget.index].date)}', 11),
+                                    ],
+                                  ),
+                                  _descriptionTextBox('${widget.imagesList[widget.index].description}', 14),
+                                  _descriptionTextBox('${widget.imagesList[widget.index].tags}', 10),
+                                ],
+                              ),
+                            )),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            Flexible(
+            Expanded(
+              flex: 1,
               child: Container(
                 height: 50,
-                decoration: BoxDecoration(color: const Color(0xFF42A5F5)),
                 child: Row(
                   children: [
                     // TODO Restore download button when needed
@@ -227,20 +281,6 @@ class _ViewImageScreenState extends State<ViewImageScreen> with SingleTickerProv
                 ),
               ),
             ),
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(6.0),
-                child: ListView(
-                  children: [
-                    _descriptionTextBox('${widget.imagesList[widget.index].description}', 20),
-                    _descriptionTextBox('${widget.imagesList[widget.index].date}', 14),
-                    _descriptionTextBox('${widget.imagesList[widget.index].location}', 14),
-                    _descriptionTextBox('${widget.imagesList[widget.index].tags}', 14),
-                  ],
-                ),
-              ),
-            )
           ],
         ),
       ),
@@ -253,7 +293,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> with SingleTickerProv
       child: Container(
         child: Text(
           '$s',
-          style: TextStyle(fontSize: fontSize),
+          style: TextStyle(fontSize: fontSize, color: Colors.white),
         ),
       ),
     );

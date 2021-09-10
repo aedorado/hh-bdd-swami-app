@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/models/podo/gallery_image.dart';
 import 'package:hh_bbds_app/ui/gallery/gallery_constants.dart';
 import 'package:hh_bbds_app/ui/gallery/gallery_view_image.dart';
+import 'package:hh_bbds_app/utils/utils.dart';
 
 class AllImagesListScreen extends StatelessWidget {
   ScrollController _semicircleController = ScrollController();
@@ -24,51 +25,6 @@ class AllImagesListScreen extends StatelessWidget {
     }
   }
 
-  _getLabelText(String d) {
-    var parts = d.split(' ')[0].split('-');
-    String ds = "";
-    switch (parts[1]) {
-      case "01":
-        ds += " Jan";
-        break;
-      case "02":
-        ds += " Feb";
-        break;
-      case "03":
-        ds += " Mar";
-        break;
-      case "04":
-        ds += " Apr";
-        break;
-      case "05":
-        ds += " May";
-        break;
-      case "06":
-        ds += " Jun";
-        break;
-      case "07":
-        ds += " Jul";
-        break;
-      case "08":
-        ds += " Aug";
-        break;
-      case "09":
-        ds += " Sep";
-        break;
-      case "10":
-        ds += " Oct";
-        break;
-      case "11":
-        ds += " Nov";
-        break;
-      case "12":
-        ds += " Dec";
-        break;
-    }
-    ds += " " + parts[0];
-    return ds;
-  }
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
@@ -85,12 +41,12 @@ class AllImagesListScreen extends StatelessWidget {
                     : 0;
                 if (currentItem < numItems) {
                   return Text(
-                    _getLabelText('${snapshot.data!.docs[currentItem]['date']}'),
+                    DateToLabel('${snapshot.data!.docs[currentItem]['date']}'),
                     style: TextStyle(fontSize: 12),
                   );
                 } else {
                   return Text(
-                    _getLabelText('${snapshot.data!.docs[numItems - 1]['date']}'),
+                    DateToLabel('${snapshot.data!.docs[numItems - 1]['date']}'),
                     style: TextStyle(fontSize: 12),
                   );
                 }
