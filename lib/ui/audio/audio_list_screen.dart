@@ -171,8 +171,6 @@ class _AudioListScreenState extends State<AudioListScreen> {
             border: this.selectedSuggestion == index
                 ? Border(bottom: BorderSide(width: 2.0, color: Color(0xFFE2C56A)))
                 : null,
-            color: this.selectedSuggestion == index ? Color(0xFF0077C2) : Color(0xFFBDBDBD),
-            borderRadius: new BorderRadius.all(Radius.elliptical(80, 100)),
           ),
           height: 36,
           child: Padding(
