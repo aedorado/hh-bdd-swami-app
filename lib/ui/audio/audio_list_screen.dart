@@ -13,7 +13,6 @@ import 'package:hh_bbds_app/ui/audio/miniplayer.dart';
 import 'package:hh_bbds_app/ui/favorites/favorite_audios.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:palette_generator/palette_generator.dart';
 import 'audio_year_screen.dart';
 
 class AudioListScreen extends StatefulWidget {
@@ -25,7 +24,7 @@ class _AudioListScreenState extends State<AudioListScreen> {
   PageController _pageController = PageController(
     initialPage: 0,
   );
-  final _animationDuration = 250;
+  final _animationDuration = 200;
   int selectedSuggestion = 0;
 
   final List audioListScreenSuggestions = ['TRACKS', 'SERIES', 'SEMINARS', 'YEAR'];
@@ -102,9 +101,9 @@ class _AudioListScreenState extends State<AudioListScreen> {
         child: Column(
           children: [
             Container(
-              height: 56,
+              height: 50,
               decoration: BoxDecoration(
-                color: const Color(0xFFBDBDBD),
+                color: const Color(0xFF005CB2),
               ),
               child: Row(
                 children: [
@@ -169,6 +168,9 @@ class _AudioListScreenState extends State<AudioListScreen> {
           duration: Duration(milliseconds: this._animationDuration),
           curve: Curves.easeIn,
           decoration: new BoxDecoration(
+            border: this.selectedSuggestion == index
+                ? Border(bottom: BorderSide(width: 2.0, color: Color(0xFFE2C56A)))
+                : null,
             color: this.selectedSuggestion == index ? Color(0xFF0077C2) : Color(0xFFBDBDBD),
             borderRadius: new BorderRadius.all(Radius.elliptical(80, 100)),
           ),
@@ -178,7 +180,9 @@ class _AudioListScreenState extends State<AudioListScreen> {
             child: Center(
               child: Text(
                 title,
-                style: TextStyle(color: Colors.white, fontSize: 16),
+                style: this.selectedSuggestion == index
+                    ? TextStyle(color: Color(0xFFE2C56A), fontSize: 16, fontWeight: FontWeight.w800)
+                    : TextStyle(color: Colors.white, fontSize: 16),
               ),
             ),
           ),

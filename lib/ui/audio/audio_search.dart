@@ -67,7 +67,7 @@ class AudioSearch extends SearchDelegate<String> {
                 return Column(
                   children: [
                     Container(
-                      height: 56,
+                      height: 50,
                       child: Row(
                         children: [
                           Expanded(
@@ -85,12 +85,11 @@ class AudioSearch extends SearchDelegate<String> {
                                         duration: Duration(milliseconds: 300),
                                         curve: Curves.easeIn,
                                         decoration: new BoxDecoration(
-                                          color: this._selectedSearchFilter == index
-                                              ? Color(0xFF0077C2)
-                                              : Color(0xFFBDDEFB),
-                                          borderRadius: new BorderRadius.all(Radius.elliptical(80, 100)),
+                                          border: this._selectedSearchFilter == index
+                                              ? Border(bottom: BorderSide(width: 2.0, color: Color(0xFF005CB2)))
+                                              : null,
                                         ),
-                                        height: 36,
+                                        height: 32,
                                         child: InkWell(
                                           onTap: () {
                                             setState(() {
@@ -102,11 +101,12 @@ class AudioSearch extends SearchDelegate<String> {
                                             child: Center(
                                               child: Text(
                                                 _searchScreenSuggestionBoxes[index].toUpperCase(),
-                                                style: TextStyle(
-                                                    color: this._selectedSearchFilter == index
-                                                        ? Colors.white
-                                                        : Colors.black,
-                                                    fontSize: 16),
+                                                style: this._selectedSearchFilter == index
+                                                    ? TextStyle(
+                                                        color: Color(0xFF005CB2),
+                                                        fontSize: 16,
+                                                        fontWeight: FontWeight.w700)
+                                                    : TextStyle(color: Colors.black, fontSize: 16),
                                               ),
                                             ),
                                           ),
@@ -194,8 +194,9 @@ class AudioSearch extends SearchDelegate<String> {
         return isAMatch;
       }).toList();
       matchedByTags = docs
-          .where((element) =>
-              (!matchedSet.contains(element['id']) && (element['tags'] as String).toLowerCase().contains(query)))
+          .where((element) => (!matchedSet.contains(element['id']) &&
+              docs.contains('tags') &&
+              (element['tags'] as String).toLowerCase().contains(query)))
           .toList();
     }
 

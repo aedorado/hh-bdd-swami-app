@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -59,10 +60,23 @@ class GalleryAlbums extends StatelessWidget {
                                     child: Container(
                                   child: Hero(
                                     tag: album.id,
-                                    child: Image(
-                                      image: NetworkImage(album.coverUrl),
-                                      fit: BoxFit.cover,
+                                    child: CachedNetworkImage(
+                                      imageUrl: album.coverUrl,
+                                      imageBuilder: (context, imageProvider) => Container(
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                            image: imageProvider,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                                      errorWidget: (context, url, error) => Icon(Icons.error),
                                     ),
+                                    // Image(
+                                    //   image: NetworkImage(album.coverUrl),
+                                    //   fit: BoxFit.cover,
+                                    // ),
                                   ),
                                 )),
                                 Positioned(

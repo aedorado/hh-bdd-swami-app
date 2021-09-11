@@ -288,6 +288,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> with SingleTickerProv
   }
 
   _descriptionTextBox(String s, double fontSize) {
+    if (s.length == 0) return Container();
     return Padding(
       padding: const EdgeInsets.all(3.0),
       child: Container(

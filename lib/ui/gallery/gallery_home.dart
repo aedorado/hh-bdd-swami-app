@@ -21,8 +21,9 @@ class _GalleryHomeState extends State<GalleryHome> {
   final _animationDuration = 250;
   int selectedSuggestion = 0;
 
-  late List galleryScreenSuggestions =
-      (widget.galleryOperateMode == GalleryOperateMode.OPERATE_MODE_RSS) ? ['ALL', 'ALBUMS', 'COLORS'] : ['ALL', 'ALBUMS', 'PLACES'];
+  late List galleryScreenSuggestions = (widget.galleryOperateMode == GalleryOperateMode.OPERATE_MODE_RSS)
+      ? ['ALL', 'ALBUMS', 'COLORS']
+      : ['ALL', 'ALBUMS', 'PLACES'];
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +35,9 @@ class _GalleryHomeState extends State<GalleryHome> {
         child: Column(
           children: [
             Container(
-              height: 56,
+              height: 50,
               decoration: BoxDecoration(
-                color: const Color(0xFFBDBDBD),
+                color: const Color(0xFF005CB2),
               ),
               child: Row(
                 children: [
@@ -98,7 +99,9 @@ class _GalleryHomeState extends State<GalleryHome> {
       onTap: () {
         setState(() {
           this.selectedSuggestion = index;
-          this._pageController.animateToPage(index, duration: Duration(milliseconds: this._animationDuration), curve: Curves.easeIn);
+          this
+              ._pageController
+              .animateToPage(index, duration: Duration(milliseconds: this._animationDuration), curve: Curves.easeIn);
         });
       },
       child: Padding(
@@ -107,10 +110,12 @@ class _GalleryHomeState extends State<GalleryHome> {
           duration: Duration(milliseconds: this._animationDuration),
           curve: Curves.easeIn,
           decoration: new BoxDecoration(
-            color: this.selectedSuggestion == index ? Color(0xFF0077C2) : Color(0xFFBDBDBD),
-            borderRadius: new BorderRadius.all(Radius.elliptical(80, 100)),
-          ),
-          height: 36,
+              border: this.selectedSuggestion == index
+                  ? Border(
+                      bottom: BorderSide(width: 2.0, color: Color(0xFFE2C56A)),
+                    )
+                  : null),
+          height: 32,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Center(
