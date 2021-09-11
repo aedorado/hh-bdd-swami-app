@@ -37,7 +37,7 @@ jobs:
         artifacts: "build/app/outputs/apk/debug/*.apk"
         # artifacts: "build/app/outputs/apk/debug/*.apk,build/ios/iphoneos/app.ipa"
         token: ${{ secrets.TOKEN }}
-        tag: v1.0.${{ github.run_number }}
+        tag: vD1.0.${{ github.run_number }}
   build_release:
     name: Build APK Release
     runs-on: macos-latest
