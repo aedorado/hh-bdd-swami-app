@@ -152,9 +152,18 @@ class OpenAlbum extends StatelessWidget {
                             child: Container(
                           child: Hero(
                             tag: album.id,
-                            child: Image(
-                              image: NetworkImage(album.coverUrl),
-                              fit: BoxFit.cover,
+                            child: CachedNetworkImage(
+                              imageUrl: album.coverUrl,
+                              imageBuilder: (context, imageProvider) => Container(
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: imageProvider,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                              errorWidget: (context, url, error) => Icon(Icons.error),
                             ),
                           ),
                         )),
@@ -208,17 +217,6 @@ class OpenAlbum extends StatelessWidget {
                   ),
                   _openAlbumSliverList(context, album),
                 ],
-                // child: StreamBuilder<QuerySnapshot>(
-                //   stream: FirebaseFirestore.instance.collection(this.imagesCollectionName).where("album_id", isEqualTo: this.album.id).snapshots(),
-                //   builder: (context, snapshot) {
-                //     if (snapshot.hasData) {
-                //       return _openAlbumSliverList(context, album, snapshot);
-                //     } else if (snapshot.hasError) {
-                //       return Text("${snapshot.error}");
-                //     }
-                //     return Center(child: Container(height: 24, width: 24, child: CircularProgressIndicator()));
-                //   },
-                // ),
               ),
             ),
           ],

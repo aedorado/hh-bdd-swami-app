@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/models/podo/gallery_image.dart';
 import 'package:hive/hive.dart';
@@ -235,35 +236,11 @@ class _ViewImageScreenState extends State<ViewImageScreen> with SingleTickerProv
                                       onPressed: () {
                                         if (isAleadyAddedToFavorites) {
                                           favoriteImagesBox.delete(this.widget.imagesList[this.widget.index].id);
-                                          if (shouldShowSnackbar) {
-                                            ScaffoldMessenger.of(context).showSnackBar(FavoritesImagesSnackBar(
-                                              favoritesActionPerformed: FAVORITES_ACTION_REMOVE,
-                                            ).build(context));
-                                            setState(() {
-                                              this.shouldShowSnackbar = false;
-                                            });
-                                            Future.delayed(Duration(seconds: 1), () {
-                                              setState(() {
-                                                this.shouldShowSnackbar = true;
-                                              });
-                                            });
-                                          }
+                                          Fluttertoast.showToast(msg: 'Removed from Favorites');
                                         } else {
                                           favoriteImagesBox.put(
                                               widget.imagesList[widget.index].id, widget.imagesList[widget.index]);
-                                          if (shouldShowSnackbar) {
-                                            ScaffoldMessenger.of(context).showSnackBar(FavoritesImagesSnackBar(
-                                              favoritesActionPerformed: FAVORITES_ACTION_ADD,
-                                            ).build(context));
-                                            setState(() {
-                                              this.shouldShowSnackbar = false;
-                                            });
-                                            Future.delayed(Duration(seconds: 1), () {
-                                              setState(() {
-                                                this.shouldShowSnackbar = true;
-                                              });
-                                            });
-                                          }
+                                          Fluttertoast.showToast(msg: 'Added to Favorites');
                                         }
                                       });
                                 }))),
