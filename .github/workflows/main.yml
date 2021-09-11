@@ -10,7 +10,7 @@ on:
 name: Build and Release
 jobs:
   build_debug:
-    name: Build APK & IPA
+    name: Build APK Debug
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v1
@@ -23,14 +23,14 @@ jobs:
     - run: flutter pub get
     - run: flutter test
     - run: flutter build apk --debug --split-per-abi
-    - run: |
-        flutter build ios --no-codesign
-        cd build/ios/iphoneos
-        mkdir Payload
-        cd Payload
-        ln -s ../Runner.app
-        cd ..
-        zip -r app.ipa Payload
+    # - run: |
+    #     flutter build ios --no-codesign
+    #     cd build/ios/iphoneos
+    #     mkdir Payload
+    #     cd Payload
+    #     ln -s ../Runner.app
+    #     cd ..
+    #     zip -r app.ipa Payload
     - name: Push APK to Releases
       uses: ncipollo/release-action@v1
       with:
@@ -38,7 +38,7 @@ jobs:
         token: ${{ secrets.TOKEN }}
         tag: v1.0.${{ github.run_number }}
   build_release:
-    name: Build APK & IPA
+    name: Build APK Release
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v1
