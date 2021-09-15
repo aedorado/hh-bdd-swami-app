@@ -60,6 +60,7 @@ class _HomeState extends State<Home> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.favorite_border), label: "Favorites"),
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_today_rounded), label: "Calendar"),
           // BottomNavigationBarItem(icon: Icon(Icons.face_outlined), label: "Mindfulness"),
           // BottomNavigationBarItem(icon: Icon(Icons.notifications_outlined), label: "Alerts")
         ],
