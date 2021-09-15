@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hh_bbds_app/ui/calendar/calendar.dart';
 import 'package:hh_bbds_app/ui/library/library_home.dart';
 
 import 'home_carousel.dart';
@@ -18,11 +19,12 @@ class _HomeState extends State<Home> {
     LibraryHome(
       isFavoritesLibrary: true,
     ),
+    Calendar(),
     // MindfulnessScreen(),
     // AlertScreen(),
   ];
 
-  var _homeSreenAppBarTitles = ['BDD Swami App', 'Favorites'];
+  var _homeSreenAppBarTitles = ['BDD Swami App', 'Favorites', 'Calendar'];
   // var _homeSreenAppBarTitles = ['BDD Swami App', 'Favorites', 'Mindfulness', 'Alerts'];
 
   void _onItemTapped(int index) {
