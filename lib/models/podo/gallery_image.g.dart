@@ -18,45 +18,42 @@ class GalleryImageAdapter extends TypeAdapter<GalleryImage> {
     };
     return GalleryImage(
       id: fields[0] as String,
-      albumID: fields[1] as String,
-      color: fields[2] as String,
-      date: fields[3] as String,
-      description: fields[4] as String,
-      displayURL: fields[5] as String,
-      downloadURL: fields[6] as String,
-      thumbnailURL: fields[7] as String,
-      location: fields[8] as String,
-      tags: fields[9] as String,
-      type: fields[10] as String,
-    );
+      date: fields[1] as String,
+      description: fields[2] as String,
+      displayURL: fields[3] as String,
+      downloadURL: fields[4] as String,
+      thumbnailURL: fields[5] as String,
+      tags: fields[6] as String,
+    )
+      ..group = fields[7] as String
+      ..isRss = fields[8] as bool
+      ..order = fields[9] as int;
   }
 
   @override
   void write(BinaryWriter writer, GalleryImage obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.albumID)
-      ..writeByte(2)
-      ..write(obj.color)
-      ..writeByte(3)
       ..write(obj.date)
-      ..writeByte(4)
+      ..writeByte(2)
       ..write(obj.description)
-      ..writeByte(5)
+      ..writeByte(3)
       ..write(obj.displayURL)
-      ..writeByte(6)
+      ..writeByte(4)
       ..write(obj.downloadURL)
-      ..writeByte(7)
+      ..writeByte(5)
       ..write(obj.thumbnailURL)
-      ..writeByte(8)
-      ..write(obj.location)
-      ..writeByte(9)
+      ..writeByte(6)
       ..write(obj.tags)
-      ..writeByte(10)
-      ..write(obj.type);
+      ..writeByte(7)
+      ..write(obj.group)
+      ..writeByte(8)
+      ..write(obj.isRss)
+      ..writeByte(9)
+      ..write(obj.order);
   }
 
   @override

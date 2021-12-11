@@ -19,13 +19,15 @@ class ViewImageScreen extends StatefulWidget {
   _ViewImageScreenState createState() => _ViewImageScreenState();
 }
 
-class _ViewImageScreenState extends State<ViewImageScreen> with SingleTickerProviderStateMixin {
+class _ViewImageScreenState extends State<ViewImageScreen>
+    with SingleTickerProviderStateMixin {
   Box favoriteImagesBox = Hive.box<GalleryImage>(HIVE_BOX_FAVORITE_IMAGES);
   bool shouldShowSnackbar = true;
   bool showDescription = true;
   bool descriptionIsVisible = true;
 
-  final TransformationController _transformationController = TransformationController();
+  final TransformationController _transformationController =
+      TransformationController();
   Animation<Matrix4>? _animationReset;
   late final AnimationController _controllerReset;
 
@@ -136,7 +138,8 @@ class _ViewImageScreenState extends State<ViewImageScreen> with SingleTickerProv
                         onInteractionEnd: _onInteractionEnd,
                         transformationController: _transformationController,
                         child: CachedNetworkImage(
-                          imageUrl: this.widget.imagesList[widget.index].displayURL,
+                          imageUrl:
+                              this.widget.imagesList[widget.index].displayURL,
                           imageBuilder: (context, imageProvider) => Container(
                             decoration: BoxDecoration(
                               color: Colors.black,
@@ -146,8 +149,10 @@ class _ViewImageScreenState extends State<ViewImageScreen> with SingleTickerProv
                               ),
                             ),
                           ),
-                          placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                          errorWidget: (context, url, error) => Icon(Icons.error),
+                          placeholder: (context, url) =>
+                              Center(child: CircularProgressIndicator()),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
                         ),
                       ),
                     ),
@@ -168,23 +173,28 @@ class _ViewImageScreenState extends State<ViewImageScreen> with SingleTickerProv
                             width: MediaQuery.of(context).size.width * 1,
                             decoration: BoxDecoration(
                                 color: Color(0x78525252),
-                                borderRadius:
-                                    BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(10),
+                                    topRight: Radius.circular(10))),
                             child: Padding(
                               padding: const EdgeInsets.all(6.0),
                               child: Column(
                                 children: [
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       _descriptionTextBox(
-                                          '${widget.imagesList[widget.index].location != '-' ? widget.imagesList[widget.index].location : ""}',
+                                          '${DateToLabel(widget.imagesList[widget.index].date)}',
                                           11),
-                                      _descriptionTextBox('${DateToLabel(widget.imagesList[widget.index].date)}', 11),
                                     ],
                                   ),
-                                  _descriptionTextBox('${widget.imagesList[widget.index].description}', 14),
-                                  _descriptionTextBox('${widget.imagesList[widget.index].tags}', 10),
+                                  _descriptionTextBox(
+                                      '${widget.imagesList[widget.index].description}',
+                                      14),
+                                  _descriptionTextBox(
+                                      '${widget.imagesList[widget.index].tags}',
+                                      10),
                                 ],
                               ),
                             )),
@@ -216,8 +226,9 @@ class _ViewImageScreenState extends State<ViewImageScreen> with SingleTickerProv
                                 icon: Icon(Icons.chevron_left),
                                 onPressed: () {
                                   setState(() {
-                                    widget.index =
-                                        widget.index == 0 ? (widget.imagesList.length - 1) : widget.index - 1;
+                                    widget.index = widget.index == 0
+                                        ? (widget.imagesList.length - 1)
+                                        : widget.index - 1;
                                   });
                                 }))),
                     Expanded(
@@ -226,21 +237,33 @@ class _ViewImageScreenState extends State<ViewImageScreen> with SingleTickerProv
                             child: ValueListenableBuilder(
                                 valueListenable: favoriteImagesBox.listenable(),
                                 builder: (context, Box box, w) {
-                                  var isAleadyAddedToFavorites =
-                                      box.get(this.widget.imagesList[this.widget.index].id) != null;
+                                  var isAleadyAddedToFavorites = box.get(this
+                                          .widget
+                                          .imagesList[this.widget.index]
+                                          .id) !=
+                                      null;
                                   return IconButton(
                                       icon: Icon(
-                                        isAleadyAddedToFavorites ? Icons.favorite : Icons.favorite_border,
+                                        isAleadyAddedToFavorites
+                                            ? Icons.favorite
+                                            : Icons.favorite_border,
                                         color: Colors.redAccent,
                                       ),
                                       onPressed: () {
                                         if (isAleadyAddedToFavorites) {
-                                          favoriteImagesBox.delete(this.widget.imagesList[this.widget.index].id);
-                                          Fluttertoast.showToast(msg: 'Removed from Favorites');
+                                          favoriteImagesBox.delete(this
+                                              .widget
+                                              .imagesList[this.widget.index]
+                                              .id);
+                                          Fluttertoast.showToast(
+                                              msg: 'Removed from Favorites');
                                         } else {
                                           favoriteImagesBox.put(
-                                              widget.imagesList[widget.index].id, widget.imagesList[widget.index]);
-                                          Fluttertoast.showToast(msg: 'Added to Favorites');
+                                              widget
+                                                  .imagesList[widget.index].id,
+                                              widget.imagesList[widget.index]);
+                                          Fluttertoast.showToast(
+                                              msg: 'Added to Favorites');
                                         }
                                       });
                                 }))),
@@ -251,7 +274,8 @@ class _ViewImageScreenState extends State<ViewImageScreen> with SingleTickerProv
                                 icon: Icon(Icons.chevron_right),
                                 onPressed: () {
                                   setState(() {
-                                    widget.index = (widget.index + 1) % widget.imagesList.length;
+                                    widget.index = (widget.index + 1) %
+                                        widget.imagesList.length;
                                   });
                                 }))),
                   ],

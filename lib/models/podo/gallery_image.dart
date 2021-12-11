@@ -9,89 +9,79 @@ class GalleryImage {
   late String id;
 
   @HiveField(1)
-  late String albumID;
-
-  @HiveField(2)
-  late String color;
-
-  @HiveField(3)
   late String date;
 
-  @HiveField(4)
+  @HiveField(2)
   late String description;
 
-  @HiveField(5)
+  @HiveField(3)
   late String displayURL;
 
-  @HiveField(6)
+  @HiveField(4)
   late String downloadURL;
 
-  @HiveField(7)
+  @HiveField(5)
   late String thumbnailURL;
 
-  @HiveField(8)
-  late String location;
-
-  @HiveField(9)
+  @HiveField(6)
   late String tags;
 
-  @HiveField(10)
-  late String type;
+  @HiveField(7)
+  late String group;
+
+  @HiveField(8)
+  late bool isRss;
+
+  @HiveField(9)
+  late int order;
 
   GalleryImage(
       {required this.id,
-      required this.albumID,
-      required this.color,
       required this.date,
       required this.description,
       required this.displayURL,
       required this.downloadURL,
       required this.thumbnailURL,
-      required this.location,
-      required this.tags,
-      required this.type});
+      required this.tags});
 
   GalleryImage.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    albumID = json['album_id'];
-    color = json['color'];
+    group = json['group'];
+    isRss = json['isRss'];
     date = json['date'];
     description = json['description'];
     displayURL = json['display_url'];
     downloadURL = json['download_url'];
     thumbnailURL = json['thumbnail_url'];
-    location = json['location'];
+    order = json['order'];
     tags = json['tags'];
-    type = json['type'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['album_id'] = this.albumID;
-    data['color'] = this.color;
+    data['group'] = this.group;
     data['date'] = this.date;
     data['description'] = this.description;
     data['display_url'] = this.displayURL;
     data['download_url'] = this.downloadURL;
     data['thumbnail_url'] = this.thumbnailURL;
-    data['location'] = this.location;
+    data['isRss'] = this.isRss;
     data['tags'] = this.tags;
-    data['type'] = this.type;
+    data['order'] = this.order;
     return data;
   }
 
   GalleryImage.fromFireBaseSnapshotDoc(QueryDocumentSnapshot<Object?> doc) {
     id = doc['id'] ?? '';
     description = doc['description'] ?? '';
-    albumID = doc['album_id'] ?? '';
-    color = doc['color'] ?? '';
+    group = doc['group'] ?? '';
+    isRss = doc['is_rss'] ?? '';
     date = doc['date'] ?? '';
     displayURL = doc['display_url'] ?? '';
     downloadURL = doc['download_url'] ?? '';
     thumbnailURL = doc['thumbnail_url'] ?? '';
-    location = doc['location'] ?? '';
+    order = doc['order'] ?? '';
     tags = doc['tags'] ?? '';
-    type = doc['type'] ?? '';
   }
 }

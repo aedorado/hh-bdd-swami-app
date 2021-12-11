@@ -254,18 +254,7 @@ class OpenAlbum extends StatelessWidget {
                                 MaterialPageRoute(
                                     builder: (context) => ViewImageScreen(imagesList: imagesList, index: index)));
                           },
-                          child: (imageToDisplay.type == "Video")
-                              ? Container(
-                                  child: Center(
-                                    child: Container(
-                                        child: Icon(
-                                      Icons.play_arrow,
-                                      size: 40,
-                                      color: Colors.white,
-                                    )),
-                                  ),
-                                )
-                              : Container(),
+                          child: Container(),
                         )),
                   ),
                 );
