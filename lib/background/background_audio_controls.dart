@@ -1,4 +1,3 @@
-
 import 'dart:async';
 
 import 'package:audio_service/audio_service.dart';
@@ -6,7 +5,6 @@ import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
 
 class AudioPlayerBackgroundTasks extends BackgroundAudioTask {
-
   final _audioPlayer = AudioPlayer();
   AudioProcessingState? _skipState;
   StreamSubscription<PlaybackEvent>? _eventSubscription;
@@ -30,8 +28,8 @@ class AudioPlayerBackgroundTasks extends BackgroundAudioTask {
           onPause();
           break;
         case ProcessingState.ready:
-        // If we just came from skipping between tracks, clear the skip
-        // state now that we're ready to play.
+          // If we just came from skipping between tracks, clear the skip
+          // state now that we're ready to play.
           _skipState = null;
           break;
         default:
@@ -51,7 +49,7 @@ class AudioPlayerBackgroundTasks extends BackgroundAudioTask {
         // MediaControl.skipToNext,
       ],
       systemActions: [
-        MediaAction.seekTo,
+        // MediaAction.seekTo,
         MediaAction.seekForward,
         MediaAction.seekBackward,
       ],
@@ -67,10 +65,10 @@ class AudioPlayerBackgroundTasks extends BackgroundAudioTask {
   AudioProcessingState? _getProcessingState() {
     if (_skipState != null) return _skipState;
     switch (_audioPlayer.processingState) {
-      case ProcessingState.idle:
-        return AudioProcessingState.stopped;
-      case ProcessingState.loading:
-        return AudioProcessingState.connecting;
+      // case ProcessingState.idle:
+      // return AudioProcessingState.stopped;
+      // case ProcessingState.loading:
+      // return AudioProcessingState.connecting;
       case ProcessingState.buffering:
         return AudioProcessingState.buffering;
       case ProcessingState.ready:
@@ -96,22 +94,21 @@ class AudioPlayerBackgroundTasks extends BackgroundAudioTask {
   }
 
   @override
-  Future<void> onPlay() async{
-    if (AudioServiceBackground.state.processingState == AudioProcessingState.completed) {
+  Future<void> onPlay() async {
+    if (AudioServiceBackground.state.processingState ==
+        AudioProcessingState.completed) {
       this.onSeekTo(Duration(milliseconds: 0));
     }
     AudioServiceBackground.setState(
-        playing: true,
-        processingState: AudioProcessingState.ready);
+        playing: true, processingState: AudioProcessingState.ready);
     await _audioPlayer.play();
     return super.onPlay();
   }
 
   @override
-  Future<void> onPause() async{
+  Future<void> onPause() async {
     AudioServiceBackground.setState(
-        playing: false,
-        processingState: AudioProcessingState.ready);
+        playing: false, processingState: AudioProcessingState.ready);
     await _audioPlayer.pause();
     return super.onPause();
   }
@@ -133,5 +130,4 @@ class AudioPlayerBackgroundTasks extends BackgroundAudioTask {
     //     processingState: AudioProcessingState.ready);
     return super.onPlayMediaItem(mediaItem);
   }
-
 }
