@@ -2,9 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/models/podo/gallery_image.dart';
-import 'package:hh_bbds_app/models/podo/image_group.dart';
+import 'package:hh_bbds_app/models/podo/image_category.dart';
 import 'package:hh_bbds_app/ui/gallery/gallery_view_image.dart';
-import 'package:sticky_headers/sticky_headers.dart';
 
 class GalleryScreen extends StatelessWidget {
   const GalleryScreen({Key? key}) : super(key: key);
@@ -21,7 +20,7 @@ class GridHeader extends StatefulWidget {
 }
 
 class _GridHeaderState extends State<GridHeader> {
-  String imagesGroupsName = 'image_groups';
+  String imageCategoriesCollectionName = 'image_categories';
 
   PageController _pageController = PageController(
     initialPage: 0,
@@ -34,12 +33,14 @@ class _GridHeaderState extends State<GridHeader> {
   ];
   final List audioListScreenFutures = [
     FirebaseFirestore.instance
-        .collection('image_groups')
+        .collection('image_categories')
         .where('is_rss', isEqualTo: true)
+        .orderBy('category_name', descending: true)
         .snapshots(),
     FirebaseFirestore.instance
-        .collection('image_groups')
+        .collection('image_categories')
         .where('is_rss', isEqualTo: false)
+        .orderBy('category_name', descending: true)
         .snapshots(),
   ];
 
@@ -81,7 +82,13 @@ class _GridHeaderState extends State<GridHeader> {
             ),
           ),
           Expanded(
+            // child: AllAlbumsScreen(audioListScreenFutures[0]),
             child: PageView(
+              onPageChanged: (pageNumber) {
+                setState(() {
+                  this.selectedSuggestion = pageNumber;
+                });
+              },
               controller: _pageController,
               children: [
                 AllAlbumsScreen(audioListScreenFutures[0]),
@@ -135,14 +142,16 @@ class _GridHeaderState extends State<GridHeader> {
     );
   }
 
-  List<ImageGroup> _getImagesListFromSnapshot(
+  List<ImageCategory> _getImagesListFromSnapshot(
       List<QueryDocumentSnapshot<Object?>> docs) {
-    return docs.map((doc) => ImageGroup.fromFireBaseSnapshotDoc(doc)).toList();
+    return docs
+        .map((doc) => ImageCategory.fromFireBaseSnapshotDoc(doc))
+        .toList();
   }
 }
 
 class AllAlbumsScreen extends StatelessWidget {
-  String imagesGroupsName = 'image_groups';
+  String imageCategoriesCollectionName = 'image_categories';
 
   late Stream<QuerySnapshot<Map<String, dynamic>>> gallerySnapshot;
   AllAlbumsScreen(Stream<QuerySnapshot<Map<String, dynamic>>> gallerySnapshot) {
@@ -161,59 +170,98 @@ class AllAlbumsScreen extends StatelessWidget {
               itemCount: snapshot.data!.size,
               itemBuilder: (BuildContext context, int index) {
                 var doc = snapshot.data!.docs[index];
-                ImageGroup ig = ImageGroup.fromFireBaseSnapshotDoc(doc);
-                return StickyHeader(
-                  header: Container(
-                    height: 38.0,
-                    color: Colors.white,
-                    padding: new EdgeInsets.symmetric(horizontal: 12.0),
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      ig.groupName,
-                      style: const TextStyle(
-                          color: Colors.purple,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  content: Container(
-                    child: GridView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: ig.subgroupsList.length,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 1,
+                ImageCategory ig = ImageCategory.fromFireBaseSnapshotDoc(doc);
+                return Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        ig.categoryName,
+                        style: TextStyle(fontSize: 18.0),
                       ),
-                      itemBuilder: (context, index) {
-                        return InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => AllImagesScreen(
-                                          isRss: ig.isRss,
-                                          group: ig.subgroupsList[index],
-                                        )));
-                          },
-                          child: Card(
-                            margin: EdgeInsets.all(4.0),
-                            color: Colors.purpleAccent,
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 12.0, top: 6.0, bottom: 2.0),
-                              child: Center(
-                                  child: Text(
-                                ig.subgroupsList[index],
-                                style: TextStyle(
-                                    fontSize: 14, color: Colors.black54),
-                              )),
+                    ),
+                    Container(
+                      height: 300,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: GridView.builder(
+                              scrollDirection: Axis.horizontal,
+                              shrinkWrap: true,
+                              physics: ScrollPhysics(),
+                              itemCount: ig.subcategoryList.length,
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                childAspectRatio: 1,
+                              ),
+                              itemBuilder: (context, index) {
+                                var subcategoryName =
+                                    ig.subcategoryList[index]['name'] as String;
+                                return InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                AllImagesScreen(
+                                                  isRss: ig.isRss,
+                                                  subcategory: subcategoryName,
+                                                )));
+                                  },
+                                  child: Stack(
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              image: NetworkImage(ig
+                                                      .subcategoryList[index]
+                                                  ['cover_image'] as String),
+                                              fit: BoxFit.cover),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          boxShadow: <BoxShadow>[
+                                            BoxShadow(
+                                              offset: Offset(0, -2.0),
+                                              color: Color(0x44BDBDBD),
+                                              blurRadius: 8,
+                                            )
+                                          ],
+                                        ),
+                                        margin: EdgeInsets.all(4.0),
+                                      ),
+                                      Positioned(
+                                          bottom: 0,
+                                          left: 4,
+                                          right: 4,
+                                          child: Container(
+                                            color:
+                                                Colors.white.withOpacity(0.7),
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 7.0,
+                                                  top: 3.0,
+                                                  left: 3.0,
+                                                  right: 3.0),
+                                              child: Center(
+                                                  child: Text(
+                                                subcategoryName,
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.black),
+                                              )),
+                                            ),
+                                          ))
+                                    ],
+                                  ),
+                                );
+                              },
                             ),
                           ),
-                        );
-                      },
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
                 );
               });
         } else {
@@ -226,10 +274,10 @@ class AllAlbumsScreen extends StatelessWidget {
 
 class AllImagesScreen extends StatelessWidget {
   late bool isRss;
-  late String group;
+  late String subcategory;
   String imagesCollectionName = 'images';
 
-  AllImagesScreen({required this.isRss, required this.group});
+  AllImagesScreen({required this.isRss, required this.subcategory});
 
   List<GalleryImage> _getImagesListFromSnapshot(
       List<QueryDocumentSnapshot<Object?>> docs) {
@@ -249,7 +297,7 @@ class AllImagesScreen extends StatelessWidget {
           stream: FirebaseFirestore.instance
               .collection(this.imagesCollectionName)
               .orderBy("date")
-              .where('group', isEqualTo: this.group)
+              .where('subcategory', isEqualTo: this.subcategory)
               .where('is_rss', isEqualTo: this.isRss)
               .snapshots(),
           builder: (context, snapshot) {
