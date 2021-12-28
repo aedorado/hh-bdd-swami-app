@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/models/podo/gallery_image.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hh_bbds_app/utils/utils.dart';
 import 'dart:ui' as ui;
@@ -19,15 +18,13 @@ class ViewImageScreen extends StatefulWidget {
   _ViewImageScreenState createState() => _ViewImageScreenState();
 }
 
-class _ViewImageScreenState extends State<ViewImageScreen>
-    with SingleTickerProviderStateMixin {
+class _ViewImageScreenState extends State<ViewImageScreen> with SingleTickerProviderStateMixin {
   Box favoriteImagesBox = Hive.box<GalleryImage>(HIVE_BOX_FAVORITE_IMAGES);
   bool shouldShowSnackbar = true;
   bool showDescription = true;
   bool descriptionIsVisible = true;
 
-  final TransformationController _transformationController =
-      TransformationController();
+  final TransformationController _transformationController = TransformationController();
   Animation<Matrix4>? _animationReset;
   late final AnimationController _controllerReset;
 
@@ -138,8 +135,7 @@ class _ViewImageScreenState extends State<ViewImageScreen>
                         onInteractionEnd: _onInteractionEnd,
                         transformationController: _transformationController,
                         child: CachedNetworkImage(
-                          imageUrl:
-                              this.widget.imagesList[widget.index].displayURL,
+                          imageUrl: this.widget.imagesList[widget.index].displayURL,
                           imageBuilder: (context, imageProvider) => Container(
                             decoration: BoxDecoration(
                               color: Colors.black,
@@ -149,10 +145,8 @@ class _ViewImageScreenState extends State<ViewImageScreen>
                               ),
                             ),
                           ),
-                          placeholder: (context, url) =>
-                              Center(child: CircularProgressIndicator()),
-                          errorWidget: (context, url, error) =>
-                              Icon(Icons.error),
+                          placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                          errorWidget: (context, url, error) => Icon(Icons.error),
                         ),
                       ),
                     ),
@@ -174,15 +168,13 @@ class _ViewImageScreenState extends State<ViewImageScreen>
                             decoration: BoxDecoration(
                                 color: Color(0x78525252),
                                 borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(10),
-                                    topRight: Radius.circular(10))),
+                                    topLeft: Radius.circular(10), topRight: Radius.circular(10))),
                             child: Padding(
                               padding: const EdgeInsets.all(6.0),
                               child: Column(
                                 children: [
                                   Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       _descriptionTextBox(
                                           '${DateToLabel(widget.imagesList[widget.index].date)}',
@@ -190,11 +182,9 @@ class _ViewImageScreenState extends State<ViewImageScreen>
                                     ],
                                   ),
                                   _descriptionTextBox(
-                                      '${widget.imagesList[widget.index].description}',
-                                      14),
+                                      '${widget.imagesList[widget.index].description}', 14),
                                   _descriptionTextBox(
-                                      '${widget.imagesList[widget.index].tags}',
-                                      10),
+                                      '${widget.imagesList[widget.index].tags}', 10),
                                 ],
                               ),
                             )),
@@ -237,11 +227,8 @@ class _ViewImageScreenState extends State<ViewImageScreen>
                             child: ValueListenableBuilder(
                                 valueListenable: favoriteImagesBox.listenable(),
                                 builder: (context, Box box, w) {
-                                  var isAleadyAddedToFavorites = box.get(this
-                                          .widget
-                                          .imagesList[this.widget.index]
-                                          .id) !=
-                                      null;
+                                  var isAleadyAddedToFavorites =
+                                      box.get(this.widget.imagesList[this.widget.index].id) != null;
                                   return IconButton(
                                       icon: Icon(
                                         isAleadyAddedToFavorites
@@ -251,19 +238,13 @@ class _ViewImageScreenState extends State<ViewImageScreen>
                                       ),
                                       onPressed: () {
                                         if (isAleadyAddedToFavorites) {
-                                          favoriteImagesBox.delete(this
-                                              .widget
-                                              .imagesList[this.widget.index]
-                                              .id);
-                                          Fluttertoast.showToast(
-                                              msg: 'Removed from Favorites');
+                                          favoriteImagesBox
+                                              .delete(this.widget.imagesList[this.widget.index].id);
+                                          Fluttertoast.showToast(msg: 'Removed from Favorites');
                                         } else {
-                                          favoriteImagesBox.put(
-                                              widget
-                                                  .imagesList[widget.index].id,
+                                          favoriteImagesBox.put(widget.imagesList[widget.index].id,
                                               widget.imagesList[widget.index]);
-                                          Fluttertoast.showToast(
-                                              msg: 'Added to Favorites');
+                                          Fluttertoast.showToast(msg: 'Added to Favorites');
                                         }
                                       });
                                 }))),
@@ -274,8 +255,7 @@ class _ViewImageScreenState extends State<ViewImageScreen>
                                 icon: Icon(Icons.chevron_right),
                                 onPressed: () {
                                   setState(() {
-                                    widget.index = (widget.index + 1) %
-                                        widget.imagesList.length;
+                                    widget.index = (widget.index + 1) % widget.imagesList.length;
                                   });
                                 }))),
                   ],

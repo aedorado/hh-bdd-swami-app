@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:audio_service/audio_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -12,13 +11,11 @@ import 'package:hh_bbds_app/models/podo/alert.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/models/podo/quote.dart';
 import 'package:hh_bbds_app/network/remote_config.dart';
-import 'package:hh_bbds_app/services/audio_handler.dart';
 import 'package:hh_bbds_app/services/service_locator.dart';
 import 'package:hh_bbds_app/ui/audio/page_manager.dart';
 import 'package:hh_bbds_app/ui/home/home.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:get_it/get_it.dart';
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
     'high_importance_channel', // id

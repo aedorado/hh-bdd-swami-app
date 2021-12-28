@@ -19,6 +19,7 @@ class PageManager {
   final playButtonNotifier = PlayButtonNotifier();
   final isLastSongNotifier = ValueNotifier<bool>(true);
   final isShuffleModeEnabledNotifier = ValueNotifier<bool>(false);
+  final playbackSpeedNotifier = ValueNotifier<double>(1);
 
   final _audioHandler = getIt<AudioHandler>();
 
@@ -48,6 +49,10 @@ class PageManager {
   void add() {}
   void remove() {}
 
+  void setSpeed(double speed) async {
+    await _audioHandler.setSpeed(speed);
+  }
+
   void playMediaItem(MediaItem mediaItem) async {
     await _audioHandler.playMediaItem(mediaItem);
   }
@@ -56,23 +61,20 @@ class PageManager {
     _audioHandler.playbackState.listen((playbackState) {
       debugPrint('PBS : ' + playbackState.toString());
       final isPlaying = playbackState.playing;
-      debugPrint('isPlaying : ' + isPlaying.toString());
       final processingState = playbackState.processingState;
       if (processingState == AudioProcessingState.loading ||
           processingState == AudioProcessingState.buffering) {
-        debugPrint('PBS-1');
         playButtonNotifier.value = ButtonState.loading;
       } else if (!isPlaying) {
-        debugPrint('PBS-2');
         playButtonNotifier.value = ButtonState.paused;
       } else if (processingState != AudioProcessingState.completed) {
-        debugPrint('PBS-3');
         playButtonNotifier.value = ButtonState.playing;
       } else {
-        debugPrint('PBS-4');
         _audioHandler.seek(Duration.zero);
         _audioHandler.pause();
       }
+
+      playbackSpeedNotifier.value = playbackState.speed;
     });
   }
 

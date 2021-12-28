@@ -1,10 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/models/podo/album.dart';
 import 'package:hh_bbds_app/models/podo/gallery_image.dart';
-import 'package:hh_bbds_app/ui/gallery/gallery_all_images_list_screen.dart';
 import 'package:hh_bbds_app/ui/gallery/gallery_constants.dart';
 import 'package:hh_bbds_app/ui/gallery/gallery_view_image.dart';
 
@@ -70,7 +68,8 @@ class GalleryAlbums extends StatelessWidget {
                                           ),
                                         ),
                                       ),
-                                      placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                                      placeholder: (context, url) =>
+                                          Center(child: CircularProgressIndicator()),
                                       errorWidget: (context, url, error) => Icon(Icons.error),
                                     ),
                                     // Image(
@@ -162,7 +161,8 @@ class OpenAlbum extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                              placeholder: (context, url) =>
+                                  Center(child: CircularProgressIndicator()),
                               errorWidget: (context, url, error) => Icon(Icons.error),
                             ),
                           ),
@@ -237,22 +237,25 @@ class OpenAlbum extends StatelessWidget {
             return SliverGrid(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
               delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
-                GalleryImage imageToDisplay = GalleryImage.fromFireBaseSnapshotDoc(snapshot.data!.docs[index]);
+                GalleryImage imageToDisplay =
+                    GalleryImage.fromFireBaseSnapshotDoc(snapshot.data!.docs[index]);
                 return Padding(
                   padding: const EdgeInsets.all(1.0),
                   child: Hero(
                     tag: imageToDisplay.displayURL,
                     child: Container(
                         decoration: BoxDecoration(
-                            image:
-                                DecorationImage(image: NetworkImage(imageToDisplay.thumbnailURL), fit: BoxFit.cover)),
+                            image: DecorationImage(
+                                image: NetworkImage(imageToDisplay.thumbnailURL),
+                                fit: BoxFit.cover)),
                         child: GestureDetector(
                           behavior: HitTestBehavior.translucent,
                           onTap: () {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => ViewImageScreen(imagesList: imagesList, index: index)));
+                                    builder: (context) =>
+                                        ViewImageScreen(imagesList: imagesList, index: index)));
                           },
                           child: Container(),
                         )),

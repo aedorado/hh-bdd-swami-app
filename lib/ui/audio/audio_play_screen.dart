@@ -3,12 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hh_bbds_app/adapter/adapter.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
-// import 'package:hh_bbds_app/background/audio_handler.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
-import 'package:hh_bbds_app/models/podo/media_state.dart';
 import 'package:hh_bbds_app/notifiers/play_button_notifier.dart';
 import 'package:hh_bbds_app/notifiers/progress_notifier.dart';
-import 'package:hh_bbds_app/streams/streams.dart';
 import 'package:hh_bbds_app/ui/audio/page_manager.dart';
 import 'package:hh_bbds_app/ui/favorites/favorite_audios.dart';
 import 'package:hive/hive.dart';
@@ -16,20 +13,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 
 GetIt getIt = GetIt.instance;
-
-var audioTitleStyle = TextStyle(
-  // fontWeight: FontWeight.bold,
-  color: Colors.black,
-  fontSize: 20.0,
-  decoration: TextDecoration.none,
-);
-
-var audioSubtitleStyle = TextStyle(
-  // fontWeight: FontWeight.bold,
-  color: Colors.black,
-  fontSize: 14.0,
-  decoration: TextDecoration.none,
-);
 
 class AudioPlayScreen extends StatefulWidget {
   late MediaItem mediaItem;
@@ -48,27 +31,12 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
   void initAudioPlayer() async {
     final pageManager = getIt<PageManager>();
     if (widget.mediaItem != null) {
-      pageManager.playMediaItem(widget.mediaItem);
-      // final _audioHandler = getIt<AudioHandler>();
-      // _audioHandler.playMediaItem(widget.mediaItem);
-      // pageManager.playMediaItem(widget.mediaItem);
-      // pageManager.setAudioSource(widget.mediaItem);
-      // pageManager.playFromUri(widget.mediaItem);
-      // if (!AudioService.running) {
-      // await AudioService.start(
-      //     androidNotificationIcon: 'mipmap/ic_launcher',); //, params: {"url": audio.url});
-      // }
-      // if (widget.mediaItem != null) {
-      //   if (AudioService.currentMediaItem?.id != widget.mediaItem?.id) {
-      //     await AudioService.playMediaItem(widget.mediaItem!);
-      //   } else {
-      //     AudioService.play();
-      //   }
-      // }
+      MediaItem? currentMediaItem = pageManager.currentMediaItemNotifier.value;
+      if (currentMediaItem == null ||
+          currentMediaItem != null && currentMediaItem.id != widget.mediaItem.id) {
+        pageManager.playMediaItem(widget.mediaItem);
+      }
     }
-    // else {
-    //   AudioService.play();
-    // }
   }
 
   @override
@@ -87,21 +55,16 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
             Expanded(
               flex: 6,
               child: Padding(
-                padding:
-                    const EdgeInsets.only(left: 0, right: 0, top: 0, bottom: 0),
+                padding: const EdgeInsets.only(left: 0, right: 0, top: 0, bottom: 0),
                 // padding: const EdgeInsets.only(left: 24, right: 24, top: 24, bottom: 24),
                 child: Container(
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(0),
                       boxShadow: [
-                        BoxShadow(
-                            offset: Offset(0, 8.0),
-                            color: Color(0x88BDBDBD),
-                            blurRadius: 8)
+                        BoxShadow(offset: Offset(0, 8.0), color: Color(0x88BDBDBD), blurRadius: 8)
                       ],
                       image: DecorationImage(
-                          image:
-                              NetworkImage(widget.mediaItem.artUri.toString()),
+                          image: NetworkImage(widget.mediaItem.artUri.toString()),
                           fit: BoxFit.cover)),
                 ),
               ),
@@ -115,18 +78,25 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                     flex: 3,
                     child: Center(
                       child: Padding(
-                        padding:
-                            const EdgeInsets.only(left: 18, right: 18, top: 12),
+                        padding: const EdgeInsets.only(left: 18, right: 18, top: 12),
                         child: Column(
                           children: [
                             Text(
                               widget.mediaItem.title,
-                              style: audioTitleStyle,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 20.0,
+                                decoration: TextDecoration.none,
+                              ),
                               textAlign: TextAlign.center,
                             ),
                             Text(
                               widget.mediaItem.extras!['subtitle'] ?? '',
-                              style: audioSubtitleStyle,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 14.0,
+                                decoration: TextDecoration.none,
+                              ),
                               textAlign: TextAlign.center,
                             )
                           ],
@@ -137,8 +107,7 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                   Expanded(
                     flex: 2,
                     child: Padding(
-                      padding: const EdgeInsets.only(
-                          left: 40, right: 40, top: 20, bottom: 10),
+                      padding: const EdgeInsets.only(left: 40, right: 40, top: 20, bottom: 10),
                       child: AudioProgressBar(),
                     ),
                   ),
@@ -154,55 +123,44 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                           color: Color(0xFF004BA0),
                         ),
                         child: Center(
-                          child: PlayButton(),
+                          child: PlayButton(iconSize: 36),
                         ),
                       ),
                     ),
                   ),
+                  Expanded(flex: 2, child: AudioSpeedPicker()),
                   Expanded(
                     flex: 2,
                     child: Padding(
-                      padding:
-                          const EdgeInsets.only(left: 50, right: 50, top: 16),
+                      padding: const EdgeInsets.only(left: 50, right: 50, top: 16),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Container(
                             child: InkWell(
                               onTap: () {
-                                String? currentMediaItemId =
-                                    widget.mediaItem.id;
+                                String? currentMediaItemId = widget.mediaItem.id;
                                 String favoritesActionPerformed;
-                                if (favoriteAudiosBox.get(currentMediaItemId) ==
-                                    null) {
-                                  favoritesActionPerformed =
-                                      FAVORITES_ACTION_ADD;
-                                  favoriteAudiosBox.put(
-                                      currentMediaItemId,
-                                      Adapter.mediaItemToAudio(
-                                          widget.mediaItem));
+                                if (favoriteAudiosBox.get(currentMediaItemId) == null) {
+                                  favoritesActionPerformed = FAVORITES_ACTION_ADD;
+                                  favoriteAudiosBox.put(currentMediaItemId,
+                                      Adapter.mediaItemToAudio(widget.mediaItem));
                                 } else {
-                                  favoritesActionPerformed =
-                                      FAVORITES_ACTION_REMOVE;
+                                  favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
                                   favoriteAudiosBox.delete(currentMediaItemId);
                                 }
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(FavoriteAudioSnackBar(
-                                  audio: Adapter.mediaItemToAudio(
-                                      widget.mediaItem),
-                                  favoritesActionPerformed:
-                                      favoritesActionPerformed,
+                                ScaffoldMessenger.of(context).showSnackBar(FavoriteAudioSnackBar(
+                                  audio: Adapter.mediaItemToAudio(widget.mediaItem),
+                                  favoritesActionPerformed: favoritesActionPerformed,
                                   displayUndoAction: false,
                                 ).build(context));
                               },
                               child: ValueListenableBuilder(
-                                  valueListenable:
-                                      favoriteAudiosBox.listenable(),
+                                  valueListenable: favoriteAudiosBox.listenable(),
                                   builder: (context, Box<Audio> box, _) {
                                     MediaItem mi = widget.mediaItem;
                                     return IconTheme(
-                                        data: new IconThemeData(
-                                            color: Colors.redAccent),
+                                        data: new IconThemeData(color: Colors.redAccent),
                                         child: Icon(
                                           (box.get(mi.id)) == null
                                               ? Icons.favorite_border
@@ -249,17 +207,18 @@ class AudioProgressBar extends StatelessWidget {
 class PlayButton extends StatefulWidget {
   @override
   State<PlayButton> createState() => _PlayButtonState();
+
+  double iconSize;
+  PlayButton({required this.iconSize});
 }
 
-class _PlayButtonState extends State<PlayButton>
-    with SingleTickerProviderStateMixin {
+class _PlayButtonState extends State<PlayButton> with SingleTickerProviderStateMixin {
   late AnimationController controller;
 
   @override
   void initState() {
     super.initState();
-    controller =
-        AnimationController(duration: Duration(milliseconds: 300), vsync: this);
+    controller = AnimationController(duration: Duration(milliseconds: 300), vsync: this);
   }
 
   @override
@@ -279,19 +238,72 @@ class _PlayButtonState extends State<PlayButton>
           case ButtonState.paused:
             return IconButton(
               color: Colors.white,
-              iconSize: 36,
+              iconSize: widget.iconSize,
               icon: Icon(Icons.play_arrow),
               onPressed: pageManager.play,
             );
           case ButtonState.playing:
             return IconButton(
               color: Colors.white,
-              iconSize: 36,
+              iconSize: widget.iconSize,
               icon: Icon(Icons.pause),
               onPressed: pageManager.pause,
             );
         }
       },
+    );
+  }
+}
+
+class AudioSpeedPicker extends StatefulWidget {
+  const AudioSpeedPicker({Key? key}) : super(key: key);
+
+  @override
+  State<AudioSpeedPicker> createState() => _AudioSpeedPickerState();
+}
+
+class _AudioSpeedPickerState extends State<AudioSpeedPicker> {
+  final pageManager = getIt<PageManager>();
+  late String originalSpeed;
+
+  @override
+  void initState() {
+    super.initState();
+    double osp = pageManager.playbackSpeedNotifier.value;
+    if (osp == 0.75)
+      this.originalSpeed = '0.75';
+    else if (osp == 1.0)
+      this.originalSpeed = '1';
+    else if (osp == 1.5)
+      this.originalSpeed = '1.5';
+    else if (osp == 2) this.originalSpeed = '2';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButton<String>(
+      value: originalSpeed,
+      // icon: const Icon(Icons.arrow_downward),
+      elevation: 16,
+      style: const TextStyle(color: Colors.deepPurple),
+      underline: Container(
+        height: 2,
+        color: Colors.blueAccent,
+      ),
+      onChanged: (String? updatedSpeed) {
+        if (updatedSpeed != this.originalSpeed) {
+          setState(() {
+            originalSpeed = updatedSpeed!;
+          });
+          pageManager.setSpeed(double.parse(updatedSpeed ?? '1'));
+        }
+      },
+      items: <String>['0.75', '1', '1.5', '2'].map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value + 'x'),
+        );
+      }).toList(),
     );
   }
 }

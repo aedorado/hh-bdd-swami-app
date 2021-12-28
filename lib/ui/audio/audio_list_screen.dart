@@ -10,8 +10,8 @@ import 'package:hh_bbds_app/ui/audio/audio_play_screen.dart';
 import 'package:hh_bbds_app/ui/audio/audio_search.dart';
 import 'package:hh_bbds_app/ui/audio/audio_constants.dart';
 import 'package:hh_bbds_app/ui/audio/miniplayer.dart';
+import 'package:hh_bbds_app/ui/audio/page_manager.dart';
 import 'package:hh_bbds_app/ui/favorites/favorite_audios.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'audio_year_screen.dart';
 
@@ -28,19 +28,11 @@ class _AudioListScreenState extends State<AudioListScreen> {
   int selectedSuggestion = 0;
   bool searchLoading = false;
 
-  final List audioListScreenSuggestions = [
-    'TRACKS',
-    'SERIES',
-    'SEMINARS',
-    'YEAR'
-  ];
+  final List audioListScreenSuggestions = ['TRACKS', 'SERIES', 'SEMINARS', 'YEAR'];
   final List audioListScreenFutures = [
     FirebaseFirestore.instance.collection("audios").orderBy('name').snapshots(),
     FirebaseFirestore.instance.collection("series").orderBy('name').snapshots(),
-    FirebaseFirestore.instance
-        .collection("seminars")
-        .orderBy('name')
-        .snapshots(),
+    FirebaseFirestore.instance.collection("seminars").orderBy('name').snapshots(),
     // FirebaseFirestore.instance.collection("audios").orderBy('name').snapshots(),
   ];
 
@@ -67,15 +59,13 @@ class _AudioListScreenState extends State<AudioListScreen> {
           IconButton(
               icon: Icon(Icons.search),
               onPressed: () async {
-                var selectionType =
-                    await showSearch(context: context, delegate: AudioSearch());
+                var selectionType = await showSearch(context: context, delegate: AudioSearch());
                 setState(() {
                   this.searchLoading = true;
                 });
                 if (selectionType == TRACKS || selectionType == SHORT_AUDIOS) {
                   Box hiveBox = Hive.box(HIVE_BOX_AUDIO_SEARCH);
-                  String id =
-                      hiveBox.get(HIVE_BOX_AUDIO_SEARCH_KEY_SELECTED_ITEM);
+                  String id = hiveBox.get(HIVE_BOX_AUDIO_SEARCH_KEY_SELECTED_ITEM);
                   FirebaseFirestore.instance
                       .collection('audios')
                       .where("id", isEqualTo: id)
@@ -84,25 +74,19 @@ class _AudioListScreenState extends State<AudioListScreen> {
                       .then(
                     (value) async {
                       if (value.size > 0) {
-                        Audio audio =
-                            Adapter.firebaseAudioSnapshotToAudio(value.docs[0]);
+                        Audio audio = Adapter.firebaseAudioSnapshotToAudio(value.docs[0]);
                         MediaItem mediaItem = Adapter.audioToMediaItem(audio);
                         setState(() {
                           this.searchLoading = false;
                         });
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    AudioPlayScreen(mediaItem)));
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => AudioPlayScreen(mediaItem)));
                       }
                     },
                   );
-                } else if (selectionType == SEMINARS ||
-                    selectionType == SERIES) {
+                } else if (selectionType == SEMINARS || selectionType == SERIES) {
                   Box hiveBox = Hive.box(HIVE_BOX_AUDIO_SEARCH);
-                  String id =
-                      hiveBox.get(HIVE_BOX_AUDIO_SEARCH_KEY_SELECTED_ITEM);
+                  String id = hiveBox.get(HIVE_BOX_AUDIO_SEARCH_KEY_SELECTED_ITEM);
                   FirebaseFirestore.instance
                       .collection(selectionType!.toLowerCase())
                       .where("id", isEqualTo: id)
@@ -112,16 +96,14 @@ class _AudioListScreenState extends State<AudioListScreen> {
                     (value) async {
                       if (value.size > 0) {
                         AudioFolder audioFolder =
-                            AudioFolder.fromFirebaseAudioFolderSnapshot(
-                                value.docs[0]);
+                            AudioFolder.fromFirebaseAudioFolderSnapshot(value.docs[0]);
                         setState(() {
                           this.searchLoading = false;
                         });
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    AudioFolderScreen(audioFolder)));
+                                builder: (context) => AudioFolderScreen(audioFolder)));
                       }
                     },
                   );
@@ -143,20 +125,17 @@ class _AudioListScreenState extends State<AudioListScreen> {
                       children: [
                         Expanded(
                           child: SingleChildScrollView(
-                            physics: BouncingScrollPhysics(
-                                parent: AlwaysScrollableScrollPhysics()),
+                            physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                             scrollDirection: Axis.horizontal,
                             child: Row(
                               children: [
                                 ListView.builder(
                                     scrollDirection: Axis.horizontal,
                                     shrinkWrap: true,
-                                    itemCount:
-                                        audioListScreenSuggestions.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return _audioListSuggestionBox(index,
-                                          audioListScreenSuggestions[index]);
+                                    itemCount: audioListScreenSuggestions.length,
+                                    itemBuilder: (BuildContext context, int index) {
+                                      return _audioListSuggestionBox(
+                                          index, audioListScreenSuggestions[index]);
                                     }),
                               ],
                             ),
@@ -184,7 +163,7 @@ class _AudioListScreenState extends State<AudioListScreen> {
                       },
                     ),
                   ),
-                  // Miniplayer(),
+                  Miniplayer(),
                 ],
               ),
       ),
@@ -201,15 +180,13 @@ class _AudioListScreenState extends State<AudioListScreen> {
         });
       },
       child: Padding(
-        padding:
-            const EdgeInsets.only(left: 5.0, right: 5.0, top: 6, bottom: 6),
+        padding: const EdgeInsets.only(left: 5.0, right: 5.0, top: 6, bottom: 6),
         child: AnimatedContainer(
           duration: Duration(milliseconds: this._animationDuration),
           curve: Curves.easeIn,
           decoration: new BoxDecoration(
             border: this.selectedSuggestion == index
-                ? Border(
-                    bottom: BorderSide(width: 2.0, color: Color(0xFFE2C56A)))
+                ? Border(bottom: BorderSide(width: 2.0, color: Color(0xFFE2C56A)))
                 : null,
           ),
           height: 36,
@@ -219,10 +196,7 @@ class _AudioListScreenState extends State<AudioListScreen> {
               child: Text(
                 title,
                 style: this.selectedSuggestion == index
-                    ? TextStyle(
-                        color: Color(0xFFE2C56A),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800)
+                    ? TextStyle(color: Color(0xFFE2C56A), fontSize: 16, fontWeight: FontWeight.w800)
                     : TextStyle(color: Colors.white, fontSize: 16),
               ),
             ),
@@ -249,14 +223,12 @@ class AudioListPage extends StatelessWidget {
           // return Text(snapshot.data!.title);
           return Container(
               child: ListView.builder(
-                  physics: BouncingScrollPhysics(
-                      parent: AlwaysScrollableScrollPhysics()),
+                  physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
                   itemCount: snapshot.data!.size,
                   itemBuilder: (BuildContext context, int index) {
-                    Audio audio = Adapter.firebaseAudioSnapshotToAudio(
-                        snapshot.data!.docs[index]);
+                    Audio audio = Adapter.firebaseAudioSnapshotToAudio(snapshot.data!.docs[index]);
                     return AudioListScreenRow(
                       audio: audio,
                     );
@@ -264,9 +236,7 @@ class AudioListPage extends StatelessWidget {
         } else if (snapshot.hasError) {
           return Text("${snapshot.error}");
         }
-        return Center(
-            child: Container(
-                height: 24, width: 24, child: CircularProgressIndicator()));
+        return Center(child: Container(height: 24, width: 24, child: CircularProgressIndicator()));
       },
     );
   }
@@ -274,6 +244,7 @@ class AudioListPage extends StatelessWidget {
 
 class AudioListScreenRow extends StatelessWidget {
   final Audio audio;
+  final pageManager = getIt<PageManager>();
 
   Box<Audio> favoriteAudiosBox = Hive.box<Audio>(HIVE_BOX_FAVORITE_AUDIOS);
 
@@ -281,132 +252,110 @@ class AudioListScreenRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<MediaItem?>(
-        stream: AudioService.currentMediaItemStream,
-        builder: (context, currentMediaItemSnapshot) {
-          bool isItemPlaying = false;
-          if (currentMediaItemSnapshot.data?.id == audio.id) {
-            isItemPlaying = true;
-          }
-          return ConstrainedBox(
-            constraints: new BoxConstraints(
-              minHeight: 60.0,
-              maxHeight: 80.0,
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Image
-                Expanded(
-                    flex: 7,
-                    child: InkWell(
-                      onTap: () async {
-                        MediaItem mediaItem = Adapter.audioToMediaItem(audio);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    AudioPlayScreen(mediaItem)));
-                      },
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: Container(
-                              height: MediaQuery.of(context).size.height,
-                              decoration: BoxDecoration(
-                                  color:
-                                      isItemPlaying ? Color(0xFFBBDEFB) : null),
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 2, left: 4, right: 2, bottom: 2),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Colors.blue, // inner circle color
-                                      image: DecorationImage(
-                                          image: NetworkImage(
-                                              audio.thumbnailUrl))),
+    MediaItem? currentMediaItem = this.pageManager.currentMediaItemNotifier.value;
+    bool isItemPlaying = currentMediaItem != null && currentMediaItem.id == audio.id;
+    return ConstrainedBox(
+      constraints: new BoxConstraints(
+        minHeight: 60.0,
+        maxHeight: 80.0,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Image
+          Expanded(
+              flex: 7,
+              child: InkWell(
+                onTap: () async {
+                  MediaItem mediaItem = Adapter.audioToMediaItem(audio);
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => AudioPlayScreen(mediaItem)));
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        height: MediaQuery.of(context).size.height,
+                        decoration: BoxDecoration(color: isItemPlaying ? Color(0xFFBBDEFB) : null),
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 2, left: 4, right: 2, bottom: 2),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.blue, // inner circle color
+                                image: DecorationImage(image: NetworkImage(audio.thumbnailUrl))),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                        flex: 6,
+                        child: Container(
+                          decoration:
+                              BoxDecoration(color: isItemPlaying ? Color(0xFFBBDEFB) : null),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${audio.name}',
+                                  maxLines: 2,
+                                  style: TextStyle(fontSize: 15),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                              ),
+                                Text(
+                                  '${audio.name}',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              ],
                             ),
                           ),
-                          Expanded(
-                              flex: 6,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    color: isItemPlaying
-                                        ? Color(0xFFBBDEFB)
-                                        : null),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '${audio.name}',
-                                        maxLines: 2,
-                                        style: TextStyle(fontSize: 15),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      Text(
-                                        '${audio.name}',
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(fontSize: 12),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )),
-                        ],
-                      ),
-                    )),
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: isItemPlaying ? Color(0xFFBBDEFB) : null),
-                    child: InkWell(
-                      onTap: () {
-                        String favoritesActionPerformed;
-                        if (favoriteAudiosBox.get(audio.id) == null) {
-                          favoritesActionPerformed = FAVORITES_ACTION_ADD;
-                          favoriteAudiosBox.put(audio.id, audio);
-                        } else {
-                          favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
-                          favoriteAudiosBox.delete(audio.id);
-                        }
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(FavoriteAudioSnackBar(
-                          audio: audio,
-                          favoritesActionPerformed: favoritesActionPerformed,
-                          displayUndoAction: false,
-                        ).build(context));
-                      },
-                      child: ValueListenableBuilder(
-                          valueListenable: favoriteAudiosBox.listenable(),
-                          builder: (context, Box<Audio> box, widget) {
-                            return IconTheme(
-                                data:
-                                    new IconThemeData(color: Colors.redAccent),
-                                child: Icon(
-                                  (box.get(audio.id) == null)
-                                      ? Icons.favorite_border
-                                      : Icons.favorite,
-                                  size: 24,
-                                ));
-                          }),
-                    ),
-                  ),
+                        )),
+                  ],
                 ),
-              ],
-              //: Center(child: Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 18),)),
+              )),
+          Expanded(
+            flex: 1,
+            child: Container(
+              decoration: BoxDecoration(color: isItemPlaying ? Color(0xFFBBDEFB) : null),
+              child: InkWell(
+                onTap: () {
+                  String favoritesActionPerformed;
+                  if (favoriteAudiosBox.get(audio.id) == null) {
+                    favoritesActionPerformed = FAVORITES_ACTION_ADD;
+                    favoriteAudiosBox.put(audio.id, audio);
+                  } else {
+                    favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
+                    favoriteAudiosBox.delete(audio.id);
+                  }
+                  ScaffoldMessenger.of(context).showSnackBar(FavoriteAudioSnackBar(
+                    audio: audio,
+                    favoritesActionPerformed: favoritesActionPerformed,
+                    displayUndoAction: false,
+                  ).build(context));
+                },
+                child: ValueListenableBuilder(
+                    valueListenable: favoriteAudiosBox.listenable(),
+                    builder: (context, Box<Audio> box, widget) {
+                      return IconTheme(
+                          data: new IconThemeData(color: Colors.redAccent),
+                          child: Icon(
+                            (box.get(audio.id) == null) ? Icons.favorite_border : Icons.favorite,
+                            size: 24,
+                          ));
+                    }),
+              ),
             ),
-          );
-        });
+          ),
+        ],
+        //: Center(child: Text('${snapshot.data[index].name}', style: TextStyle(fontSize: 18),)),
+      ),
+    );
   }
 }
 
@@ -426,15 +375,13 @@ class AudioFolderPage extends StatelessWidget {
           // return Text(snapshot.data!.title);
           return Container(
               child: ListView.builder(
-                  physics: BouncingScrollPhysics(
-                      parent: AlwaysScrollableScrollPhysics()),
+                  physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
                   itemCount: snapshot.data!.size,
                   itemBuilder: (BuildContext context, int index) {
                     AudioFolder audioFolder =
-                        AudioFolder.fromFirebaseAudioFolderSnapshot(
-                            snapshot.data!.docs[index]);
+                        AudioFolder.fromFirebaseAudioFolderSnapshot(snapshot.data!.docs[index]);
                     return Container(
                       // TODO: Make sure the rows on all the screens are of equal height
                       height: 76,
@@ -450,8 +397,7 @@ class AudioFolderPage extends StatelessWidget {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            AudioFolderScreen(audioFolder)));
+                                        builder: (context) => AudioFolderScreen(audioFolder)));
                               },
                               child: Row(
                                 children: [
@@ -464,8 +410,7 @@ class AudioFolderPage extends StatelessWidget {
                                         decoration: BoxDecoration(
                                             shape: BoxShape.circle,
                                             image: DecorationImage(
-                                                image: NetworkImage(
-                                                    audioFolder.thumbnailUrl))),
+                                                image: NetworkImage(audioFolder.thumbnailUrl))),
                                       ),
                                     ),
                                   ),
@@ -474,10 +419,8 @@ class AudioFolderPage extends StatelessWidget {
                                       child: Padding(
                                         padding: const EdgeInsets.all(12.0),
                                         child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               '${audioFolder.name}',
@@ -502,9 +445,7 @@ class AudioFolderPage extends StatelessWidget {
         } else if (snapshot.hasError) {
           return Text("${snapshot.error}");
         }
-        return Center(
-            child: Container(
-                height: 24, width: 24, child: CircularProgressIndicator()));
+        return Center(child: Container(height: 24, width: 24, child: CircularProgressIndicator()));
       },
     );
   }
