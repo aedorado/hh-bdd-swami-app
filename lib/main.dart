@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -11,14 +12,17 @@ import 'package:hh_bbds_app/models/podo/alert.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/models/podo/quote.dart';
 import 'package:hh_bbds_app/network/remote_config.dart';
+import 'package:hh_bbds_app/services/audio_handler.dart';
+import 'package:hh_bbds_app/services/service_locator.dart';
+import 'package:hh_bbds_app/ui/audio/page_manager.dart';
 import 'package:hh_bbds_app/ui/home/home.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:get_it/get_it.dart';
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
     'high_importance_channel', // id
     'High Importance Notifications', // title
-    'This channel is used for important notifications.', // description
     importance: Importance.max,
     playSound: true);
 
@@ -41,8 +45,7 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
+      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
 
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
@@ -71,6 +74,8 @@ void main() async {
   await Hive.openBox(HIVE_BOX_FAVORITE_BLOGS);
   await Hive.openBox<GalleryImage>(HIVE_BOX_FAVORITE_IMAGES);
 
+  await setupServiceLocator();
+
   runApp(MaterialApp(
     title: 'HH BDD Swami',
     theme: ThemeData(primarySwatch: Colors.blue, fontFamily: 'Nunito'),
@@ -89,13 +94,11 @@ class _BDDSAppState extends State<BDDSApp> {
 
   saveAlert(RemoteMessage message) {
     Box<Alert> alertsBox = Hive.box<Alert>(HIVE_BOX_ALERTS);
-    alertsBox.put(message.messageId,
-        Alert.fromFirebaseMessage(message.messageId, message.data));
+    alertsBox.put(message.messageId, Alert.fromFirebaseMessage(message.messageId, message.data));
   }
 
   checkForInitialMessage() async {
-    RemoteMessage? initialMessage =
-        await FirebaseMessaging.instance.getInitialMessage();
+    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
       saveAlert(initialMessage);
       setState(() {
@@ -117,8 +120,7 @@ class _BDDSAppState extends State<BDDSApp> {
     // If app was opened by a PN when app was in the background
     checkForInitialMessage();
 
-    var initializationSettingsAndroid =
-        new AndroidInitializationSettings('ic_launcher');
+    var initializationSettingsAndroid = new AndroidInitializationSettings('ic_launcher');
     var initializationSettingsIOS = new IOSInitializationSettings();
     var initializationSettings = new InitializationSettings(
         android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
@@ -139,7 +141,6 @@ class _BDDSAppState extends State<BDDSApp> {
             android: AndroidNotificationDetails(
               channel.id,
               channel.name,
-              channel.description,
               color: Colors.blue,
               playSound: true,
               importance: Importance.max,
@@ -162,6 +163,14 @@ class _BDDSAppState extends State<BDDSApp> {
         });
       }
     });
+
+    getIt<PageManager>().init();
+  }
+
+  @override
+  void dispose() {
+    getIt<PageManager>().dispose();
+    super.dispose();
   }
 
   @override

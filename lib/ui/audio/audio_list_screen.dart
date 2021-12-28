@@ -26,12 +26,21 @@ class _AudioListScreenState extends State<AudioListScreen> {
   );
   final _animationDuration = 200;
   int selectedSuggestion = 0;
+  bool searchLoading = false;
 
-  final List audioListScreenSuggestions = ['TRACKS', 'SERIES', 'SEMINARS', 'YEAR'];
+  final List audioListScreenSuggestions = [
+    'TRACKS',
+    'SERIES',
+    'SEMINARS',
+    'YEAR'
+  ];
   final List audioListScreenFutures = [
     FirebaseFirestore.instance.collection("audios").orderBy('name').snapshots(),
     FirebaseFirestore.instance.collection("series").orderBy('name').snapshots(),
-    FirebaseFirestore.instance.collection("seminars").orderBy('name').snapshots(),
+    FirebaseFirestore.instance
+        .collection("seminars")
+        .orderBy('name')
+        .snapshots(),
     // FirebaseFirestore.instance.collection("audios").orderBy('name').snapshots(),
   ];
 
@@ -44,7 +53,7 @@ class _AudioListScreenState extends State<AudioListScreen> {
   }
 
   initAudioService() async {
-    await AudioService.connect();
+    // await AudioService.connect();
   }
 
   @override
@@ -52,33 +61,48 @@ class _AudioListScreenState extends State<AudioListScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: !_isSearching,
-        foregroundColor: Colors.black,
+        foregroundColor: Colors.white,
         title: Text('Audio Library'),
         actions: [
           IconButton(
               icon: Icon(Icons.search),
               onPressed: () async {
-                var selectionType = await showSearch(context: context, delegate: AudioSearch());
+                var selectionType =
+                    await showSearch(context: context, delegate: AudioSearch());
+                setState(() {
+                  this.searchLoading = true;
+                });
                 if (selectionType == TRACKS || selectionType == SHORT_AUDIOS) {
                   Box hiveBox = Hive.box(HIVE_BOX_AUDIO_SEARCH);
-                  String id = hiveBox.get(HIVE_BOX_AUDIO_SEARCH_KEY_SELECTED_ITEM);
-                  FirebaseFirestore.instance.collection('audios').where("id", isEqualTo: id).limit(1).get().then(
+                  String id =
+                      hiveBox.get(HIVE_BOX_AUDIO_SEARCH_KEY_SELECTED_ITEM);
+                  FirebaseFirestore.instance
+                      .collection('audios')
+                      .where("id", isEqualTo: id)
+                      .limit(1)
+                      .get()
+                      .then(
                     (value) async {
                       if (value.size > 0) {
-                        Audio audio = Adapter.firebaseAudioSnapshotToAudio(value.docs[0]);
+                        Audio audio =
+                            Adapter.firebaseAudioSnapshotToAudio(value.docs[0]);
                         MediaItem mediaItem = Adapter.audioToMediaItem(audio);
+                        setState(() {
+                          this.searchLoading = false;
+                        });
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => AudioPlayScreen(
-                                      mediaItem: mediaItem,
-                                    )));
+                                builder: (context) =>
+                                    AudioPlayScreen(mediaItem)));
                       }
                     },
                   );
-                } else if (selectionType == SEMINARS || selectionType == SERIES) {
+                } else if (selectionType == SEMINARS ||
+                    selectionType == SERIES) {
                   Box hiveBox = Hive.box(HIVE_BOX_AUDIO_SEARCH);
-                  String id = hiveBox.get(HIVE_BOX_AUDIO_SEARCH_KEY_SELECTED_ITEM);
+                  String id =
+                      hiveBox.get(HIVE_BOX_AUDIO_SEARCH_KEY_SELECTED_ITEM);
                   FirebaseFirestore.instance
                       .collection(selectionType!.toLowerCase())
                       .where("id", isEqualTo: id)
@@ -87,9 +111,17 @@ class _AudioListScreenState extends State<AudioListScreen> {
                       .then(
                     (value) async {
                       if (value.size > 0) {
-                        AudioFolder audioFolder = AudioFolder.fromFirebaseAudioFolderSnapshot(value.docs[0]);
+                        AudioFolder audioFolder =
+                            AudioFolder.fromFirebaseAudioFolderSnapshot(
+                                value.docs[0]);
+                        setState(() {
+                          this.searchLoading = false;
+                        });
                         Navigator.push(
-                            context, MaterialPageRoute(builder: (context) => AudioFolderScreen(audioFolder)));
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    AudioFolderScreen(audioFolder)));
                       }
                     },
                   );
@@ -98,57 +130,63 @@ class _AudioListScreenState extends State<AudioListScreen> {
         ],
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              height: 50,
-              decoration: BoxDecoration(
-                color: const Color(0xFF005CB2),
-              ),
-              child: Row(
+        child: this.searchLoading
+            ? Center(child: CircularProgressIndicator())
+            : Column(
                 children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              shrinkWrap: true,
-                              itemCount: audioListScreenSuggestions.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                return _audioListSuggestionBox(index, audioListScreenSuggestions[index]);
-                              }),
-                        ],
-                      ),
+                  Container(
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF005CB2),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            physics: BouncingScrollPhysics(
+                                parent: AlwaysScrollableScrollPhysics()),
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: [
+                                ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    shrinkWrap: true,
+                                    itemCount:
+                                        audioListScreenSuggestions.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return _audioListSuggestionBox(index,
+                                          audioListScreenSuggestions[index]);
+                                    }),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+                  Expanded(
+                    child: PageView.builder(
+                      itemCount: audioListScreenSuggestions.length,
+                      itemBuilder: (context, index) {
+                        if (index == 3) {
+                          return AudioYearList();
+                        } else if (index == 1 || index == 2) {
+                          return AudioFolderPage(audioListScreenFutures[index]);
+                        }
+                        return AudioListPage(audioListScreenFutures[index]);
+                      },
+                      controller: _pageController,
+                      onPageChanged: (pageNumber) {
+                        setState(() {
+                          this.selectedSuggestion = pageNumber;
+                        });
+                      },
+                    ),
+                  ),
+                  // Miniplayer(),
                 ],
               ),
-            ),
-            Expanded(
-              child: PageView.builder(
-                itemCount: audioListScreenSuggestions.length,
-                itemBuilder: (context, index) {
-                  if (index == 3) {
-                    return AudioYearList();
-                  } else if (index == 1 || index == 2) {
-                    return AudioFolderPage(audioListScreenFutures[index]);
-                  }
-                  return AudioListPage(audioListScreenFutures[index]);
-                },
-                controller: _pageController,
-                onPageChanged: (pageNumber) {
-                  setState(() {
-                    this.selectedSuggestion = pageNumber;
-                  });
-                },
-              ),
-            ),
-            Miniplayer(),
-          ],
-        ),
       ),
     );
   }
@@ -163,13 +201,15 @@ class _AudioListScreenState extends State<AudioListScreen> {
         });
       },
       child: Padding(
-        padding: const EdgeInsets.only(left: 5.0, right: 5.0, top: 6, bottom: 6),
+        padding:
+            const EdgeInsets.only(left: 5.0, right: 5.0, top: 6, bottom: 6),
         child: AnimatedContainer(
           duration: Duration(milliseconds: this._animationDuration),
           curve: Curves.easeIn,
           decoration: new BoxDecoration(
             border: this.selectedSuggestion == index
-                ? Border(bottom: BorderSide(width: 2.0, color: Color(0xFFE2C56A)))
+                ? Border(
+                    bottom: BorderSide(width: 2.0, color: Color(0xFFE2C56A)))
                 : null,
           ),
           height: 36,
@@ -179,7 +219,10 @@ class _AudioListScreenState extends State<AudioListScreen> {
               child: Text(
                 title,
                 style: this.selectedSuggestion == index
-                    ? TextStyle(color: Color(0xFFE2C56A), fontSize: 16, fontWeight: FontWeight.w800)
+                    ? TextStyle(
+                        color: Color(0xFFE2C56A),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800)
                     : TextStyle(color: Colors.white, fontSize: 16),
               ),
             ),
@@ -206,12 +249,14 @@ class AudioListPage extends StatelessWidget {
           // return Text(snapshot.data!.title);
           return Container(
               child: ListView.builder(
-                  physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                  physics: BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics()),
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
                   itemCount: snapshot.data!.size,
                   itemBuilder: (BuildContext context, int index) {
-                    Audio audio = Adapter.firebaseAudioSnapshotToAudio(snapshot.data!.docs[index]);
+                    Audio audio = Adapter.firebaseAudioSnapshotToAudio(
+                        snapshot.data!.docs[index]);
                     return AudioListScreenRow(
                       audio: audio,
                     );
@@ -219,7 +264,9 @@ class AudioListPage extends StatelessWidget {
         } else if (snapshot.hasError) {
           return Text("${snapshot.error}");
         }
-        return Center(child: Container(height: 24, width: 24, child: CircularProgressIndicator()));
+        return Center(
+            child: Container(
+                height: 24, width: 24, child: CircularProgressIndicator()));
       },
     );
   }
@@ -257,7 +304,10 @@ class AudioListScreenRow extends StatelessWidget {
                       onTap: () async {
                         MediaItem mediaItem = Adapter.audioToMediaItem(audio);
                         Navigator.push(
-                            context, MaterialPageRoute(builder: (context) => AudioPlayScreen(mediaItem: mediaItem)));
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    AudioPlayScreen(mediaItem)));
                       },
                       child: Row(
                         children: [
@@ -265,14 +315,19 @@ class AudioListScreenRow extends StatelessWidget {
                             flex: 1,
                             child: Container(
                               height: MediaQuery.of(context).size.height,
-                              decoration: BoxDecoration(color: isItemPlaying ? Color(0xFFBBDEFB) : null),
+                              decoration: BoxDecoration(
+                                  color:
+                                      isItemPlaying ? Color(0xFFBBDEFB) : null),
                               child: Padding(
-                                padding: const EdgeInsets.only(top: 2, left: 4, right: 2, bottom: 2),
+                                padding: const EdgeInsets.only(
+                                    top: 2, left: 4, right: 2, bottom: 2),
                                 child: Container(
                                   decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: Colors.blue, // inner circle color
-                                      image: DecorationImage(image: NetworkImage(audio.thumbnailUrl))),
+                                      image: DecorationImage(
+                                          image: NetworkImage(
+                                              audio.thumbnailUrl))),
                                 ),
                               ),
                             ),
@@ -280,12 +335,16 @@ class AudioListScreenRow extends StatelessWidget {
                           Expanded(
                               flex: 6,
                               child: Container(
-                                decoration: BoxDecoration(color: isItemPlaying ? Color(0xFFBBDEFB) : null),
+                                decoration: BoxDecoration(
+                                    color: isItemPlaying
+                                        ? Color(0xFFBBDEFB)
+                                        : null),
                                 child: Padding(
                                   padding: const EdgeInsets.all(12.0),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         '${audio.name}',
@@ -308,7 +367,8 @@ class AudioListScreenRow extends StatelessWidget {
                 Expanded(
                   flex: 1,
                   child: Container(
-                    decoration: BoxDecoration(color: isItemPlaying ? Color(0xFFBBDEFB) : null),
+                    decoration: BoxDecoration(
+                        color: isItemPlaying ? Color(0xFFBBDEFB) : null),
                     child: InkWell(
                       onTap: () {
                         String favoritesActionPerformed;
@@ -319,7 +379,8 @@ class AudioListScreenRow extends StatelessWidget {
                           favoritesActionPerformed = FAVORITES_ACTION_REMOVE;
                           favoriteAudiosBox.delete(audio.id);
                         }
-                        ScaffoldMessenger.of(context).showSnackBar(FavoriteAudioSnackBar(
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(FavoriteAudioSnackBar(
                           audio: audio,
                           favoritesActionPerformed: favoritesActionPerformed,
                           displayUndoAction: false,
@@ -329,9 +390,12 @@ class AudioListScreenRow extends StatelessWidget {
                           valueListenable: favoriteAudiosBox.listenable(),
                           builder: (context, Box<Audio> box, widget) {
                             return IconTheme(
-                                data: new IconThemeData(color: Colors.redAccent),
+                                data:
+                                    new IconThemeData(color: Colors.redAccent),
                                 child: Icon(
-                                  (box.get(audio.id) == null) ? Icons.favorite_border : Icons.favorite,
+                                  (box.get(audio.id) == null)
+                                      ? Icons.favorite_border
+                                      : Icons.favorite,
                                   size: 24,
                                 ));
                           }),
@@ -362,12 +426,15 @@ class AudioFolderPage extends StatelessWidget {
           // return Text(snapshot.data!.title);
           return Container(
               child: ListView.builder(
-                  physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                  physics: BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics()),
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
                   itemCount: snapshot.data!.size,
                   itemBuilder: (BuildContext context, int index) {
-                    AudioFolder audioFolder = AudioFolder.fromFirebaseAudioFolderSnapshot(snapshot.data!.docs[index]);
+                    AudioFolder audioFolder =
+                        AudioFolder.fromFirebaseAudioFolderSnapshot(
+                            snapshot.data!.docs[index]);
                     return Container(
                       // TODO: Make sure the rows on all the screens are of equal height
                       height: 76,
@@ -381,18 +448,24 @@ class AudioFolderPage extends StatelessWidget {
                             child: InkWell(
                               onTap: () {
                                 Navigator.push(
-                                    context, MaterialPageRoute(builder: (context) => AudioFolderScreen(audioFolder)));
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            AudioFolderScreen(audioFolder)));
                               },
                               child: Row(
                                 children: [
                                   Expanded(
                                     flex: 1,
                                     child: Padding(
-                                      padding: const EdgeInsets.only(top: 6, left: 6, right: 6, bottom: 6),
+                                      padding: const EdgeInsets.only(
+                                          top: 6, left: 6, right: 6, bottom: 6),
                                       child: Container(
                                         decoration: BoxDecoration(
                                             shape: BoxShape.circle,
-                                            image: DecorationImage(image: NetworkImage(audioFolder.thumbnailUrl))),
+                                            image: DecorationImage(
+                                                image: NetworkImage(
+                                                    audioFolder.thumbnailUrl))),
                                       ),
                                     ),
                                   ),
@@ -401,8 +474,10 @@ class AudioFolderPage extends StatelessWidget {
                                       child: Padding(
                                         padding: const EdgeInsets.all(12.0),
                                         child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               '${audioFolder.name}',
@@ -427,7 +502,9 @@ class AudioFolderPage extends StatelessWidget {
         } else if (snapshot.hasError) {
           return Text("${snapshot.error}");
         }
-        return Center(child: Container(height: 24, width: 24, child: CircularProgressIndicator()));
+        return Center(
+            child: Container(
+                height: 24, width: 24, child: CircularProgressIndicator()));
       },
     );
   }

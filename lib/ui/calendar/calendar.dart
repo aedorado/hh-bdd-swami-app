@@ -40,8 +40,7 @@ class Event {
       this.buttonNeeded = false,
       this.notificationActive = false}) {
     if (this.timestamp != null) {
-      this.datetime = DateTime.fromMillisecondsSinceEpoch(
-          this.timestamp!.millisecondsSinceEpoch);
+      this.datetime = DateTime.fromMillisecondsSinceEpoch(this.timestamp!.millisecondsSinceEpoch);
     }
   }
 
@@ -52,8 +51,7 @@ class Event {
     timestamp = doc['timing'];
     buttonNeeded = doc['link'] == '-' ? false : true;
     if (this.timestamp != null) {
-      datetime = DateTime.fromMillisecondsSinceEpoch(
-          this.timestamp!.millisecondsSinceEpoch);
+      datetime = DateTime.fromMillisecondsSinceEpoch(this.timestamp!.millisecondsSinceEpoch);
       subtitle = datetime.toString();
     }
     isExpanded = false;
@@ -61,8 +59,7 @@ class Event {
   }
 
   @override
-  String toString() =>
-      'title=${title},timestamp=${timestamp},datetime=${datetime}';
+  String toString() => 'title=${title},timestamp=${timestamp},datetime=${datetime}';
 }
 
 final kEvents = LinkedHashMap<DateTime, List<Event>>(
@@ -74,7 +71,7 @@ int getHashCode(DateTime key) {
   return key.day * 1000000 + key.month * 10000 + key.year;
 }
 
-final monthsAhead = 4;
+final monthsAhead = 2;
 final monthsBefore = 1;
 final kToday = DateTime.now();
 final kFirstDay = DateTime(kToday.year, kToday.month - monthsBefore, 1);
@@ -108,19 +105,14 @@ class _CalendarState extends State<Calendar> {
   }
 
   void fetchEvents() async {
-    var snapshot = await FirebaseFirestore.instance
-        .collection(this.eventsCollection)
-        .get();
+    var snapshot = await FirebaseFirestore.instance.collection(this.eventsCollection).get();
     var eventsList = [
       for (var doc in snapshot.docs)
-        Event.fromFirebaseDocument(
-            doc) // (doc['title'], '', timestamp: doc['timing'])
+        Event.fromFirebaseDocument(doc) // (doc['title'], '', timestamp: doc['timing'])
     ];
-    Map<DateTime, List<Event>> dateToEventsMap =
-        new Map<DateTime, List<Event>>();
+    Map<DateTime, List<Event>> dateToEventsMap = new Map<DateTime, List<Event>>();
     eventsList.forEach((event) {
-      DateTime key = DateTime.utc(
-          event.datetime!.year, event.datetime!.month, event.datetime!.day);
+      DateTime key = DateTime.utc(event.datetime!.year, event.datetime!.month, event.datetime!.day);
       if (!dateToEventsMap.containsKey(key)) {
         dateToEventsMap[key] = <Event>[];
       }
@@ -155,8 +147,7 @@ class _CalendarState extends State<Calendar> {
   String eventsCollection = 'events';
   String recurringEventsCollection = 'recurring_events';
 
-  Widget _buildRecurringEventsModalRow(
-      String imageAsset, String seriesTitle, String occursOn) {
+  Widget _buildRecurringEventsModalRow(String imageAsset, String seriesTitle, String occursOn) {
     return Padding(
       padding: const EdgeInsets.only(top: 6.0, bottom: 6.0),
       child: Container(
@@ -170,9 +161,7 @@ class _CalendarState extends State<Calendar> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Expanded(
-                  flex: 6,
-                  child: CircleAvatar(backgroundImage: AssetImage(imageAsset))),
+              Expanded(flex: 6, child: CircleAvatar(backgroundImage: AssetImage(imageAsset))),
               Expanded(flex: 1, child: Container()),
               Expanded(
                   flex: 33,
@@ -201,8 +190,7 @@ class _CalendarState extends State<Calendar> {
         builder: (BuildContext context) {
           return Dialog(
             insetPadding: EdgeInsets.all(24.0),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             elevation: 16,
             child: Container(
               decoration: BoxDecoration(
@@ -252,13 +240,10 @@ class _CalendarState extends State<Calendar> {
                                   shrinkWrap: true,
                                   physics: BouncingScrollPhysics(),
                                   itemCount: snapshot.data!.size,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
+                                  itemBuilder: (BuildContext context, int index) {
                                     var doc = snapshot.data!.docs[index];
                                     return _buildRecurringEventsModalRow(
-                                        doc['avatar'],
-                                        doc['timing'],
-                                        doc['title']);
+                                        doc['avatar'], doc['timing'], doc['title']);
                                   });
                             } else {
                               return Center(child: CircularProgressIndicator());
@@ -292,12 +277,11 @@ class _CalendarState extends State<Calendar> {
                   return SizedBox(
                       height: 32,
                       child: Container(
-                        decoration:
-                            BoxDecoration(color: Colors.amberAccent.shade200),
+                        decoration: BoxDecoration(color: Colors.amberAccent.shade200),
                         alignment: Alignment.center,
                         child: Padding(
-                          padding: const EdgeInsets.only(
-                              left: 12.0, top: 2.0, bottom: 2.0, right: 2.0),
+                          padding:
+                              const EdgeInsets.only(left: 12.0, top: 2.0, bottom: 2.0, right: 2.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
@@ -342,8 +326,7 @@ class _CalendarState extends State<Calendar> {
               ],
             ),
             child: Padding(
-              padding:
-                  const EdgeInsets.only(left: 4.0, right: 4.0, bottom: 6.0),
+              padding: const EdgeInsets.only(left: 4.0, right: 4.0, bottom: 6.0),
               child: TableCalendar(
                 firstDay: kFirstDay,
                 lastDay: kLastDay,
@@ -353,10 +336,10 @@ class _CalendarState extends State<Calendar> {
                 onDaySelected: _onDaySelected,
                 eventLoader: _getEventsForDay,
                 calendarStyle: CalendarStyle(
-                    selectedDecoration: BoxDecoration(
-                        color: Color(0xFF005CB2), shape: BoxShape.circle),
-                    todayDecoration: BoxDecoration(
-                        color: Color(0xAA005CB2), shape: BoxShape.circle)),
+                    selectedDecoration:
+                        BoxDecoration(color: Color(0xFF005CB2), shape: BoxShape.circle),
+                    todayDecoration:
+                        BoxDecoration(color: Color(0xAA005CB2), shape: BoxShape.circle)),
                 headerStyle: HeaderStyle(
                   formatButtonVisible: false,
                 ),
@@ -372,8 +355,7 @@ class _CalendarState extends State<Calendar> {
                       child: Container(
                         width: MediaQuery.of(context).size.width * .045,
                         height: MediaQuery.of(context).size.width * .045,
-                        decoration: BoxDecoration(
-                            color: Colors.blue, shape: BoxShape.circle),
+                        decoration: BoxDecoration(color: Colors.blue, shape: BoxShape.circle),
                         child: Text(
                           '${events.length}',
                           textAlign: TextAlign.center,
@@ -401,16 +383,13 @@ class _CalendarState extends State<Calendar> {
                       'November',
                       'December'
                     ];
-                    String monthName =
-                        '${months[day.month - 1] + day.year.toString()}';
+                    String monthName = '${months[day.month - 1] + ' ' + day.year.toString()}';
                     return Container(
                         alignment: Alignment.center,
                         child: Text(
                           monthName,
                           style: TextStyle(
-                              fontFamily: 'Nunito',
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
+                              fontFamily: 'Nunito', fontSize: 16, fontWeight: FontWeight.bold),
                         ));
                   },
                 ),
@@ -430,8 +409,7 @@ class _CalendarState extends State<Calendar> {
         Expanded(
           flex: 1,
           child: SingleChildScrollView(
-            physics:
-                BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+            physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
             child: ValueListenableBuilder<List<Event>>(
               valueListenable: _selectedEvents,
               builder: (context, value, _) {
@@ -456,8 +434,7 @@ class CalendarExpansionList extends StatefulWidget {
 class _CalendarExpansionListState extends State<CalendarExpansionList> {
   Box notificationsHiveBox = Hive.box(HIVE_BOX_NOTIFICATIONS_LIST);
 
-  Future<void> _zonedScheduleNotification(
-      int id, String title, DateTime dateTime) async {
+  Future<void> _zonedScheduleNotification(int id, String title, DateTime dateTime) async {
     Duration dateTimeDiff = dateTime.difference(DateTime.now());
     debugPrint('Notification coming up in: ${dateTimeDiff.toString()}');
     await flutterLocalNotificationsPlugin.zonedSchedule(
@@ -466,11 +443,12 @@ class _CalendarExpansionListState extends State<CalendarExpansionList> {
         'scheduled body',
         tz.TZDateTime.now(tz.local).add(dateTimeDiff),
         const NotificationDetails(
-            android: AndroidNotificationDetails('your channel id',
-                'your channel name', 'your channel description')),
+            android: AndroidNotificationDetails(
+          'your channel id',
+          'your channel name',
+        )),
         androidAllowWhileIdle: true,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime);
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime);
   }
 
   @override
@@ -494,9 +472,8 @@ class _CalendarExpansionListState extends State<CalendarExpansionList> {
                       icon: ValueListenableBuilder(
                         valueListenable: notificationsHiveBox.listenable(),
                         builder: (context, Box box, widget) {
-                          List<int> notificationsList = notificationsHiveBox
-                                  .get(HIVE_BOX_NOTIFICATIONS_LIST_KEY) ??
-                              [];
+                          List<int> notificationsList =
+                              notificationsHiveBox.get(HIVE_BOX_NOTIFICATIONS_LIST_KEY) ?? [];
                           if (notificationsList.contains(event.id)) {
                             return Icon(Icons.notifications_active_outlined);
                           }
@@ -505,14 +482,11 @@ class _CalendarExpansionListState extends State<CalendarExpansionList> {
                       ),
                       onPressed: () async {
                         if (event.datetime!.isAfter(DateTime.now())) {
-                          List<int> notificationsList = notificationsHiveBox
-                                  .get(HIVE_BOX_NOTIFICATIONS_LIST_KEY) ??
-                              [];
+                          List<int> notificationsList =
+                              notificationsHiveBox.get(HIVE_BOX_NOTIFICATIONS_LIST_KEY) ?? [];
                           if (notificationsList.contains(event.id)) {
-                            await flutterLocalNotificationsPlugin
-                                .cancel(event.id);
-                            notificationsList
-                                .removeWhere((item) => item == event.id);
+                            await flutterLocalNotificationsPlugin.cancel(event.id);
+                            notificationsList.removeWhere((item) => item == event.id);
                             Fluttertoast.showToast(msg: 'Alert removed');
                           } else {
                             await _zonedScheduleNotification(
@@ -521,8 +495,7 @@ class _CalendarExpansionListState extends State<CalendarExpansionList> {
                             Fluttertoast.showToast(msg: 'Alert set');
                           }
                           notificationsHiveBox.put(
-                              HIVE_BOX_NOTIFICATIONS_LIST_KEY,
-                              notificationsList);
+                              HIVE_BOX_NOTIFICATIONS_LIST_KEY, notificationsList);
                         } else {
                           Fluttertoast.showToast(msg: 'Event has ended');
                         }
@@ -552,10 +525,8 @@ class _CalendarExpansionListState extends State<CalendarExpansionList> {
                       if (event.buttonNeeded ?? false)
                         TextButton(
                           onPressed: () async {
-                            if (await canLaunch(
-                                'https://youtu.be/TYPKAj1685M?t=3771')) {
-                              await launch(
-                                  'https://youtu.be/TYPKAj1685M?t=3771');
+                            if (await canLaunch('https://youtu.be/TYPKAj1685M?t=3771')) {
+                              await launch('https://youtu.be/TYPKAj1685M?t=3771');
                             } else {
                               // TODO toast shows cannot open link
                             }

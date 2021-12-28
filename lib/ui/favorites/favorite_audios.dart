@@ -25,7 +25,8 @@ class FavoriteAudios extends StatelessWidget {
                   return Center(
                     child: Padding(
                       padding: const EdgeInsets.all(24.0),
-                      child: Text('No audios added to favorites. Visit library to add audios to favorites list.'),
+                      child: Text(
+                          'No audios added to favorites. Visit library to add audios to favorites list.'),
                     ),
                   );
                 }
@@ -53,26 +54,28 @@ class FavoriteAudios extends StatelessWidget {
                                     flex: 7,
                                     child: InkWell(
                                       onTap: () async {
-                                        MediaItem mediaItem = Adapter.audioToMediaItem(favoriteAudiosList[index]);
+                                        MediaItem mediaItem =
+                                            Adapter.audioToMediaItem(favoriteAudiosList[index]);
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) => AudioPlayScreen(
-                                                      mediaItem: mediaItem,
-                                                    )));
+                                                builder: (context) => AudioPlayScreen(mediaItem)));
                                       },
                                       child: Row(
                                         children: [
                                           Expanded(
                                             flex: 1,
                                             child: Padding(
-                                              padding: const EdgeInsets.only(top: 2, left: 4, right: 2, bottom: 2),
+                                              padding: const EdgeInsets.only(
+                                                  top: 2, left: 4, right: 2, bottom: 2),
                                               child: Container(
                                                 decoration: BoxDecoration(
                                                     shape: BoxShape.circle,
                                                     image: DecorationImage(
                                                         image: NetworkImage(
-                                                            favoriteAudiosList[index]?.thumbnailUrl ?? ''))),
+                                                            favoriteAudiosList[index]
+                                                                    ?.thumbnailUrl ??
+                                                                ''))),
                                               ),
                                             ),
                                           ),
@@ -108,7 +111,8 @@ class FavoriteAudios extends StatelessWidget {
                                       onTap: () {
                                         Audio audio = favoriteAudiosList[index]!;
                                         favoriteAudiosBox.delete(favoriteAudiosList[index]?.id);
-                                        ScaffoldMessenger.of(context).showSnackBar(FavoriteAudioSnackBar(
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(FavoriteAudioSnackBar(
                                           audio: audio,
                                           favoritesActionPerformed: FAVORITES_ACTION_REMOVE,
                                           displayUndoAction: true,
@@ -154,7 +158,9 @@ class FavoriteAudioSnackBar extends StatelessWidget {
   final bool displayUndoAction;
 
   FavoriteAudioSnackBar(
-      {required this.audio, required this.favoritesActionPerformed, required this.displayUndoAction}) {
+      {required this.audio,
+      required this.favoritesActionPerformed,
+      required this.displayUndoAction}) {
     if (this.favoritesActionPerformed == FAVORITES_ACTION_REMOVE) {
       _snackBarText = 'Removed from Favorites';
     } else {

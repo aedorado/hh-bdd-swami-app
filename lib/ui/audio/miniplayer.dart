@@ -61,7 +61,7 @@ class Miniplayer extends StatelessWidget {
                   // ),
                   InkWell(
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen()));
+                      // Navigator.push(context, MaterialPageRoute(builder: (context) => AudioPlayScreen()));
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(12.0),
@@ -77,7 +77,9 @@ class Miniplayer extends StatelessWidget {
                                 decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     image: DecorationImage(
-                                        image: NetworkImage(snapshot.data?.mediaItem?.extras!['thumbnailUrl'] ?? ''))),
+                                        image: NetworkImage(
+                                            snapshot.data?.mediaItem?.extras!['thumbnailUrl'] ??
+                                                ''))),
                               ),
                             ),
                           ),
