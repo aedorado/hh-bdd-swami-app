@@ -1,10 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/models/podo/gallery_image.dart';
 import 'package:hh_bbds_app/ui/gallery/gallery_view_image.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class FavoriteImages extends StatelessWidget {
@@ -24,7 +22,8 @@ class FavoriteImages extends StatelessWidget {
                 return Center(
                   child: Padding(
                     padding: const EdgeInsets.all(24.0),
-                    child: Text('No images added to favorites. Visit library to add images to favorites list.'),
+                    child: Text(
+                        'No images added to favorites. Visit library to add images to favorites list.'),
                   ),
                 );
               }
@@ -45,7 +44,8 @@ class FavoriteImages extends StatelessWidget {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => ViewImageScreen(imagesList: imagesList, index: index)));
+                                      builder: (context) =>
+                                          ViewImageScreen(imagesList: imagesList, index: index)));
                             },
                             child: Hero(
                               tag: imageToDisplay.displayURL,
@@ -60,7 +60,8 @@ class FavoriteImages extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                                placeholder: (context, url) =>
+                                    Center(child: CircularProgressIndicator()),
                                 errorWidget: (context, url, error) => Icon(Icons.error),
                               ),
                             ),

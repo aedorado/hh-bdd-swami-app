@@ -1,3 +1,4 @@
+import 'package:hh_bbds_app/ui/audio/audio_constants.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:audio_service/audio_service.dart';
 
@@ -36,11 +37,13 @@ class MyAudioHandler extends BaseAudioHandler {
       final playing = _player.playing;
       playbackState.add(playbackState.value.copyWith(
         controls: [
+          MediaControl.rewind,
           if (playing) MediaControl.pause else MediaControl.play,
           MediaControl.stop,
+          MediaControl.fastForward
         ],
         systemActions: const {MediaAction.seek},
-        androidCompactActionIndices: const [0, 1],
+        androidCompactActionIndices: const [1, 2],
         processingState: const {
           ProcessingState.idle: AudioProcessingState.idle,
           ProcessingState.loading: AudioProcessingState.loading,
@@ -100,6 +103,18 @@ class MyAudioHandler extends BaseAudioHandler {
   Future<void> stop() async {
     await _player.stop();
     return super.stop();
+  }
+
+  @override
+  Future<void> fastForward() {
+    return this.seek(_player.position + Duration(seconds: FAST_FORWARD_DURATION));
+  }
+
+  @override
+  Future<void> rewind() {
+    Duration updatedPosition = _player.position + Duration(seconds: -FAST_FORWARD_DURATION);
+    if (updatedPosition.isNegative) updatedPosition = Duration(seconds: 0);
+    return this.seek(updatedPosition);
   }
 
   @override

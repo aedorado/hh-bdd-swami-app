@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/models/podo/quote.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class Quotes extends StatelessWidget {
@@ -18,7 +17,10 @@ class Quotes extends StatelessWidget {
       ),
       body: Container(
         child: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance.collection(FIREBASE_QUOTES_COLLECTION).orderBy("id").snapshots(),
+            stream: FirebaseFirestore.instance
+                .collection(FIREBASE_QUOTES_COLLECTION)
+                .orderBy("id")
+                .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 List<Quote> quotes = _getQuoteListFromSnapshot(snapshot.data!.docs);
@@ -62,7 +64,9 @@ class QuoteDisplay extends StatelessWidget {
           behavior: HitTestBehavior.translucent,
           onTap: () {
             Navigator.push(
-                context, MaterialPageRoute(builder: (context) => ViewQuote(quoteList: quoteList, index: index)));
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ViewQuote(quoteList: quoteList, index: index)));
           },
           child: CachedNetworkImage(
               imageUrl: quoteList[index].url,
@@ -204,7 +208,9 @@ class _ViewQuoteState extends State<ViewQuote> with SingleTickerProviderStateMix
                         ),
                         onPressed: () {
                           setState(() {
-                            widget.index = widget.index == 0 ? (widget.quoteList.length - 1) : widget.index - 1;
+                            widget.index = widget.index == 0
+                                ? (widget.quoteList.length - 1)
+                                : widget.index - 1;
                           });
                         }),
                     ValueListenableBuilder(
@@ -222,7 +228,8 @@ class _ViewQuoteState extends State<ViewQuote> with SingleTickerProviderStateMix
                                   favoriteQuotesBox.delete(currentQuote.id);
                                   Fluttertoast.showToast(msg: 'Removed from Favorites');
                                 } else {
-                                  favoriteQuotesBox.put(currentQuote.id, this.widget.quoteList[this.widget.index]);
+                                  favoriteQuotesBox.put(
+                                      currentQuote.id, this.widget.quoteList[this.widget.index]);
                                   Fluttertoast.showToast(msg: 'Added to Favorites');
                                 }
                               });

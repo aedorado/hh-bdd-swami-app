@@ -6,9 +6,9 @@ import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/models/podo/audio.dart';
 import 'package:hh_bbds_app/notifiers/play_button_notifier.dart';
 import 'package:hh_bbds_app/notifiers/progress_notifier.dart';
+import 'package:hh_bbds_app/ui/audio/audio_constants.dart';
 import 'package:hh_bbds_app/ui/audio/page_manager.dart';
 import 'package:hh_bbds_app/ui/favorites/favorite_audios.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 
@@ -114,21 +114,17 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                   Expanded(
                     flex: 2,
                     child: Padding(
-                      padding: const EdgeInsets.only(top: 5, bottom: 5),
-                      child: Container(
-                        width: 56,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color(0xFF004BA0),
-                        ),
-                        child: Center(
-                          child: PlayButton(iconSize: 36),
-                        ),
+                      padding: const EdgeInsets.only(top: 3, bottom: 3),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          SkipAheadButton(forward: false),
+                          PlayButton(iconSize: 36),
+                          SkipAheadButton(forward: true)
+                        ],
                       ),
                     ),
                   ),
-                  Expanded(flex: 2, child: AudioSpeedPicker()),
                   Expanded(
                     flex: 2,
                     child: Padding(
@@ -136,6 +132,7 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
+                          AudioSpeedPickerButton(),
                           Container(
                             child: InkWell(
                               onTap: () {
@@ -170,6 +167,7 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                                   }),
                             ),
                           ),
+                          AudioSpeedPicker(),
                         ],
                       ),
                     ),
@@ -200,6 +198,26 @@ class AudioProgressBar extends StatelessWidget {
           onSeek: pageManager.seek,
         );
       },
+    );
+  }
+}
+
+class SkipAheadButton extends StatelessWidget {
+  final pageManager = getIt<PageManager>();
+
+  bool forward = true;
+  SkipAheadButton({required this.forward});
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: () {
+        if (forward)
+          pageManager.skip(FAST_FORWARD_DURATION);
+        else
+          pageManager.skip(-FAST_FORWARD_DURATION);
+      },
+      icon: Icon(forward ? Icons.fast_forward_rounded : Icons.fast_rewind_rounded),
     );
   }
 }
@@ -237,14 +255,14 @@ class _PlayButtonState extends State<PlayButton> with SingleTickerProviderStateM
             );
           case ButtonState.paused:
             return IconButton(
-              color: Colors.white,
+              color: Colors.blueAccent,
               iconSize: widget.iconSize,
               icon: Icon(Icons.play_arrow),
               onPressed: pageManager.play,
             );
           case ButtonState.playing:
             return IconButton(
-              color: Colors.white,
+              color: Colors.blueAccent,
               iconSize: widget.iconSize,
               icon: Icon(Icons.pause),
               onPressed: pageManager.pause,
@@ -252,6 +270,39 @@ class _PlayButtonState extends State<PlayButton> with SingleTickerProviderStateM
         }
       },
     );
+  }
+}
+
+class AudioSpeedPickerButton extends StatefulWidget {
+  const AudioSpeedPickerButton({Key? key}) : super(key: key);
+
+  @override
+  _AudioSpeedPickerButtonState createState() => _AudioSpeedPickerButtonState();
+}
+
+class _AudioSpeedPickerButtonState extends State<AudioSpeedPickerButton> {
+  final pageManager = getIt<PageManager>();
+  List<double> allSpeeds = [0.75, 1, 1.5, 2];
+  late int speedIndex;
+  late double originalSpeed;
+
+  @override
+  void initState() {
+    super.initState();
+    this.originalSpeed = pageManager.playbackSpeedNotifier.value;
+    this.speedIndex = this.allSpeeds.indexOf(this.originalSpeed);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+        onPressed: () {
+          setState(() {
+            this.speedIndex = (this.speedIndex + 1) % allSpeeds.length;
+          });
+          pageManager.setSpeed(allSpeeds[this.speedIndex]);
+        },
+        child: Text('${allSpeeds[speedIndex]}x'));
   }
 }
 
@@ -285,10 +336,10 @@ class _AudioSpeedPickerState extends State<AudioSpeedPicker> {
       value: originalSpeed,
       // icon: const Icon(Icons.arrow_downward),
       elevation: 16,
-      style: const TextStyle(color: Colors.deepPurple),
+      // style: const TextStyle(color: Colors.deepPurple),
       underline: Container(
-        height: 2,
-        color: Colors.blueAccent,
+        height: 1,
+        color: Colors.lightBlueAccent,
       ),
       onChanged: (String? updatedSpeed) {
         if (updatedSpeed != this.originalSpeed) {

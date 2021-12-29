@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/models/podo/blog.dart';
 import 'package:hh_bbds_app/ui/gallery/gallery_view_image.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class MindfulnessScreen extends StatelessWidget {
@@ -15,7 +14,10 @@ class MindfulnessScreen extends StatelessWidget {
     return Container(
       color: Color(0xFFE0E2E1),
       child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection('blogs').orderBy('date', descending: true).snapshots(),
+          stream: FirebaseFirestore.instance
+              .collection('blogs')
+              .orderBy('date', descending: true)
+              .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return ListView.builder(
@@ -52,8 +54,11 @@ class MindfulnessScreen extends StatelessWidget {
                                         ? WidgetSpan(
                                             child: GestureDetector(
                                               onTap: () {
-                                                Navigator.push(context,
-                                                    MaterialPageRoute(builder: (context) => MindfulnessArticle(blog)));
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            MindfulnessArticle(blog)));
                                               },
                                               child: Text(
                                                 'read more!',
@@ -82,7 +87,8 @@ class MindfulnessScreen extends StatelessWidget {
                                           ),
                                         ),
                                       ),
-                                      placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                                      placeholder: (context, url) =>
+                                          Center(child: CircularProgressIndicator()),
                                       errorWidget: (context, url, error) => Icon(Icons.error),
                                     ),
                                   ),

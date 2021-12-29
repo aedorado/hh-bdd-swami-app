@@ -1,12 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/models/podo/gallery_image.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hh_bbds_app/utils/utils.dart';
-import 'dart:ui' as ui;
 
 class ViewImageScreen extends StatefulWidget {
   late int index = 0;

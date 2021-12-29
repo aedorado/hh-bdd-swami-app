@@ -9,7 +9,6 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 Future<void> _configureLocalTimeZone() async {
@@ -59,7 +58,7 @@ class Event {
   }
 
   @override
-  String toString() => 'title=${title},timestamp=${timestamp},datetime=${datetime}';
+  String toString() => 'title=$title,timestamp=$timestamp,datetime=$datetime';
 }
 
 final kEvents = LinkedHashMap<DateTime, List<Event>>(
@@ -294,7 +293,7 @@ class _CalendarState extends State<Calendar> {
                                 ),
                                 child: Center(
                                   child: Text(
-                                    count == 0 ? 'No' : '${count}',
+                                    count == 0 ? 'No' : '$count',
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ),

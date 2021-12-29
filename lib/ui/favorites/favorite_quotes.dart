@@ -1,10 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/models/podo/quote.dart';
 import 'package:hh_bbds_app/ui/quotes/quotes_screen.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class FavoriteQuotes extends StatelessWidget {
@@ -24,7 +22,8 @@ class FavoriteQuotes extends StatelessWidget {
                 return Center(
                   child: Padding(
                     padding: const EdgeInsets.all(24.0),
-                    child: Text('No quotes added to favorites. Visit library to add quotes to favorites list.'),
+                    child: Text(
+                        'No quotes added to favorites. Visit library to add quotes to favorites list.'),
                   ),
                 );
               }
@@ -42,8 +41,11 @@ class FavoriteQuotes extends StatelessWidget {
                           child: GestureDetector(
                             behavior: HitTestBehavior.translucent,
                             onTap: () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) => ViewQuote(quoteList: quotes, index: index)));
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          ViewQuote(quoteList: quotes, index: index)));
                             },
                             child: Hero(
                               tag: quote.url,
@@ -58,7 +60,8 @@ class FavoriteQuotes extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                                placeholder: (context, url) =>
+                                    Center(child: CircularProgressIndicator()),
                                 errorWidget: (context, url, error) => Icon(Icons.error),
                               ),
                             ),
