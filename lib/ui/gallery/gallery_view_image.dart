@@ -171,18 +171,11 @@ class _ViewImageScreenState extends State<ViewImageScreen> with SingleTickerProv
                               padding: const EdgeInsets.all(6.0),
                               child: Column(
                                 children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      _descriptionTextBox(
-                                          '${DateToLabel(widget.imagesList[widget.index].date)}',
-                                          11),
-                                    ],
-                                  ),
+                                  _descriptionTextBox(
+                                      '${DateToLabel(widget.imagesList[widget.index].date)}', 11),
                                   _descriptionTextBox(
                                       '${widget.imagesList[widget.index].description}', 14),
-                                  _descriptionTextBox(
-                                      '${widget.imagesList[widget.index].tags}', 10),
+                                  // _descriptionTextBox('${widget.imagesList[widget.index].tags}', 10),
                                 ],
                               ),
                             )),
@@ -271,6 +264,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> with SingleTickerProv
     return Padding(
       padding: const EdgeInsets.all(3.0),
       child: Container(
+        alignment: Alignment.centerLeft,
         child: Text(
           '$s',
           style: TextStyle(fontSize: fontSize, color: Colors.white),

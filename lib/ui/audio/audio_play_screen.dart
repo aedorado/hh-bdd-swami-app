@@ -73,33 +73,19 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
               flex: 5,
               child: Column(
                 children: [
-                  // TODO add a loader to hide controls while audio is loading in background?
                   Expanded(
-                    flex: 3,
+                    flex: 2,
                     child: Center(
                       child: Padding(
-                        padding: const EdgeInsets.only(left: 18, right: 18, top: 12),
-                        child: Column(
-                          children: [
-                            Text(
-                              widget.mediaItem.title,
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20.0,
-                                decoration: TextDecoration.none,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            Text(
-                              widget.mediaItem.extras!['subtitle'] ?? '',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 14.0,
-                                decoration: TextDecoration.none,
-                              ),
-                              textAlign: TextAlign.center,
-                            )
-                          ],
+                        padding: const EdgeInsets.only(left: 18, right: 18, top: 18),
+                        child: Text(
+                          widget.mediaItem.title,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20.0,
+                            decoration: TextDecoration.none,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),

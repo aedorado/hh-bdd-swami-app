@@ -51,7 +51,7 @@ class Event {
     buttonNeeded = doc['link'] == '-' ? false : true;
     if (this.timestamp != null) {
       datetime = DateTime.fromMillisecondsSinceEpoch(this.timestamp!.millisecondsSinceEpoch);
-      subtitle = datetime.toString();
+      subtitle = datetime.toString().substring(0, datetime.toString().length - 7);
     }
     isExpanded = false;
     notificationActive = false;

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hh_bbds_app/models/podo/gallery_image.dart';
 import 'package:hh_bbds_app/models/podo/image_category.dart';
 import 'package:hh_bbds_app/ui/gallery/gallery_view_image.dart';
+import 'package:hh_bbds_app/ui/library/library_home.dart';
 
 class GalleryScreen extends StatelessWidget {
   const GalleryScreen({Key? key}) : super(key: key);
@@ -61,8 +62,7 @@ class _GridHeaderState extends State<GridHeader> {
               children: [
                 Expanded(
                   child: SingleChildScrollView(
-                    physics: BouncingScrollPhysics(
-                        parent: AlwaysScrollableScrollPhysics()),
+                    physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
@@ -71,8 +71,7 @@ class _GridHeaderState extends State<GridHeader> {
                             shrinkWrap: true,
                             itemCount: galleryScreenSuggestions.length,
                             itemBuilder: (BuildContext context, int index) {
-                              return _gallerySuggestionBox(
-                                  index, galleryScreenSuggestions[index]);
+                              return _gallerySuggestionBox(index, galleryScreenSuggestions[index]);
                             }),
                       ],
                     ),
@@ -111,15 +110,13 @@ class _GridHeaderState extends State<GridHeader> {
         });
       },
       child: Padding(
-        padding:
-            const EdgeInsets.only(left: 5.0, right: 5.0, top: 6, bottom: 6),
+        padding: const EdgeInsets.only(left: 5.0, right: 5.0, top: 6, bottom: 6),
         child: AnimatedContainer(
           duration: Duration(milliseconds: this._animationDuration),
           curve: Curves.easeIn,
           decoration: new BoxDecoration(
             border: this.selectedSuggestion == index
-                ? Border(
-                    bottom: BorderSide(width: 2.0, color: Color(0xFFE2C56A)))
+                ? Border(bottom: BorderSide(width: 2.0, color: Color(0xFFE2C56A)))
                 : null,
           ),
           height: 36,
@@ -129,10 +126,7 @@ class _GridHeaderState extends State<GridHeader> {
               child: Text(
                 title,
                 style: this.selectedSuggestion == index
-                    ? TextStyle(
-                        color: Color(0xFFE2C56A),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800)
+                    ? TextStyle(color: Color(0xFFE2C56A), fontSize: 16, fontWeight: FontWeight.w800)
                     : TextStyle(color: Colors.white, fontSize: 16),
               ),
             ),
@@ -142,11 +136,8 @@ class _GridHeaderState extends State<GridHeader> {
     );
   }
 
-  List<ImageCategory> _getImagesListFromSnapshot(
-      List<QueryDocumentSnapshot<Object?>> docs) {
-    return docs
-        .map((doc) => ImageCategory.fromFireBaseSnapshotDoc(doc))
-        .toList();
+  List<ImageCategory> _getImagesListFromSnapshot(List<QueryDocumentSnapshot<Object?>> docs) {
+    return docs.map((doc) => ImageCategory.fromFireBaseSnapshotDoc(doc)).toList();
   }
 }
 
@@ -175,10 +166,7 @@ class AllAlbumsScreen extends StatelessWidget {
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        ig.categoryName,
-                        style: TextStyle(fontSize: 18.0),
-                      ),
+                      child: SectionHeader(text: ig.categoryName),
                     ),
                     Container(
                       height: 300,
@@ -190,21 +178,18 @@ class AllAlbumsScreen extends StatelessWidget {
                               shrinkWrap: true,
                               physics: ScrollPhysics(),
                               itemCount: ig.subcategoryList.length,
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2,
-                                childAspectRatio: 1,
+                                childAspectRatio: .8,
                               ),
                               itemBuilder: (context, index) {
-                                var subcategoryName =
-                                    ig.subcategoryList[index]['name'] as String;
+                                var subcategoryName = ig.subcategoryList[index]['name'] as String;
                                 return InkWell(
                                   onTap: () {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) =>
-                                                AllImagesScreen(
+                                            builder: (context) => AllImagesScreen(
                                                   isRss: ig.isRss,
                                                   subcategory: subcategoryName,
                                                 )));
@@ -214,12 +199,10 @@ class AllAlbumsScreen extends StatelessWidget {
                                       Container(
                                         decoration: BoxDecoration(
                                           image: DecorationImage(
-                                              image: NetworkImage(ig
-                                                      .subcategoryList[index]
+                                              image: NetworkImage(ig.subcategoryList[index]
                                                   ['cover_image'] as String),
                                               fit: BoxFit.cover),
-                                          borderRadius:
-                                              BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(8),
                                           boxShadow: <BoxShadow>[
                                             BoxShadow(
                                               offset: Offset(0, -2.0),
@@ -235,20 +218,14 @@ class AllAlbumsScreen extends StatelessWidget {
                                           left: 4,
                                           right: 4,
                                           child: Container(
-                                            color:
-                                                Colors.white.withOpacity(0.7),
+                                            color: Colors.white.withOpacity(0.7),
                                             child: Padding(
                                               padding: const EdgeInsets.only(
-                                                  bottom: 7.0,
-                                                  top: 3.0,
-                                                  left: 3.0,
-                                                  right: 3.0),
+                                                  bottom: 7.0, top: 3.0, left: 3.0, right: 3.0),
                                               child: Center(
                                                   child: Text(
                                                 subcategoryName,
-                                                style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: Colors.black),
+                                                style: TextStyle(fontSize: 14, color: Colors.black),
                                               )),
                                             ),
                                           ))
@@ -279,11 +256,8 @@ class AllImagesScreen extends StatelessWidget {
 
   AllImagesScreen({required this.isRss, required this.subcategory});
 
-  List<GalleryImage> _getImagesListFromSnapshot(
-      List<QueryDocumentSnapshot<Object?>> docs) {
-    return docs
-        .map((doc) => GalleryImage.fromFireBaseSnapshotDoc(doc))
-        .toList();
+  List<GalleryImage> _getImagesListFromSnapshot(List<QueryDocumentSnapshot<Object?>> docs) {
+    return docs.map((doc) => GalleryImage.fromFireBaseSnapshotDoc(doc)).toList();
   }
 
   @override
@@ -312,8 +286,7 @@ class AllImagesScreen extends StatelessWidget {
                 itemCount: numItems,
                 itemBuilder: (context, index) {
                   GalleryImage imageToDisplay =
-                      GalleryImage.fromFireBaseSnapshotDoc(
-                          snapshot.data!.docs[index]);
+                      GalleryImage.fromFireBaseSnapshotDoc(snapshot.data!.docs[index]);
                   return Padding(
                     padding: const EdgeInsets.all(1.0),
                     child: Hero(
@@ -325,8 +298,8 @@ class AllImagesScreen extends StatelessWidget {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ViewImageScreen(
-                                      imagesList: imagesList, index: index)));
+                                  builder: (context) =>
+                                      ViewImageScreen(imagesList: imagesList, index: index)));
                         },
                         child: CachedNetworkImage(
                             imageUrl: imageToDisplay.thumbnailURL,
@@ -341,8 +314,7 @@ class AllImagesScreen extends StatelessWidget {
                                 ),
                             placeholder: (context, url) =>
                                 Center(child: CircularProgressIndicator()),
-                            errorWidget: (context, url, error) =>
-                                Icon(Icons.error)),
+                            errorWidget: (context, url, error) => Icon(Icons.error)),
                       )),
                     ),
                   );

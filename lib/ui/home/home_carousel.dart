@@ -62,25 +62,6 @@ class CarouselList extends StatefulWidget {
 }
 
 class _CarouselListState extends State<CarouselList> {
-  // TODO add default carousel for when internet is not available
-  var defaultCarouselCards = [
-    HomeScreenCarouselCard(
-      image: 'https://i.ibb.co/QNw14kf/demyst3.jpg',
-      clickable: true,
-      link: 'https://www.youtube.com/watch?v=gN8xsdWYY7Q',
-    ),
-    HomeScreenCarouselCard(
-      image: 'https://bddswami.com/wp-content/uploads/2020/07/rs02-1.jpg',
-      clickable: true,
-      link: 'https://www.youtube.com/watch?v=gN8xsdWYY7Q',
-    ),
-    HomeScreenCarouselCard(
-      image: 'https://bddswami.com/wp-content/uploads/2020/07/rs01-1.jpg',
-      clickable: true,
-      link: 'https://www.youtube.com/watch?v=gN8xsdWYY7Q',
-    ),
-  ];
-
   var homeCarouselCards = [];
 
   int totalCarouselCards = 0;
@@ -97,9 +78,8 @@ class _CarouselListState extends State<CarouselList> {
         this.doneFetchingCards = false;
       });
       value.docs.forEach((doc) {
-        this
-            .homeCarouselCards
-            .add(HomeScreenCarouselCard(image: doc['image_url'], clickable: doc['clickable'], link: doc['url']));
+        this.homeCarouselCards.add(HomeScreenCarouselCard(
+            image: doc['image_url'], clickable: doc['clickable'], link: doc['url']));
         this.totalCarouselCards++;
       });
       setState(() {
@@ -142,7 +122,9 @@ class _CarouselListState extends State<CarouselList> {
                   margin: EdgeInsets.symmetric(horizontal: 6.0),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: (this.currentPage % this.totalCarouselCards == i) ? Colors.red : Color(0xFFA6AEBD),
+                    color: (this.currentPage % this.totalCarouselCards == i)
+                        ? Colors.amber[800]
+                        : Color(0xFFA6AEBD),
                   ),
                 ),
           ],
@@ -162,8 +144,8 @@ class _CarouselListState extends State<CarouselList> {
                 ? PageView.builder(
                     itemBuilder: (context, index) {
                       return CarouselCard(
-                          card: this.homeCarouselCards[
-                              index % this.totalCarouselCards] // homeCarouselCards[index % snapshot.data!.size],
+                          card: this.homeCarouselCards[index %
+                              this.totalCarouselCards] // homeCarouselCards[index % snapshot.data!.size],
                           );
                     },
                     // itemCount: homeCarouselCards.length, // comment for infinite carousel
@@ -174,9 +156,7 @@ class _CarouselListState extends State<CarouselList> {
                       });
                     },
                   )
-                : Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                : Center(child: CircularProgressIndicator()),
           ),
           updateIndicators(),
         ],

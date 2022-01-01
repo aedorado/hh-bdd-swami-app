@@ -19,30 +19,12 @@ class LibraryHome extends StatelessWidget {
             this.isFavoritesLibrary ? _getFavoritesLibraryContent() : _getGeneralibraryContent());
   }
 
-  _sectionHeader(String text) {
-    return Container(
-      alignment: Alignment.centerLeft,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 8.0),
-        child: Text(
-          text,
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-            color: Color(0xFF444444),
-            fontSize: 28.0,
-            decoration: TextDecoration.none,
-          ),
-        ),
-      ),
-    );
-  }
-
   _getFavoritesLibraryContent() {
     return ListView(
         scrollDirection: Axis.vertical,
         physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
         children: <Widget>[
-          _sectionHeader("Vani"),
+          SectionHeader(text: "Vani"),
           Container(
             height: 200,
             child: Row(
@@ -54,7 +36,7 @@ class LibraryHome extends StatelessWidget {
               ],
             ),
           ),
-          _sectionHeader("Darshan"),
+          SectionHeader(text: "Darshan"),
           Container(
             height: 200,
             child: Row(
@@ -68,7 +50,7 @@ class LibraryHome extends StatelessWidget {
               ],
             ),
           ),
-          _sectionHeader("Quotes"),
+          SectionHeader(text: "Quotes"),
           Container(
             height: 200,
             child: Row(
@@ -87,7 +69,7 @@ class LibraryHome extends StatelessWidget {
 
   _getGeneralibraryContent() {
     return Column(children: [
-      _sectionHeader("Vani"),
+      SectionHeader(text: "Vani"),
       Container(
         height: 200,
         child: Row(
@@ -99,7 +81,7 @@ class LibraryHome extends StatelessWidget {
           ],
         ),
       ),
-      _sectionHeader("Darshan"),
+      SectionHeader(text: "Darshan"),
       Container(
         height: 200,
         child: Row(
@@ -113,7 +95,7 @@ class LibraryHome extends StatelessWidget {
           ],
         ),
       ),
-      _sectionHeader("Quotes"),
+      SectionHeader(text: "Quotes"),
       Container(
         height: 200,
         child: Row(
@@ -151,6 +133,31 @@ class LibraryCard extends StatelessWidget {
               ],
               borderRadius: BorderRadius.circular(10),
               image: DecorationImage(image: AssetImage(displayImage), fit: BoxFit.cover)),
+        ),
+      ),
+    );
+  }
+}
+
+class SectionHeader extends StatelessWidget {
+  final String text;
+
+  const SectionHeader({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.centerLeft,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 8.0),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF444444),
+            fontSize: 28.0,
+            decoration: TextDecoration.none,
+          ),
         ),
       ),
     );
