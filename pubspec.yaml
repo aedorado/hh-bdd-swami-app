@@ -53,6 +53,8 @@ dependencies:
  sticky_headers: ^0.2.0
  flutter_native_timezone: ^2.0.0
  get_it: ^7.2.0
+ font_awesome_flutter: ^9.2.0
+ flutter_svg: ^1.0.1
 
 
 dev_dependencies:
@@ -82,8 +84,6 @@ flutter:
  assets:
    - images/A.png
    - images/B.png
-   - images/C.jpg
-   - images/D.jpg
    - images/M.png
    - images/Q.png
    - images/R.png

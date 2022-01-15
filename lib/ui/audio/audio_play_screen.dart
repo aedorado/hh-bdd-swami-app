@@ -105,7 +105,10 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           SkipAheadButton(forward: false),
-                          PlayButton(iconSize: 36),
+                          PlayButton(
+                            iconSize: 60,
+                            color: Colors.blueAccent,
+                          ),
                           SkipAheadButton(forward: true)
                         ],
                       ),
@@ -118,7 +121,6 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          AudioSpeedPickerButton(),
                           Container(
                             child: InkWell(
                               onTap: () {
@@ -153,7 +155,7 @@ class _AudioPlayScreenState extends State<AudioPlayScreen> {
                                   }),
                             ),
                           ),
-                          AudioSpeedPicker(),
+                          AudioSpeedPickerButton(),
                         ],
                       ),
                     ),
@@ -203,7 +205,10 @@ class SkipAheadButton extends StatelessWidget {
         else
           pageManager.skip(-FAST_FORWARD_DURATION);
       },
-      icon: Icon(forward ? Icons.fast_forward_rounded : Icons.fast_rewind_rounded),
+      icon: Icon(
+        forward ? Icons.forward_10_rounded : Icons.replay_10_rounded,
+        size: 32,
+      ),
     );
   }
 }
@@ -213,7 +218,8 @@ class PlayButton extends StatefulWidget {
   State<PlayButton> createState() => _PlayButtonState();
 
   double iconSize;
-  PlayButton({required this.iconSize});
+  Color color;
+  PlayButton({required this.iconSize, required this.color});
 }
 
 class _PlayButtonState extends State<PlayButton> with SingleTickerProviderStateMixin {
@@ -233,24 +239,27 @@ class _PlayButtonState extends State<PlayButton> with SingleTickerProviderStateM
       builder: (_, value, __) {
         switch (value) {
           case ButtonState.loading:
-            return Container(
-              margin: EdgeInsets.all(8.0),
-              width: 32.0,
-              height: 32.0,
-              child: CircularProgressIndicator(),
+            return Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Container(
+                margin: EdgeInsets.all(8.0),
+                width: widget.iconSize - 2 * 10,
+                height: widget.iconSize - 2 * 10,
+                child: CircularProgressIndicator(),
+              ),
             );
           case ButtonState.paused:
             return IconButton(
-              color: Colors.blueAccent,
+              color: widget.color,
               iconSize: widget.iconSize,
-              icon: Icon(Icons.play_arrow),
+              icon: Icon(Icons.play_circle_fill_rounded),
               onPressed: pageManager.play,
             );
           case ButtonState.playing:
             return IconButton(
-              color: Colors.blueAccent,
+              color: widget.color,
               iconSize: widget.iconSize,
-              icon: Icon(Icons.pause),
+              icon: Icon(Icons.pause_circle_filled),
               onPressed: pageManager.pause,
             );
         }
@@ -268,7 +277,7 @@ class AudioSpeedPickerButton extends StatefulWidget {
 
 class _AudioSpeedPickerButtonState extends State<AudioSpeedPickerButton> {
   final pageManager = getIt<PageManager>();
-  List<double> allSpeeds = [0.75, 1, 1.5, 2];
+  List<double> allSpeeds = [0.75, 1, 1.25, 1.5, 2];
   late int speedIndex;
   late double originalSpeed;
 
@@ -281,14 +290,22 @@ class _AudioSpeedPickerButtonState extends State<AudioSpeedPickerButton> {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-        onPressed: () {
-          setState(() {
-            this.speedIndex = (this.speedIndex + 1) % allSpeeds.length;
-          });
-          pageManager.setSpeed(allSpeeds[this.speedIndex]);
-        },
-        child: Text('${allSpeeds[speedIndex]}x'));
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: TextButton(
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.all(16.0),
+            primary: Colors.lightBlueAccent,
+            textStyle: const TextStyle(fontSize: 16),
+          ),
+          onPressed: () {
+            setState(() {
+              this.speedIndex = (this.speedIndex + 1) % allSpeeds.length;
+            });
+            pageManager.setSpeed(allSpeeds[this.speedIndex]);
+          },
+          child: Text('${allSpeeds[speedIndex]}x')),
+    );
   }
 }
 

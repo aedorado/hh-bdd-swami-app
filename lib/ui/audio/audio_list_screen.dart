@@ -30,7 +30,7 @@ class _AudioListScreenState extends State<AudioListScreen> {
 
   final List audioListScreenSuggestions = ['TRACKS', 'SERIES', 'SEMINARS', 'YEAR'];
   final List audioListScreenFutures = [
-    FirebaseFirestore.instance.collection("audios").orderBy('name').snapshots(),
+    FirebaseFirestore.instance.collection("audios").orderBy('namePlainText').snapshots(),
     FirebaseFirestore.instance
         .collection("series")
         .where("totalContents", isNotEqualTo: 0)

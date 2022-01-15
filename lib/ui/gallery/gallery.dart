@@ -29,7 +29,7 @@ class _GridHeaderState extends State<GridHeader> {
   final _animationDuration = 200;
   int selectedSuggestion = 0;
   final List galleryScreenSuggestions = [
-    'Sri Sri Radha Shyam Sundar',
+    'Sri Sri Radha Shyamasundara',
     'HH Bhakti Dhira Damodar Swami'
   ];
   final List audioListScreenFutures = [
@@ -225,6 +225,8 @@ class AllAlbumsScreen extends StatelessWidget {
                                               child: Center(
                                                   child: Text(
                                                 subcategoryName,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
                                                 style: TextStyle(fontSize: 14, color: Colors.black),
                                               )),
                                             ),

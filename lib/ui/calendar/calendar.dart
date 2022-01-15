@@ -10,6 +10,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 Future<void> _configureLocalTimeZone() async {
   tz.initializeTimeZones();
@@ -20,6 +22,17 @@ Future<void> _configureLocalTimeZone() async {
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
+class EventButton {
+  late String type;
+  late String link;
+  late String text;
+  late Color color;
+  IconData? icon;
+
+  EventButton(
+      {required this.type, required this.text, required this.link, required this.color, this.icon});
+}
+
 class Event {
   late int id;
   late String title;
@@ -27,16 +40,15 @@ class Event {
   late Timestamp? timestamp;
   late DateTime? datetime;
   late bool? isExpanded;
-  late bool? buttonNeeded;
   late String? image;
   late bool? notificationActive = false;
+  List<EventButton> buttonsList = [];
 
   Event(this.id, this.title,
       {this.subtitle,
       this.timestamp,
       this.image,
       this.isExpanded = false,
-      this.buttonNeeded = false,
       this.notificationActive = false}) {
     if (this.timestamp != null) {
       this.datetime = DateTime.fromMillisecondsSinceEpoch(this.timestamp!.millisecondsSinceEpoch);
@@ -46,12 +58,36 @@ class Event {
   Event.fromFirebaseDocument(QueryDocumentSnapshot<Object?> doc) {
     id = doc['id'] ?? '';
     title = doc['title'] ?? '';
-    image = doc['image_url'] == '-' ? null : doc['image_url'];
+    image = doc['imageUrl'] == '' ? null : doc['imageUrl'];
     timestamp = doc['timing'];
-    buttonNeeded = doc['link'] == '-' ? false : true;
+    // buttonNeeded = doc['link'] == '' ? false : true;
     if (this.timestamp != null) {
       datetime = DateTime.fromMillisecondsSinceEpoch(this.timestamp!.millisecondsSinceEpoch);
       subtitle = datetime.toString().substring(0, datetime.toString().length - 7);
+    }
+    if (doc['zoomLink'] != '') {
+      buttonsList.add(new EventButton(
+          type: 'zoom',
+          link: doc['zoomLink'],
+          text: 'Zoom',
+          color: Colors.lightBlueAccent,
+          icon: FontAwesomeIcons.amazon));
+    }
+    if (doc['ytLink'] != '') {
+      buttonsList.add(new EventButton(
+          type: 'yt',
+          link: doc['ytLink'],
+          text: 'Youtube',
+          color: Colors.redAccent,
+          icon: FontAwesomeIcons.youtube));
+    }
+    if (doc['fbLink'] != '') {
+      buttonsList.add(new EventButton(
+          type: 'fb',
+          link: doc['fbLink'],
+          text: 'Facebook',
+          color: Colors.blueAccent,
+          icon: FontAwesomeIcons.facebook));
     }
     isExpanded = false;
     notificationActive = false;
@@ -89,6 +125,7 @@ class Calendar extends StatefulWidget {
 }
 
 class _CalendarState extends State<Calendar> {
+  bool loading = true;
   late final ValueNotifier<List<Event>> _selectedEvents;
 
   CalendarFormat _calendarFormat = CalendarFormat.month;
@@ -104,7 +141,10 @@ class _CalendarState extends State<Calendar> {
   }
 
   void fetchEvents() async {
-    var snapshot = await FirebaseFirestore.instance.collection(this.eventsCollection).get();
+    var snapshot = await FirebaseFirestore.instance
+        .collection(this.eventsCollection)
+        .where("timing", isGreaterThanOrEqualTo: kFirstDay)
+        .get();
     var eventsList = [
       for (var doc in snapshot.docs)
         Event.fromFirebaseDocument(doc) // (doc['title'], '', timestamp: doc['timing'])
@@ -128,6 +168,7 @@ class _CalendarState extends State<Calendar> {
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
     fetchEvents();
     initTimeZone();
+    loading = false;
   }
 
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
@@ -259,166 +300,177 @@ class _CalendarState extends State<Calendar> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        InkWell(
-            onTap: () {
-              _showSimpleModalDialog(context);
-            },
-            child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection(this.recurringEventsCollection)
-                  .where("is_active", isEqualTo: true)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  var count = snapshot.data!.size;
-                  return SizedBox(
-                      height: 32,
-                      child: Container(
-                        decoration: BoxDecoration(color: Colors.amberAccent.shade200),
-                        alignment: Alignment.center,
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.only(left: 12.0, top: 2.0, bottom: 2.0, right: 2.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Container(
-                                height: 22,
-                                width: 22,
-                                decoration: BoxDecoration(
-                                  color: Color(0xFF005CB2),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    count == 0 ? 'No' : '$count',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
+    return loading
+        ? Center(child: CircularProgressIndicator())
+        : Column(
+            children: [
+              InkWell(
+                  onTap: () {
+                    _showSimpleModalDialog(context);
+                  },
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection(this.recurringEventsCollection)
+                        .where("is_active", isEqualTo: true)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        var count = snapshot.data!.size;
+                        return SizedBox(
+                            height: 32,
+                            child: Container(
+                              decoration: BoxDecoration(color: Colors.amberAccent.shade200),
+                              alignment: Alignment.center,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 12.0, top: 2.0, bottom: 2.0, right: 2.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      height: 22,
+                                      width: 22,
+                                      decoration: BoxDecoration(
+                                        color: Color(0xFF005CB2),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          count == 0 ? 'No' : '$count',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                      ' recurring lectures/events.',
+                                      style: TextStyle(fontSize: 15),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              Text(
-                                ' recurring lectures/events.',
-                                style: TextStyle(fontSize: 15),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ));
-                } else {
-                  return Container();
-                }
-              },
-            )),
-        Expanded(
-          flex: 1,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: <BoxShadow>[
-                BoxShadow(
-                  offset: Offset(0, -2.0),
-                  color: Color(0x44BDBDBD),
-                  blurRadius: 8,
-                ),
-              ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 4.0, right: 4.0, bottom: 6.0),
-              child: TableCalendar(
-                firstDay: kFirstDay,
-                lastDay: kLastDay,
-                focusedDay: kToday,
-                shouldFillViewport: true,
-                calendarFormat: _calendarFormat,
-                onDaySelected: _onDaySelected,
-                eventLoader: _getEventsForDay,
-                calendarStyle: CalendarStyle(
-                    selectedDecoration:
-                        BoxDecoration(color: Color(0xFF005CB2), shape: BoxShape.circle),
-                    todayDecoration:
-                        BoxDecoration(color: Color(0xAA005CB2), shape: BoxShape.circle)),
-                headerStyle: HeaderStyle(
-                  formatButtonVisible: false,
-                ),
-                calendarBuilders: CalendarBuilders(
-                  markerBuilder: (context, date, _) {
-                    var events = _getEventsForDay(date);
-                    if (events.length == 0) {
-                      return null;
-                    }
-                    return Container(
-                      alignment: Alignment.bottomRight,
-                      margin: const EdgeInsets.symmetric(horizontal: 1.5),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * .045,
-                        height: MediaQuery.of(context).size.width * .045,
-                        decoration: BoxDecoration(color: Colors.blue, shape: BoxShape.circle),
-                        child: Text(
-                          '${events.length}',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: MediaQuery.of(context).size.width * .032,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
+                            ));
+                      } else {
+                        return Container();
+                      }
+                    },
+                  )),
+              Expanded(
+                flex: 1,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                        offset: Offset(0, -2.0),
+                        color: Color(0x44BDBDBD),
+                        blurRadius: 8,
                       ),
-                    );
-                  },
-                  headerTitleBuilder: (context, day) {
-                    List<String> months = [
-                      'January',
-                      'February',
-                      'March',
-                      'April',
-                      'May',
-                      'June',
-                      'July',
-                      'August',
-                      'September',
-                      'October',
-                      'November',
-                      'December'
-                    ];
-                    String monthName = '${months[day.month - 1] + ' ' + day.year.toString()}';
-                    return Container(
-                        alignment: Alignment.center,
-                        child: Text(
-                          monthName,
-                          style: TextStyle(
-                              fontFamily: 'Nunito', fontSize: 16, fontWeight: FontWeight.bold),
-                        ));
-                  },
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 4.0, right: 4.0, bottom: 6.0),
+                    child: TableCalendar(
+                      firstDay: kFirstDay,
+                      lastDay: kLastDay,
+                      focusedDay: kToday,
+                      shouldFillViewport: true,
+                      calendarFormat: _calendarFormat,
+                      onDaySelected: _onDaySelected,
+                      eventLoader: _getEventsForDay,
+                      calendarStyle: CalendarStyle(
+                          selectedDecoration:
+                              BoxDecoration(color: Color(0xFF005CB2), shape: BoxShape.circle),
+                          todayDecoration:
+                              BoxDecoration(color: Color(0xAA005CB2), shape: BoxShape.circle)),
+                      headerStyle: HeaderStyle(
+                        formatButtonVisible: false,
+                      ),
+                      calendarBuilders: CalendarBuilders(markerBuilder: (context, date, _) {
+                        var events = _getEventsForDay(date);
+                        if (events.length == 0) {
+                          return null;
+                        }
+                        return Container(
+                          alignment: Alignment.bottomRight,
+                          margin: const EdgeInsets.symmetric(horizontal: 1.5),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * .045,
+                            height: MediaQuery.of(context).size.width * .045,
+                            decoration: BoxDecoration(color: Colors.blue, shape: BoxShape.circle),
+                            child: Text(
+                              '${events.length}',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: MediaQuery.of(context).size.width * .032,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        );
+                      }, headerTitleBuilder: (context, day) {
+                        List<String> months = [
+                          'January',
+                          'February',
+                          'March',
+                          'April',
+                          'May',
+                          'June',
+                          'July',
+                          'August',
+                          'September',
+                          'October',
+                          'November',
+                          'December'
+                        ];
+                        String monthName = '${months[day.month - 1] + ' ' + day.year.toString()}';
+                        return Container(
+                            alignment: Alignment.center,
+                            child: Text(
+                              monthName,
+                              style: TextStyle(
+                                  fontFamily: 'Nunito', fontSize: 16, fontWeight: FontWeight.bold),
+                            ));
+                      }, dowBuilder: (context, date) {
+                        List<String> days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                        return Padding(
+                          padding: const EdgeInsets.all(1.0),
+                          child: Container(
+                            child: Text(
+                              days[date.weekday.toInt() - 1],
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 12),
+                            ),
+                          ),
+                        );
+                      }),
+                      selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                      onFormatChanged: (format) {
+                        if (_calendarFormat != format) {
+                          setState(() {
+                            _calendarFormat = format;
+                          });
+                        }
+                      },
+                    ),
+                  ),
                 ),
-                selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-                onFormatChanged: (format) {
-                  if (_calendarFormat != format) {
-                    setState(() {
-                      _calendarFormat = format;
-                    });
-                  }
-                },
               ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 10),
-        Expanded(
-          flex: 1,
-          child: SingleChildScrollView(
-            physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-            child: ValueListenableBuilder<List<Event>>(
-              valueListenable: _selectedEvents,
-              builder: (context, value, _) {
-                return CalendarExpansionList(events: value);
-              },
-            ),
-          ),
-        ),
-      ],
-    );
+              const SizedBox(height: 10),
+              Expanded(
+                flex: 1,
+                child: SingleChildScrollView(
+                  physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                  child: ValueListenableBuilder<List<Event>>(
+                    valueListenable: _selectedEvents,
+                    builder: (context, value, _) {
+                      return CalendarExpansionList(events: value);
+                    },
+                  ),
+                ),
+              ),
+            ],
+          );
   }
 }
 
@@ -439,7 +491,7 @@ class _CalendarExpansionListState extends State<CalendarExpansionList> {
     await flutterLocalNotificationsPlugin.zonedSchedule(
         id,
         title,
-        'scheduled body',
+        'Click to know more',
         tz.TZDateTime.now(tz.local).add(dateTimeDiff),
         const NotificationDetails(
             android: AndroidNotificationDetails(
@@ -464,6 +516,7 @@ class _CalendarExpansionListState extends State<CalendarExpansionList> {
             },
             children: widget.events.map<ExpansionPanel>((Event event) {
               return ExpansionPanel(
+                canTapOnHeader: true,
                 headerBuilder: (BuildContext context, bool isExpanded) {
                   return ListTile(
                     // isThreeLine: true,
@@ -474,7 +527,10 @@ class _CalendarExpansionListState extends State<CalendarExpansionList> {
                           List<int> notificationsList =
                               notificationsHiveBox.get(HIVE_BOX_NOTIFICATIONS_LIST_KEY) ?? [];
                           if (notificationsList.contains(event.id)) {
-                            return Icon(Icons.notifications_active_outlined);
+                            return Icon(
+                              Icons.notifications_active_outlined,
+                              color: Color(0xFF555555),
+                            );
                           }
                           return Icon(Icons.notifications_none);
                         },
@@ -521,16 +577,30 @@ class _CalendarExpansionListState extends State<CalendarExpansionList> {
                   child: Column(
                     children: [
                       if (event.image != null) Image.network(event.image ?? ''),
-                      if (event.buttonNeeded ?? false)
-                        TextButton(
-                          onPressed: () async {
-                            if (await canLaunch('https://youtu.be/TYPKAj1685M?t=3771')) {
-                              await launch('https://youtu.be/TYPKAj1685M?t=3771');
-                            } else {
-                              // TODO toast shows cannot open link
-                            }
-                          },
-                          child: Text('Join on Zoom'),
+                      if (event.buttonsList.length > 0)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            for (var eventButton in event.buttonsList)
+                              IconButton(
+                                onPressed: () async {
+                                  if (await canLaunch(eventButton.link)) {
+                                    await launch(eventButton.link);
+                                  } else {
+                                    // TODO toast shows cannot open link
+                                  }
+                                },
+                                icon: eventButton.type == 'zoom'
+                                    ? SvgPicture.asset(
+                                        'images/zoom.svg',
+                                        semanticsLabel: 'Join on Zoom',
+                                      )
+                                    : FaIcon(
+                                        eventButton.icon,
+                                        color: eventButton.color,
+                                      ),
+                              )
+                          ],
                         ),
                     ],
                   ),

@@ -71,7 +71,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> with SingleTickerProv
   }
 
   void _onInteractionEnd(ScaleEndDetails details) {
-    _animateResetInitialize();
+    // _animateResetInitialize();
   }
 
   @override

@@ -102,6 +102,7 @@ class MyAudioHandler extends BaseAudioHandler {
   @override
   Future<void> stop() async {
     await _player.stop();
+    _player.seek(Duration(seconds: 0));
     return super.stop();
   }
 
