@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hh_bbds_app/assets/constants.dart';
 import 'package:hh_bbds_app/ui/audio/audio_constants.dart';
+import 'package:hh_bbds_app/ui/loaders/spinkit_loaders.dart';
 import 'package:hive/hive.dart';
 
 class AudioSearch extends SearchDelegate<String> {
@@ -153,21 +154,14 @@ class AudioSearch extends SearchDelegate<String> {
               } else if (snapshot.hasError) {
                 return Text("${snapshot.error}");
               }
-              return Center(
-                  child: SpinKitThreeBounce(
-                color: Colors.blueAccent,
-                size: 50.0,
-              ));
+              return Center(child: threeBounceLoader);
             },
           );
         },
       );
     } else {
       return Center(
-        child: SpinKitThreeBounce(
-          color: Colors.blueAccent,
-          size: 50.0,
-        ),
+        child: threeBounceLoader,
       );
     }
   }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -13,6 +14,7 @@ import 'package:hh_bbds_app/models/podo/quote.dart';
 import 'package:hh_bbds_app/network/remote_config.dart';
 import 'package:hh_bbds_app/services/service_locator.dart';
 import 'package:hh_bbds_app/ui/audio/page_manager.dart';
+import 'package:hh_bbds_app/ui/calendar/view_event.dart';
 import 'package:hh_bbds_app/ui/home/home.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
@@ -73,6 +75,9 @@ void main() async {
 
   await setupServiceLocator();
 
+  NotificationAppLaunchDetails? nald =
+      await FlutterLocalNotificationsPlugin().getNotificationAppLaunchDetails();
+
   runApp(MaterialApp(
     title: 'HH BDD Swami',
     theme: ThemeData(primarySwatch: Colors.blue, fontFamily: 'Nunito'),
@@ -99,15 +104,35 @@ class _BDDSAppState extends State<BDDSApp> {
     if (initialMessage != null) {
       saveAlert(initialMessage);
       setState(() {
-        this._homeScreenSelectedScreen = 3;
+        this._homeScreenSelectedScreen = 2;
       });
     }
   }
 
   Future onSelectNotification(String? payload) {
-    setState(() {
-      this._homeScreenSelectedScreen = 3;
-    });
+    try {
+      if (null != payload && payload.length > 0) {
+        Map<String, dynamic> payloadMap = jsonDecode(payload);
+        if (payloadMap['type'] as String == 'events') {
+          // debugPrint(payloadMap.toString());
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ViewEvent(
+                        eventId: payloadMap['id'],
+                      )));
+        }
+        // setState(() {
+        //   this._homeScreenSelectedScreen = 2;
+        // });
+      } else {
+        debugPrint('Payload else: ' + (payload == null).toString());
+        debugPrint('Payload else: ' + (payload!.length).toString());
+      }
+    } on Exception catch (e) {
+      debugPrint(e.toString());
+      return Future<int>.value(0);
+    }
     return Future<int>.value(0);
   }
 

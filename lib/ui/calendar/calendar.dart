@@ -41,6 +41,7 @@ class Event {
   late DateTime? datetime;
   late bool? isExpanded;
   late String? image;
+  late String? description;
   late bool? notificationActive = false;
   List<EventButton> buttonsList = [];
 
@@ -59,6 +60,7 @@ class Event {
     id = doc['id'] ?? '';
     title = doc['title'] ?? '';
     image = doc['imageUrl'] == '' ? null : doc['imageUrl'];
+    description = doc['description'];
     timestamp = doc['timing'];
     // buttonNeeded = doc['link'] == '' ? false : true;
     if (this.timestamp != null) {
@@ -485,11 +487,11 @@ class CalendarExpansionList extends StatefulWidget {
 class _CalendarExpansionListState extends State<CalendarExpansionList> {
   Box notificationsHiveBox = Hive.box(HIVE_BOX_NOTIFICATIONS_LIST);
 
-  Future<void> _zonedScheduleNotification(int id, String title, DateTime dateTime) async {
+  Future<void> _zonedScheduleNotification(int eventId, String title, DateTime dateTime) async {
     Duration dateTimeDiff = dateTime.difference(DateTime.now());
     debugPrint('Notification coming up in: ${dateTimeDiff.toString()}');
     await flutterLocalNotificationsPlugin.zonedSchedule(
-        id,
+        eventId,
         title,
         'Click to know more',
         tz.TZDateTime.now(tz.local).add(dateTimeDiff),
@@ -499,6 +501,7 @@ class _CalendarExpansionListState extends State<CalendarExpansionList> {
           'your channel name',
         )),
         androidAllowWhileIdle: true,
+        payload: "{\"type\":\"events\", \"id\":" + eventId.toString() + "}",
         uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime);
   }
 
@@ -542,12 +545,13 @@ class _CalendarExpansionListState extends State<CalendarExpansionList> {
                           if (notificationsList.contains(event.id)) {
                             await flutterLocalNotificationsPlugin.cancel(event.id);
                             notificationsList.removeWhere((item) => item == event.id);
-                            Fluttertoast.showToast(msg: 'Alert removed');
+                            Fluttertoast.showToast(
+                                msg: 'You will not be notified about the event.');
                           } else {
                             await _zonedScheduleNotification(
                                 event.id, event.title, event.datetime!);
                             notificationsList.add(event.id);
-                            Fluttertoast.showToast(msg: 'Alert set');
+                            Fluttertoast.showToast(msg: 'You will be notified about the event.');
                           }
                           notificationsHiveBox.put(
                               HIVE_BOX_NOTIFICATIONS_LIST_KEY, notificationsList);
@@ -577,6 +581,8 @@ class _CalendarExpansionListState extends State<CalendarExpansionList> {
                   child: Column(
                     children: [
                       if (event.image != null) Image.network(event.image ?? ''),
+                      if (event.description != null && event.description!.length > 0)
+                        Text(event.description ?? ''),
                       if (event.buttonsList.length > 0)
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
