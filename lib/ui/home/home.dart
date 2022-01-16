@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hh_bbds_app/ui/more/more.dart';
 import 'package:hh_bbds_app/ui/calendar/calendar.dart';
 import 'package:hh_bbds_app/ui/library/library_home.dart';
 
@@ -20,11 +21,11 @@ class _HomeState extends State<Home> {
       isFavoritesLibrary: true,
     ),
     Calendar(),
-    // MindfulnessScreen(),
+    MoreScreen(),
     // AlertScreen(),
   ];
 
-  var _homeSreenAppBarTitles = ['BDD Swami App', 'Favorites', 'Calendar'];
+  var _homeSreenAppBarTitles = ['BDD Swami App', 'Favorites', 'Calendar', 'About'];
   // var _homeSreenAppBarTitles = ['BDD Swami App', 'Favorites', 'Mindfulness', 'Alerts'];
 
   void _onItemTapped(int index) {
@@ -61,6 +62,7 @@ class _HomeState extends State<Home> {
           BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.favorite_border), label: "Favorites"),
           BottomNavigationBarItem(icon: Icon(Icons.calendar_today_rounded), label: "Calendar"),
+          BottomNavigationBarItem(icon: Icon(Icons.info_outline_rounded), label: "About"),
           // BottomNavigationBarItem(icon: Icon(Icons.face_outlined), label: "Mindfulness"),
           // BottomNavigationBarItem(icon: Icon(Icons.notifications_outlined), label: "Alerts")
         ],

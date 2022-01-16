@@ -148,7 +148,7 @@ class _ViewQuoteState extends State<ViewQuote> with SingleTickerProviderStateMix
   }
 
   void _onInteractionEnd(ScaleEndDetails details) {
-    _animateResetInitialize();
+    // _animateResetInitialize();
   }
 
   @override
