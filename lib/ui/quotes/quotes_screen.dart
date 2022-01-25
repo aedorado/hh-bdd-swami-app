@@ -173,7 +173,7 @@ class _ViewQuoteState extends State<ViewQuote> with SingleTickerProviderStateMix
                 child: InteractiveViewer(
                   minScale: 0.1,
                   maxScale: 3,
-                  panEnabled: false,
+                  panEnabled: true,
                   onInteractionStart: _onInteractionStart,
                   onInteractionEnd: _onInteractionEnd,
                   transformationController: _transformationController,

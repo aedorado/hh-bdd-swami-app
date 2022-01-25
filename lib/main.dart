@@ -75,9 +75,6 @@ void main() async {
 
   await setupServiceLocator();
 
-  NotificationAppLaunchDetails? nald =
-      await FlutterLocalNotificationsPlugin().getNotificationAppLaunchDetails();
-
   runApp(MaterialApp(
     title: 'HH BDD Swami',
     theme: ThemeData(primarySwatch: Colors.blue, fontFamily: 'Nunito'),
@@ -109,6 +106,16 @@ class _BDDSAppState extends State<BDDSApp> {
     }
   }
 
+  isAppLaunchedByNotification() async {
+    NotificationAppLaunchDetails? notificationAppLaunchDetails =
+        await FlutterLocalNotificationsPlugin().getNotificationAppLaunchDetails();
+    if (notificationAppLaunchDetails != null) {
+      final notificationLaunchedApp = notificationAppLaunchDetails.didNotificationLaunchApp;
+      if (notificationLaunchedApp)
+        return onSelectNotification(notificationAppLaunchDetails.payload);
+    }
+  }
+
   Future onSelectNotification(String? payload) {
     try {
       if (null != payload && payload.length > 0) {
@@ -122,9 +129,6 @@ class _BDDSAppState extends State<BDDSApp> {
                         eventId: payloadMap['id'],
                       )));
         }
-        // setState(() {
-        //   this._homeScreenSelectedScreen = 2;
-        // });
       } else {
         debugPrint('Payload else: ' + (payload == null).toString());
         debugPrint('Payload else: ' + (payload!.length).toString());
@@ -187,6 +191,8 @@ class _BDDSAppState extends State<BDDSApp> {
     });
 
     getIt<PageManager>().init();
+
+    isAppLaunchedByNotification();
   }
 
   @override

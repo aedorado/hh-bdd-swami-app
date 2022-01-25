@@ -44,7 +44,7 @@ class LibraryHome extends StatelessWidget {
                 new Flexible(
                     flex: 1,
                     child: LibraryCard(
-                      displayImage: "images/B.png",
+                      displayImage: "images/D.png",
                       route: FavoriteImages(),
                     )),
               ],
@@ -89,7 +89,7 @@ class LibraryHome extends StatelessWidget {
             new Flexible(
                 flex: 1,
                 child: LibraryCard(
-                  displayImage: "images/R.png",
+                  displayImage: "images/D.png",
                   route: GalleryScreen(),
                 )),
           ],

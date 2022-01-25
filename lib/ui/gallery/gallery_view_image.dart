@@ -128,7 +128,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> with SingleTickerProv
                       child: InteractiveViewer(
                         minScale: 0.1,
                         maxScale: 3,
-                        panEnabled: false,
+                        panEnabled: true,
                         onInteractionStart: _onInteractionStart,
                         onInteractionEnd: _onInteractionEnd,
                         transformationController: _transformationController,
