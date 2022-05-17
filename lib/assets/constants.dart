@@ -1,3 +1,5 @@
+const CURRENT_APP_VERSION = 1;
+
 const String HIVE_BOX_FAVORITE_AUDIOS = 'hive_box_favorite_audios';
 const String HIVE_BOX_ALERTS = 'hive_box_alerts';
 const String HIVE_BOX_FAVORITE_IMAGES = 'hive_box_favorite_images';

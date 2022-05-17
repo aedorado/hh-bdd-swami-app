@@ -9,7 +9,8 @@ class HomeScreenCarouselCard {
   String image;
   String link;
   bool clickable;
-  HomeScreenCarouselCard({required this.image, required this.clickable, required this.link});
+  HomeScreenCarouselCard(
+      {required this.image, required this.clickable, required this.link});
 }
 
 // ignore: must_be_immutable
@@ -41,16 +42,10 @@ class CarouselCard extends StatelessWidget {
               ),
             ),
           ),
-          placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+          placeholder: (context, url) =>
+              Center(child: CircularProgressIndicator()),
           errorWidget: (context, url, error) => Icon(Icons.error),
         ),
-
-        // Container(
-        //
-        //   decoration: BoxDecoration(
-        //     image: DecorationImage(image: NetworkImage(card.image), fit: BoxFit.cover),
-        //   ),
-        // ),
       ),
     );
   }
@@ -73,13 +68,19 @@ class _CarouselListState extends State<CarouselList> {
   );
 
   getCarouselCards() async {
-    await FirebaseFirestore.instance.collection("carousel").orderBy("order").get().then((value) {
+    await FirebaseFirestore.instance
+        .collection("carousel")
+        .orderBy("order")
+        .get()
+        .then((value) {
       setState(() {
         this.doneFetchingCards = false;
       });
       value.docs.forEach((doc) {
         this.homeCarouselCards.add(HomeScreenCarouselCard(
-            image: doc['image_url'], clickable: doc['clickable'], link: doc['url']));
+            image: doc['image_url'],
+            clickable: doc['clickable'],
+            link: doc['url']));
         this.totalCarouselCards++;
       });
       setState(() {
