@@ -8,16 +8,22 @@ import 'package:hh_bbds_app/network/remote_config.dart';
 class AudioYearList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    List yearsList = RemoteConfigService.getAudioYears() ?? [];
+    String yearsListString = RemoteConfigService.getAudioYears() ?? "2020";
+    List<int> yearsList =
+        yearsListString.split(',').map((y) => int.parse(y)).toList();
+    debugPrint(yearsList.toString());
     return ListView.builder(
         itemCount: yearsList.length,
         itemBuilder: (BuildContext content, int index) {
           return ListTile(
-            title: Text('${yearsList[index]}', style: TextStyle(fontSize: 24.0)),
+            title:
+                Text('${yearsList[index]}', style: TextStyle(fontSize: 24.0)),
             trailing: Icon(Icons.chevron_right),
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => AudioYearScreen(yearsList[index])));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AudioYearScreen(yearsList[index])));
             },
           );
         });
@@ -55,7 +61,8 @@ class AudioYearScreen extends StatelessWidget {
                             name: "${this.year}",
                             isSeries: false,
                             totalContents: snapshot.data?.size ?? 0,
-                            description: "All audios from the year ${this.year}.",
+                            description:
+                                "All audios from the year ${this.year}.",
                             thumbnailUrl:
                                 "https://vrindavandarshan.in/upload_images/dailydarshan/2021-06-01-Mycnz.jpg"),
                         snapshot);
@@ -63,7 +70,10 @@ class AudioYearScreen extends StatelessWidget {
                     return Text("${snapshot.error}");
                   }
                   return Center(
-                      child: Container(height: 24, width: 24, child: CircularProgressIndicator()));
+                      child: Container(
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator()));
                 },
               ),
             ),
