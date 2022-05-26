@@ -113,59 +113,59 @@ class LibraryHome extends StatelessWidget {
           ],
         ),
       ),
-      SectionHeader(text: "About"),
-      Container(
-        height: 200,
-        child: Row(
-          children: [
-            new Flexible(
-                flex: 1,
-                child: LibraryCard(
-                  displayImage: "images/Q.png",
-                  route: AboutBDDS(),
-                )),
-          ],
-        ),
-      ),
-      Container(
-        height: 200,
-        child: Row(
-          children: [
-            new Flexible(
-                flex: 1,
-                child: LibraryCard(
-                  displayImage: "images/Q.png",
-                  route: AboutSurabhiFarm(),
-                )),
-          ],
-        ),
-      ),
-      Container(
-        height: 200,
-        child: Row(
-          children: [
-            new Flexible(
-                flex: 1,
-                child: LibraryCard(
-                  displayImage: "images/Q.png",
-                  route: AboutSurabhiFarm(),
-                )),
-          ],
-        ),
-      ),
-      Container(
-        height: 200,
-        child: Row(
-          children: [
-            new Flexible(
-                flex: 1,
-                child: LibraryCard(
-                  displayImage: "images/A.png",
-                  route: AboutContactUs(),
-                )),
-          ],
-        ),
-      ),
+      // SectionHeader(text: "About"),
+      // Container(
+      //   height: 200,
+      //   child: Row(
+      //     children: [
+      //       new Flexible(
+      //           flex: 1,
+      //           child: LibraryCard(
+      //             displayImage: "images/Q.png",
+      //             route: AboutBDDS(),
+      //           )),
+      //     ],
+      //   ),
+      // ),
+      // Container(
+      //   height: 200,
+      //   child: Row(
+      //     children: [
+      //       new Flexible(
+      //           flex: 1,
+      //           child: LibraryCard(
+      //             displayImage: "images/Q.png",
+      //             route: AboutSurabhiFarm(),
+      //           )),
+      //     ],
+      //   ),
+      // ),
+      // Container(
+      //   height: 200,
+      //   child: Row(
+      //     children: [
+      //       new Flexible(
+      //           flex: 1,
+      //           child: LibraryCard(
+      //             displayImage: "images/Q.png",
+      //             route: AboutSurabhiFarm(),
+      //           )),
+      //     ],
+      //   ),
+      // ),
+      // Container(
+      //   height: 200,
+      //   child: Row(
+      //     children: [
+      //       new Flexible(
+      //           flex: 1,
+      //           child: LibraryCard(
+      //             displayImage: "images/A.png",
+      //             route: AboutContactUs(),
+      //           )),
+      //     ],
+      //   ),
+      // ),
     ]);
   }
 }
