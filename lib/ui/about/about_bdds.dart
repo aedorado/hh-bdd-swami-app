@@ -2,44 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutBDDS extends StatelessWidget {
-  const AboutBDDS({Key? key}) : super(key: key);
+ const AboutBDDS({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Bhakti Dhira Damodra Swami'),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-                height: 248,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage("images/A.png"),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                child: null),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Text('''
-                 Bhakti Dhira Damodara Swami was born Oko Odama on 8th of June 1957 in an East Nigerian Village near the city of Calabar. Although his village had a rich tradition of the African Traditional Religion (ATR), he was trained as a Roman Catholic. From a very young age he had been concerned with the question - What happens after death?
-                
-                 “I would ponder on the topics of reincarnation and death, day and night, so much so that  I would have sleepless nights” - he says. After studying the story of King Saul, he learnt how to pray. Every night he would pray to God - “Please let me know you. Please reveal yourself to me.”
+ @override
+ Widget build(BuildContext context) {
+   return SingleChildScrollView(
+     child: Column(
+       children: [
+         SizedBox(
+           height: MediaQuery.of(context).size.height * 0.4,
+           child: Container(
+               decoration: BoxDecoration(
+                 image: DecorationImage(
+                   image: AssetImage("images/about_bdds.png"),
+                   fit: BoxFit.cover,
+                 ),
+               ),
+               child: null),
+         ),
+         Padding(
+           padding: const EdgeInsets.all(10.0),
+           child: Text('''
+                Bhakti Dhira Damodara Swami was born Oko Odama on 8th of June 1957 in an East Nigerian Village near the city of Calabar. Although his village had a rich tradition of the African Traditional Religion (ATR), he was trained as a Roman Catholic. From a very young age he had been concerned with the question - What happens after death?
+              
+                “I would ponder on the topics of reincarnation and death, day and night, so much so that  I would have sleepless nights” - he says. After studying the story of King Saul, he learnt how to pray. Every night he would pray to God - “Please let me know you. Please reveal yourself to me.”
 
-                 His prayers were finally answered in 1980 when he came in contact with the Hare Krishna Movement - which is based on the science of Bhakti-Yoga : the path to know and love God. In Lagos, Nigeria, he came across an advert in the Daily Times newspaper by the Hare Krishna movement. Inspired, he made a visit to the ISKCON Temple in Lagos. There, he not only very much enjoyed the prasādam (spiritual food), music, and dance in the company of the devotees, but was also very satisfied with the answers to his questions on reincarnation and karma .He became very attracted to the sweetness of the philosophy. Hence, in 1982 he moved to the temple as a resident devotee. While in the temple he continued to work on his reggae musical album but later discontinued to dedicate himself more fully to the pursuit of spiritual life.
+                His prayers were finally answered in 1980 when he came in contact with the Hare Krishna Movement - which is based on the science of Bhakti-Yoga : the path to know and love God. In Lagos, Nigeria, he came across an advert in the Daily Times newspaper by the Hare Krishna movement. Inspired, he made a visit to the ISKCON Temple in Lagos. There, he not only very much enjoyed the prasādam (spiritual food), music, and dance in the company of the devotees, but was also very satisfied with the answers to his questions on reincarnation and karma .He became very attracted to the sweetness of the philosophy. Hence, in 1982 he moved to the temple as a resident devotee. While in the temple he continued to work on his reggae musical album but later discontinued to dedicate himself more fully to the pursuit of spiritual life.
 
-                 Today his spiritual teachings revolve around the applications of the Bhakti-Yoga Philosophy in daily life. We welcome you to experience the science of Krishna consciousness, from a teacher who has had an incredible journey - from the villages of Nigeria as a child asking questions to a spiritual master training disciples all across the world.
-             '''),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+                Today his spiritual teachings revolve around the applications of the Bhakti-Yoga Philosophy in daily life. We welcome you to experience the science of Krishna consciousness, from a teacher who has had an incredible journey - from the villages of Nigeria as a child asking questions to a spiritual master training disciples all across the world.
+            '''),
+         ),
+       ],
+     ),
+   );
+ }
 }
+
 
 class AboutSpiritualConnection extends StatelessWidget {
   const AboutSpiritualConnection({Key? key}) : super(key: key);
